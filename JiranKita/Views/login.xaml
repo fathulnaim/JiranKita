@@ -151,7 +151,8 @@
                     FontSize="12" 
                     CornerRadius="12" 
                     HeightRequest="48" 
-                    Margin="0, 8, 0, 0" />
+                    Margin="0, 8, 0, 0" 
+                    Clicked="OnContinueClicked" />
 
             <!-- Option lain -->
             <Grid ColumnDefinitions="*, Auto, *" Margin="0, 6">

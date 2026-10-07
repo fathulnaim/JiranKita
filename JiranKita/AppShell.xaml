@@ -18,4 +18,9 @@
         ContentTemplate="{DataTemplate views:login}"
         Route="login" />
 
+    <ShellContent
+    Title="FindNeighbourhoodPage"
+    ContentTemplate="{DataTemplate views:FindNeighbourhoodPage}"
+    Route="FindNeighbourhoodPage" />
+
 </Shell>

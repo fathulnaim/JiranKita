@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+             xmlns:controls="clr-namespace:JiranKita.Controls"
+             x:Class="JiranKita.Views.FindNeighbourhoodPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- back button -->
+            <Grid ColumnDefinitions="Auto, *" Margin="0,10,0,5">
+                <!-- Guna komponen BackButton kita! -->
+                <controls:BackButton Grid.Column="0" />
+
+                <!-- badge step 2/3 -->
+                <Border Grid.Column="1"
+                        HorizontalOptions="End"
+                        VerticalOptions="Center"
+                        StrokeShape="RoundRectangle 20"
+                        Stroke="#A7F3D0"
+                        BackgroundColor="#ECFDF5"
+                        Padding="10, 4">
+                    <Label Text="Step 2 of 3"
+                           FontSize="11"
+                           FontAttributes="Bold"
+                           TextColor="#065F46" />
+                </Border>
+            </Grid>
+
+            <!-- Tajuk -->
+            <VerticalStackLayout Spacing="4">
+                <Label Text="Find Your Neighbourhood"
+                       FontSize="20"
+                       FontAttributes="Bold"
+                       TextColor="#1C1917" />
+                <Label Text="Connect to your residential condo, apartment or taman"
+                       FontSize="12"
+                       TextColor="#78716C" />
+            </VerticalStackLayout>
+
+            <!-- qr scanner -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Stroke="#E7E5E4"
+                    BackgroundColor="White"
+                    Padding="16"
+                    Margin="0, 4, 0, 0">
+                <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
+
+                    <!-- Garis putus ii -->
+                    <!-- Garis putus ii (Kamera sahaja di dalam) -->
+                    <Border StrokeShape="RoundRectangle 16"
+        Stroke="#059669"
+        StrokeThickness="2"
+        StrokeDashArray="4, 2"
+        BackgroundColor="Black"
+        HeightRequest="170"
+        WidthRequest="170">
+
+                        <zxing:CameraBarcodeReaderView 
+        x:Name="QrScanner"
+        IsDetecting="False"
+        BarcodesDetected="OnBarcodesDetected"
+        HeightRequest="170"
+        WidthRequest="170" />
+                    </Border>
+
+                    <!-- Teks panduan diletakkan di luar kotak kamera -->
+                    <Label Text="Point at JMB Notice QR" 
+       FontSize="11" 
+       FontAttributes="Bold" 
+       TextColor="#44403C" 
+       HorizontalOptions="Center" />
+
+                    <!-- Butang Flash & Gallery -->
+                    <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
+                        <!-- Butang Flash -->
+                        <Border StrokeShape="RoundRectangle 8"
+                                Stroke="#E7E5E4"
+                                BackgroundColor="#F5F5F4"
+                                Padding="12, 6">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnTorchToggleClicked" />
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Label Text="⚡" FontSize="11" TextColor="#D97706" />
+                                <Label Text="Flash" FontSize="11" TextColor="#44403C" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                        </Border>
+
+                        <!-- Butang Gallery -->
+                        <Border StrokeShape="RoundRectangle 8"
+                                Stroke="#E7E5E4"
+                                BackgroundColor="#F5F5F4"
+                                Padding="12, 6">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnGalleryClicked" />
+                            </Border.GestureRecognizers>
+                            <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                <Label Text="🖼" FontSize="11" TextColor="#0284C7" />
+                                <Label Text="Gallery" FontSize="11" TextColor="#44403C" FontAttributes="Bold" />
+                            </HorizontalStackLayout>
+                        </Border>
+                    </HorizontalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- masukkan code -->
+            <VerticalStackLayout Spacing="8" Margin="0, 4, 0, 0">
+                <Label Text="Or type 5-digit Invite Code:"
+           FontSize="12"
+           TextColor="#57534E"
+           FontAttributes="Bold" />
+
+                <Grid HeightRequest="48">
+                    <!-- tempat display code -->
+                    <Grid ColumnDefinitions="*, *, *, *, *" ColumnSpacing="8">
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White">
+                            <Label x:Name="Lbl1" FontSize="18" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White">
+                            <Label x:Name="Lbl2" FontSize="18" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Border Grid.Column="2" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White">
+                            <Label x:Name="Lbl3" FontSize="18" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Border Grid.Column="3" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White">
+                            <Label x:Name="Lbl4" FontSize="18" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Border Grid.Column="4" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White">
+                            <Label x:Name="Lbl5" FontSize="18" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+
+                    <!-- untuk type -->
+                    <Entry x:Name="HiddenOtpEntry"
+               MaxLength="5"
+               Opacity="0.01"
+               TextColor="Transparent"
+               BackgroundColor="Transparent"
+               TextChanged="OnHiddenOtpTextChanged" />
+                </Grid>
+            </VerticalStackLayout>
+
+            <!-- butang verify -->
+            <Button Text="Join Now"
+                    Clicked="OnVerifyButtonClicked"
+                    BackgroundColor="#047857"
+                    TextColor="White"
+                    FontAttributes="Bold"
+                    FontSize="12"
+                    CornerRadius="12"
+                    HeightRequest="48"
+                    Margin="0, 4, 0, 0" />
+
+            <!-- Butang utk create community -->
+            <VerticalStackLayout Spacing="4" Margin="0, 16, 0, 10" HorizontalOptions="Center">
+                <BoxView HeightRequest="1" Color="#E7E5E4" Margin="0, 0, 0, 10" />
+                <Label Text="Are you a Joint Management Body (JMB)?"
+                       FontSize="11"
+                       TextColor="#78716C"
+                       HorizontalOptions="Center" />
+                <Label Text="+ Register New Neighbourhood Community"
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       TextColor="#065F46"
+                       HorizontalOptions="Center" />
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

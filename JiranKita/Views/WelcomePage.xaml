@@ -55,7 +55,7 @@
         </VerticalStackLayout>
 
 
-        <!-- Butang login -->
+        <!-- Butang ke login -->
         <Border Grid.Row="1"
                 StrokeShape="RoundRectangle 25"
                 Stroke="#E7E5E4"

@@ -8,5 +8,6 @@ public partial class AppShell : Shell
 
         // Daftar laluan ke skrin login
         Routing.RegisterRoute("login", typeof(Views.login));
+        Routing.RegisterRoute("FindNeighbourhoodPage", typeof(Views.FindNeighbourhoodPage));
     }
 }
