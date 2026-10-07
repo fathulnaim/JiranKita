@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:JiranKita.Controls"
+             x:Class="JiranKita.Views.login"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="16">
+
+            <!-- 1. TOP BAR: Butang Back & Bahasa -->
+            <Grid ColumnDefinitions="Auto, *" Margin="0,10,0,5">
+
+                
+
+                <!-- Pilihan Bahasa (Language: EN) -->
+                <HorizontalStackLayout Grid.Column="1" 
+                                       HorizontalOptions="End" 
+                                       VerticalOptions="Center" 
+                                       Spacing="6">
+                    <Label Text="Language:" 
+                           FontSize="12" 
+                           TextColor="#78716C" 
+                           VerticalOptions="Center" />
+                    <Border StrokeShape="RoundRectangle 6" 
+                            Stroke="#E7E5E4" 
+                            BackgroundColor="White" 
+                            Padding="8, 2">
+                        <Label Text="EN" 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               TextColor="#065F46" />
+                    </Border>
+                </HorizontalStackLayout>
+            </Grid>
+
+            <!-- 2. TAJUK & SUBTAJUK -->
+            <VerticalStackLayout Spacing="4" Margin="0, 5, 0, 5">
+                <Label Text="Welcome Neighbour!" 
+                       FontSize="20" 
+                       FontAttributes="Bold" 
+                       TextColor="#1C1917" />
+                <Label Text="Sign in to your registered residency precinct" 
+                       FontSize="12" 
+                       TextColor="#78716C" />
+            </VerticalStackLayout>
+
+            <!-- 3. TAB SWITCHER (Sign In / Sign Up) -->
+            <Border StrokeShape="RoundRectangle 16"
+                    Stroke="#E7E5E4"
+                    BackgroundColor="#E7E5E4"
+                    Padding="3">
+                <Grid ColumnDefinitions="*, *">
+                    <!-- Tab Sign In (Aktif) -->
+                    <Border Grid.Column="0" 
+                            StrokeShape="RoundRectangle 12" 
+                            Stroke="Transparent" 
+                            BackgroundColor="White" 
+                            Padding="0, 8">
+                        <Label Text="Sign In" 
+                               TextColor="#1C1917" 
+                               FontAttributes="Bold" 
+                               FontSize="12" 
+                               HorizontalOptions="Center" />
+                    </Border>
+                    <!-- Tab Sign Up -->
+                    <Border Grid.Column="1" 
+                            StrokeShape="RoundRectangle 12" 
+                            Stroke="Transparent" 
+                            BackgroundColor="Transparent" 
+                            Padding="0, 8">
+                        <Label Text="Sign Up" 
+                               TextColor="#78716C" 
+                               FontAttributes="Bold" 
+                               FontSize="12" 
+                               HorizontalOptions="Center" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- 4. FORM FIELDS -->
+
+            <!-- Field 1: Email / Phone -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Residential Email / Phone" 
+                       FontSize="12" 
+                       TextColor="#44403C" 
+                       FontAttributes="Bold" />
+                <Border StrokeShape="RoundRectangle 12" 
+                        Stroke="#D6D3D1" 
+                        BackgroundColor="White" 
+                        Padding="12, 2">
+                    <Entry Placeholder="Enter residential email or phone"
+                           PlaceholderColor="#A8A29E"
+                           FontSize="13"
+                           TextColor="#1C1917" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Field 2: Password -->
+            <VerticalStackLayout Spacing="6">
+                <Label Text="Password" 
+                       FontSize="12" 
+                       TextColor="#44403C" 
+                       FontAttributes="Bold" />
+                <Border StrokeShape="RoundRectangle 12" 
+                        Stroke="#D6D3D1" 
+                        BackgroundColor="White" 
+                        Padding="12, 2">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Entry Grid.Column="0" 
+                               Placeholder="Enter password"
+                               PlaceholderColor="#A8A29E"
+                               IsPassword="True" 
+                               FontSize="13" 
+                               TextColor="#1C1917" />
+                        <Label Grid.Column="1" 
+                               Text="👁" 
+                               FontSize="14" 
+                               VerticalOptions="Center" 
+                               TextColor="#A8A29E" 
+                               Margin="0,0,5,0" />
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- 5. CHECKBOX & FORGOT PASSWORD -->
+            <Grid ColumnDefinitions="*, Auto">
+                <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
+                    <CheckBox IsChecked="True" Color="#047857" />
+                    <Label Text="Keep me logged in" 
+                           FontSize="12" 
+                           TextColor="#57534E" 
+                           VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <Label Grid.Column="1" 
+                       Text="Forgot?" 
+                       TextColor="#065F46" 
+                       FontAttributes="Bold" 
+                       FontSize="12" 
+                       VerticalOptions="Center" />
+            </Grid>
+
+            <!-- 6. BUTANG SUBMIT UTAMA -->
+            <Button Text="SIGN IN TO JIRANKITA" 
+                    BackgroundColor="#047857" 
+                    TextColor="White" 
+                    FontAttributes="Bold" 
+                    FontSize="12" 
+                    CornerRadius="12" 
+                    HeightRequest="48" 
+                    Margin="0, 8, 0, 0" />
+
+            <!-- 7. DIVIDER (Or continue with) -->
+            <Grid ColumnDefinitions="*, Auto, *" Margin="0, 6">
+                <BoxView Grid.Column="0" HeightRequest="1" Color="#E7E5E4" VerticalOptions="Center" />
+                <Label Grid.Column="1" 
+                       Text="Or continue with" 
+                       FontSize="11" 
+                       TextColor="#A8A29E" 
+                       Margin="10, 0" />
+                <BoxView Grid.Column="2" HeightRequest="1" Color="#E7E5E4" VerticalOptions="Center" />
+            </Grid>
+
+            <!-- 8. BUTANG GOOGLE -->
+            <Border StrokeShape="RoundRectangle 12" 
+                    Stroke="#E7E5E4" 
+                    BackgroundColor="White" 
+                    HeightRequest="44">
+                <HorizontalStackLayout HorizontalOptions="Center" 
+                                       VerticalOptions="Center" 
+                                       Spacing="8">
+                    <Label Text="G" 
+                           TextColor="#0284C7" 
+                           FontAttributes="Bold" 
+                           FontSize="14" />
+                    <Label Text="Google" 
+                           TextColor="#44403C" 
+                           FontAttributes="Bold" 
+                           FontSize="12" />
+                </HorizontalStackLayout>
+            </Border>
+
+            <!-- 9. FOOTER PDPA -->
+            <Label Text="Compliant with Malaysian PDPA 2010." 
+                   FontSize="10" 
+                   TextColor="#78716C" 
+                   HorizontalOptions="Center" 
+                   Margin="0, 10, 0, 10" />
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

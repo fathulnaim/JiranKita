@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JiranKita.Controls.BackButton">
+
+    <Border StrokeShape="RoundRectangle 12"
+            Stroke="#E7E5E4"
+            BackgroundColor="White"
+            HeightRequest="40"
+            WidthRequest="40"
+            Padding="0">
+        <Border.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnBackClicked" />
+        </Border.GestureRecognizers>
+
+        <Label Text="←" 
+               FontSize="18" 
+               TextColor="#44403C" 
+               HorizontalOptions="Center" 
+               VerticalOptions="Center" />
+    </Border>
+
+</ContentView>

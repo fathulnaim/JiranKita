@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JiranKita.Views.WelcomePage"
+             BackgroundColor="#FBFBFA"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Kita guna Grid 2 Baris: 
+         Baris 0 (*)    = Ruang tengah (Logo & Teks)
+         Baris 1 (Auto) = Ruang bawah (Butang) -->
+    <Grid RowDefinitions="*, Auto" Padding="24">
+
+        <!-- BAHAGIAN TENGAH: LOGO & PENERANGAN -->
+        <VerticalStackLayout Grid.Row="0"
+                             VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Spacing="12">
+
+            <!-- Kad Logo (Bingkai Hijau + Latar Putih) -->
+            <Border StrokeShape="RoundRectangle 28"
+                    Stroke="#00693E"
+                    StrokeThickness="2.5"
+                    BackgroundColor="White"
+                    HeightRequest="112"
+                    WidthRequest="112"
+                    Padding="8"
+                    Margin="0, 0, 0, 16">
+
+                <VerticalStackLayout VerticalOptions="Center" 
+                                     HorizontalOptions="Center" 
+                                     Spacing="6">
+                    <!-- LOGO ANDA MENGGANTIKAN EMOJI DI SINI -->
+                    <Image Source="logo_jirankita.png"
+                           HeightRequest="100"
+                           WidthRequest="200"
+                           Aspect="AspectFit"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Tajuk Aplikasi -->
+            <Label Text="JiranKita"
+                   FontSize="26"
+                   FontAttributes="Bold"
+                   TextColor="#1C1C1C"
+                   HorizontalTextAlignment="Center" />
+
+            <!-- Penerangan Aplikasi (Nota: Dalam XAML, simbol & ditulis sebagai &amp;) -->
+            <Label Text="Smart Community Information &amp; Communication Platform"
+                   FontSize="12"
+                   TextColor="#57534E"
+                   HorizontalTextAlignment="Center"
+                   MaximumWidthRequest="240" />
+
+        </VerticalStackLayout>
+
+
+        <!-- BAHAGIAN BAWAH: BUTANG 'CONTINUE TO SIGN IN' -->
+        <Border Grid.Row="1"
+                StrokeShape="RoundRectangle 25"
+                Stroke="#E7E5E4"
+                BackgroundColor="#F5F5F4"
+                HorizontalOptions="Center"
+                Padding="20, 10"
+                Margin="0, 0, 0, 20">
+
+            <!-- Tambah fungsi tekan (Tap) pada butang -->
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnContinueClicked" />
+            </Border.GestureRecognizers>
+
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                <Label Text="Continue to Sign In"
+                       TextColor="#065F46"
+                       FontAttributes="Bold"
+                       FontSize="12"
+                       VerticalOptions="Center" />
+                <Label Text="➔"
+                       TextColor="#065F46"
+                       FontSize="12"
+                       VerticalOptions="Center" />
+            </HorizontalStackLayout>
+        </Border>
+
+    </Grid>
+
+</ContentPage>
