@@ -10,13 +10,13 @@
          Baris 1 (Auto) = Ruang bawah (Butang) -->
     <Grid RowDefinitions="*, Auto" Padding="24">
 
-        <!-- BAHAGIAN TENGAH: LOGO & PENERANGAN -->
+        <!-- Logo dan detail kat sini -->
         <VerticalStackLayout Grid.Row="0"
                              VerticalOptions="Center"
                              HorizontalOptions="Center"
                              Spacing="12">
 
-            <!-- Kad Logo (Bingkai Hijau + Latar Putih) -->
+            <!-- bingkai logo kat sini -->
             <Border StrokeShape="RoundRectangle 28"
                     Stroke="#00693E"
                     StrokeThickness="2.5"
@@ -29,7 +29,7 @@
                 <VerticalStackLayout VerticalOptions="Center" 
                                      HorizontalOptions="Center" 
                                      Spacing="6">
-                    <!-- LOGO ANDA MENGGANTIKAN EMOJI DI SINI -->
+                    <!-- Logo kat sini -->
                     <Image Source="logo_jirankita.png"
                            HeightRequest="100"
                            WidthRequest="200"
@@ -38,14 +38,14 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Tajuk Aplikasi -->
+            <!-- Tajuk app -->
             <Label Text="JiranKita"
                    FontSize="26"
                    FontAttributes="Bold"
                    TextColor="#1C1C1C"
                    HorizontalTextAlignment="Center" />
 
-            <!-- Penerangan Aplikasi (Nota: Dalam XAML, simbol & ditulis sebagai &amp;) -->
+            <!-- Explaination -->
             <Label Text="Smart Community Information &amp; Communication Platform"
                    FontSize="12"
                    TextColor="#57534E"
@@ -55,7 +55,7 @@
         </VerticalStackLayout>
 
 
-        <!-- BAHAGIAN BAWAH: BUTANG 'CONTINUE TO SIGN IN' -->
+        <!-- Butang login -->
         <Border Grid.Row="1"
                 StrokeShape="RoundRectangle 25"
                 Stroke="#E7E5E4"
@@ -64,13 +64,13 @@
                 Padding="20, 10"
                 Margin="0, 0, 0, 20">
 
-            <!-- Tambah fungsi tekan (Tap) pada butang -->
+            <!-- untuk direct ke signin page -->
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnContinueClicked" />
             </Border.GestureRecognizers>
 
             <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                <Label Text="Continue to Sign In"
+                <Label Text="Jom Start !"
                        TextColor="#065F46"
                        FontAttributes="Bold"
                        FontSize="12"

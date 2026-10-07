@@ -9,12 +9,12 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
 
-            <!-- 1. TOP BAR: Butang Back & Bahasa -->
+            <!-- Butang back dan bahasa -->
             <Grid ColumnDefinitions="Auto, *" Margin="0,10,0,5">
 
-                
+                <controls:BackButton Grid.Column="0" />
 
-                <!-- Pilihan Bahasa (Language: EN) -->
+                <!-- Pilih bahasa -->
                 <HorizontalStackLayout Grid.Column="1" 
                                        HorizontalOptions="End" 
                                        VerticalOptions="Center" 
@@ -35,7 +35,7 @@
                 </HorizontalStackLayout>
             </Grid>
 
-            <!-- 2. TAJUK & SUBTAJUK -->
+            <!-- Welcome user kat sini -->
             <VerticalStackLayout Spacing="4" Margin="0, 5, 0, 5">
                 <Label Text="Welcome Neighbour!" 
                        FontSize="20" 
@@ -46,13 +46,13 @@
                        TextColor="#78716C" />
             </VerticalStackLayout>
 
-            <!-- 3. TAB SWITCHER (Sign In / Sign Up) -->
+            <!-- Butang signin signup -->
             <Border StrokeShape="RoundRectangle 16"
                     Stroke="#E7E5E4"
                     BackgroundColor="#E7E5E4"
                     Padding="3">
                 <Grid ColumnDefinitions="*, *">
-                    <!-- Tab Sign In (Aktif) -->
+                    <!-- Boldkan apa yang aktif -->
                     <Border Grid.Column="0" 
                             StrokeShape="RoundRectangle 12" 
                             Stroke="Transparent" 
@@ -64,7 +64,7 @@
                                FontSize="12" 
                                HorizontalOptions="Center" />
                     </Border>
-                    <!-- Tab Sign Up -->
+                    <!-- Tab signup -->
                     <Border Grid.Column="1" 
                             StrokeShape="RoundRectangle 12" 
                             Stroke="Transparent" 
@@ -79,11 +79,11 @@
                 </Grid>
             </Border>
 
-            <!-- 4. FORM FIELDS -->
+            <!-- Tempat isi maklumat -->
 
-            <!-- Field 1: Email / Phone -->
+            <!-- Email sahaja -->
             <VerticalStackLayout Spacing="6">
-                <Label Text="Residential Email / Phone" 
+                <Label Text="Residential/User Email" 
                        FontSize="12" 
                        TextColor="#44403C" 
                        FontAttributes="Bold" />
@@ -91,14 +91,14 @@
                         Stroke="#D6D3D1" 
                         BackgroundColor="White" 
                         Padding="12, 2">
-                    <Entry Placeholder="Enter residential email or phone"
+                    <Entry Placeholder="Enter residential/user email"
                            PlaceholderColor="#A8A29E"
                            FontSize="13"
                            TextColor="#1C1917" />
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Field 2: Password -->
+            <!-- Tempat password -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Password" 
                        FontSize="12" 
@@ -125,7 +125,7 @@
                 </Border>
             </VerticalStackLayout>
 
-            <!-- 5. CHECKBOX & FORGOT PASSWORD -->
+            <!-- checkbox ingat dan lupa password -->
             <Grid ColumnDefinitions="*, Auto">
                 <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
                     <CheckBox IsChecked="True" Color="#047857" />
@@ -136,14 +136,14 @@
                 </HorizontalStackLayout>
 
                 <Label Grid.Column="1" 
-                       Text="Forgot?" 
+                       Text="Forgot password?" 
                        TextColor="#065F46" 
                        FontAttributes="Bold" 
                        FontSize="12" 
                        VerticalOptions="Center" />
             </Grid>
 
-            <!-- 6. BUTANG SUBMIT UTAMA -->
+            <!-- Buton sign up -->
             <Button Text="SIGN IN TO JIRANKITA" 
                     BackgroundColor="#047857" 
                     TextColor="White" 
@@ -153,7 +153,7 @@
                     HeightRequest="48" 
                     Margin="0, 8, 0, 0" />
 
-            <!-- 7. DIVIDER (Or continue with) -->
+            <!-- Option lain -->
             <Grid ColumnDefinitions="*, Auto, *" Margin="0, 6">
                 <BoxView Grid.Column="0" HeightRequest="1" Color="#E7E5E4" VerticalOptions="Center" />
                 <Label Grid.Column="1" 
@@ -164,7 +164,7 @@
                 <BoxView Grid.Column="2" HeightRequest="1" Color="#E7E5E4" VerticalOptions="Center" />
             </Grid>
 
-            <!-- 8. BUTANG GOOGLE -->
+            <!-- Button guna google -->
             <Border StrokeShape="RoundRectangle 12" 
                     Stroke="#E7E5E4" 
                     BackgroundColor="White" 
@@ -183,7 +183,7 @@
                 </HorizontalStackLayout>
             </Border>
 
-            <!-- 9. FOOTER PDPA -->
+            <!-- Some law here -->
             <Label Text="Compliant with Malaysian PDPA 2010." 
                    FontSize="10" 
                    TextColor="#78716C" 
