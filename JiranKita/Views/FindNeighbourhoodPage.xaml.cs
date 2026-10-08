@@ -29,27 +29,45 @@ public partial class FindNeighbourhoodPage : ContentPage
         var firstResult = e.BarcodeResults.FirstOrDefault();
         if (firstResult == null) return;
 
-        string qrText = firstResult.DisplayValue;
+        string qrText = firstResult.DisplayValue?.Trim() ?? "";
 
-        MainThread.BeginInvokeOnMainThread(async () =>
+        // 1. TOLAK jika ia adalah link website (https / http)
+        if (qrText.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
+            qrText.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
         {
-            // Hentikan kamera seketika supaya tidak berulang-ulang kali imbas
-            QrScanner.CameraEnabled = false;
+            // Abaikan link web, biarkan kamera terus mencari QR yang betul
+            return;
+        }
 
-            // Bersihkan kod dan masukkan terus ke kotak 5 digit
-            if (!string.IsNullOrEmpty(qrText))
+        // 2. PENAPIS KHUSUS: Pastikan kod tepat 5 huruf/nombor sahaja (Contoh: KAJ82)
+        if (qrText.Length == 5 && qrText.All(char.IsLetterOrDigit))
+        {
+            MainThread.BeginInvokeOnMainThread(async () =>
             {
-                string cleanCode = qrText.Trim();
-                if (cleanCode.Length > 5)
-                {
-                    cleanCode = cleanCode.Substring(0, 5);
-                }
+                // Matikan kamera sekejap supaya tak scan berulang
+                QrScanner.CameraEnabled = false;
 
-                HiddenOtpEntry.Text = cleanCode.ToUpper();
-            }
+                // Masukkan kod ke kotak invite code
+                HiddenOtpEntry.Text = qrText.ToUpper();
 
-            await DisplayAlert("BERJAYA IMBAS!", $"Google ML Kit Berjaya Baca: {qrText}", "OK");
-        });
+                await DisplayAlert("BERJAYA!", $"Kod Komuniti Dikesan: {qrText.ToUpper()}", "OK");
+                await Shell.Current.GoToAsync(nameof(Views.HomePage));
+            });
+        }
+        else
+        {
+            // Jika orang imbas QR lain yang salah (contohnya QR menu kedai / MySejahtera)
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                // Pause sekejap supaya amaran tak keluar bertubi-tubi
+                QrScanner.CameraEnabled = false;
+
+                await DisplayAlert("QR Tidak Sah", "Sila imbas QR Notis JiranKita yang sah sahaja.", "Cuba Lagi");
+
+                // Hidupkan semula kamera untuk imbas semula
+                QrScanner.CameraEnabled = true;
+            });
+        }
     }
 
     // Butang Flash Lampu Picit
@@ -73,6 +91,7 @@ public partial class FindNeighbourhoodPage : ContentPage
         {
             HiddenOtpEntry.Unfocus();
             await DisplayAlert("Pengesahan Kod", $"Kod '{text}' berjaya disahkan!", "OK");
+            await Shell.Current.GoToAsync(nameof(Views.HomePage));
         }
     }
 
