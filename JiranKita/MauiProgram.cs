@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Logging;
-using ZXing.Net.Maui.Controls;
+using BarcodeScanning;
 namespace JiranKita
 {
     public static class MauiProgram
@@ -9,7 +9,7 @@ namespace JiranKita
             var builder = MauiApp.CreateBuilder();
             builder
                 .UseMauiApp<App>()
-                .UseBarcodeReader()
+                .UseBarcodeScanning()
                 .ConfigureFonts(fonts =>
                 {
                     fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
