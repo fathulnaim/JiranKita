@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:zxing="clr-namespace:ZXing.Net.Maui.Controls;assembly=ZXing.Net.MAUI.Controls"
+             xmlns:barcode="clr-namespace:BarcodeScanning;assembly=BarcodeScanning.Native.Maui"
              xmlns:controls="clr-namespace:JiranKita.Controls"
              x:Class="JiranKita.Views.FindNeighbourhoodPage"
              BackgroundColor="#FAFAF9"
@@ -10,12 +10,10 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
 
-            <!-- back button -->
+            <!-- Back Button & Step Indicator -->
             <Grid ColumnDefinitions="Auto, *" Margin="0,10,0,5">
-                <!-- Guna komponen BackButton kita! -->
                 <controls:BackButton Grid.Column="0" />
 
-                <!-- badge step 2/3 -->
                 <Border Grid.Column="1"
                         HorizontalOptions="End"
                         VerticalOptions="Center"
@@ -41,7 +39,7 @@
                        TextColor="#78716C" />
             </VerticalStackLayout>
 
-            <!-- qr scanner -->
+            <!-- Kad Scanner QR Google ML Kit -->
             <Border StrokeShape="RoundRectangle 16"
                     Stroke="#E7E5E4"
                     BackgroundColor="White"
@@ -49,30 +47,31 @@
                     Margin="0, 4, 0, 0">
                 <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
 
-                    <!-- Garis putus ii -->
-                    <!-- Garis putus ii (Kamera sahaja di dalam) -->
+                    <!-- Garis putus-putus dengan Kamera Asli Google -->
                     <Border StrokeShape="RoundRectangle 16"
-        Stroke="#059669"
-        StrokeThickness="2"
-        StrokeDashArray="4, 2"
-        BackgroundColor="Black"
-        HeightRequest="170"
-        WidthRequest="170">
+                            Stroke="#059669"
+                            StrokeThickness="2"
+                            StrokeDashArray="4, 2"
+                            BackgroundColor="Black"
+                            HeightRequest="170"
+                            WidthRequest="170">
 
-                        <zxing:CameraBarcodeReaderView 
-        x:Name="QrScanner"
-        IsDetecting="False"
-        BarcodesDetected="OnBarcodesDetected"
-        HeightRequest="170"
-        WidthRequest="170" />
+                        <!-- KAMERA GOOGLE ML KIT -->
+                        <barcode:CameraView 
+                            x:Name="QrScanner"
+                            CameraEnabled="True"
+                            CameraFacing="Back"
+                            OnDetectionFinished="OnDetectionFinished"
+                            HeightRequest="170"
+                            WidthRequest="170" />
                     </Border>
 
-                    <!-- Teks panduan diletakkan di luar kotak kamera -->
+                    <!-- Teks panduan di luar kotak kamera -->
                     <Label Text="Point at JMB Notice QR" 
-       FontSize="11" 
-       FontAttributes="Bold" 
-       TextColor="#44403C" 
-       HorizontalOptions="Center" />
+                           FontSize="11" 
+                           FontAttributes="Bold" 
+                           TextColor="#44403C" 
+                           HorizontalOptions="Center" />
 
                     <!-- Butang Flash & Gallery -->
                     <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
@@ -108,15 +107,15 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- masukkan code -->
+            <!-- Kotak 5-Digit Invite Code -->
             <VerticalStackLayout Spacing="8" Margin="0, 4, 0, 0">
                 <Label Text="Or type 5-digit Invite Code:"
-           FontSize="12"
-           TextColor="#57534E"
-           FontAttributes="Bold" />
+                       FontSize="12"
+                       TextColor="#57534E"
+                       FontAttributes="Bold" />
 
                 <Grid HeightRequest="48">
-                    <!-- tempat display code -->
+                    <!-- 5 Kotak Paparan -->
                     <Grid ColumnDefinitions="*, *, *, *, *" ColumnSpacing="8">
                         <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White">
                             <Label x:Name="Lbl1" FontSize="18" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" VerticalOptions="Center" />
@@ -135,17 +134,17 @@
                         </Border>
                     </Grid>
 
-                    <!-- untuk type -->
+                    <!-- Kotak Input Halimunan untuk Menaip -->
                     <Entry x:Name="HiddenOtpEntry"
-               MaxLength="5"
-               Opacity="0.01"
-               TextColor="Transparent"
-               BackgroundColor="Transparent"
-               TextChanged="OnHiddenOtpTextChanged" />
+                           MaxLength="5"
+                           Opacity="0.01"
+                           TextColor="Transparent"
+                           BackgroundColor="Transparent"
+                           TextChanged="OnHiddenOtpTextChanged" />
                 </Grid>
             </VerticalStackLayout>
 
-            <!-- butang verify -->
+            <!-- Butang Verify -->
             <Button Text="Join Now"
                     Clicked="OnVerifyButtonClicked"
                     BackgroundColor="#047857"
@@ -156,7 +155,7 @@
                     HeightRequest="48"
                     Margin="0, 4, 0, 0" />
 
-            <!-- Butang utk create community -->
+            <!-- JMB Footer -->
             <VerticalStackLayout Spacing="4" Margin="0, 16, 0, 10" HorizontalOptions="Center">
                 <BoxView HeightRequest="1" Color="#E7E5E4" Margin="0, 0, 0, 10" />
                 <Label Text="Are you a Joint Management Body (JMB)?"
