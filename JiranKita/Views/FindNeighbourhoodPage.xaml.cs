@@ -51,6 +51,7 @@ public partial class FindNeighbourhoodPage : ContentPage
                 HiddenOtpEntry.Text = qrText.ToUpper();
 
                 await DisplayAlert("BERJAYA!", $"Kod Komuniti Dikesan: {qrText.ToUpper()}", "OK");
+                await Shell.Current.GoToAsync(nameof(Views.HomePage));
             });
         }
         else
@@ -90,6 +91,7 @@ public partial class FindNeighbourhoodPage : ContentPage
         {
             HiddenOtpEntry.Unfocus();
             await DisplayAlert("Pengesahan Kod", $"Kod '{text}' berjaya disahkan!", "OK");
+            await Shell.Current.GoToAsync(nameof(Views.HomePage));
         }
     }
 
