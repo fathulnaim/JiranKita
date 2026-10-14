@@ -36,6 +36,10 @@
 	<ItemGroup>
 		<!-- App Icon -->
 		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
+		<MauiSplashScreen Include="Resources\AppIcon\logo_jirankita.png">
+		  <Color>#FAFAF9</Color>
+		  <BaseSize>128,128</BaseSize>
+		</MauiSplashScreen>
 		<MauiSplashScreen Include="Resources\Images\logo_jirankita.png">
 		  <Color>#FAFAF9</Color>
 		  <BaseSize>128,128</BaseSize>
@@ -70,6 +74,9 @@
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\FindNeighbourhoodPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\HomePage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\WelcomePage.xaml">

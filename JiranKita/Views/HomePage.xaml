@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JiranKita.Views.HomePage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False">
+
+    <!-- Grid 3 Baris: 
+         Row 0 (Auto) = Header lokasi & profil (Kekal di atas)
+         Row 1 (*)    = Isi kandungan yang boleh diskrol
+         Row 2 (Auto) = Menu Tab Navigasi (Kekal di bawah) -->
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ================= 1. HEADER ATAS ================= -->
+        <Border Grid.Row="0"
+                Stroke="#E7E5E4"
+                StrokeThickness="1"
+                BackgroundColor="White"
+                Padding="16, 12">
+            <Grid ColumnDefinitions="*, Auto">
+
+                <!-- Info Lokasi -->
+                <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                    <Label Text="📍" FontSize="16" VerticalOptions="Center" />
+                    <VerticalStackLayout Spacing="0">
+                        <HorizontalStackLayout Spacing="4">
+                            <Label Text="Seri Kembangan" 
+                                   FontSize="13" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#1C1917" />
+                            <Label Text="▼" FontSize="8" TextColor="#A8A29E" VerticalOptions="Center" />
+                        </HorizontalStackLayout>
+                        <Label Text="Zone B, Block A-D" 
+                               FontSize="10" 
+                               TextColor="#78716C" />
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+
+                <!-- Loceng Notifikasi & Avatar Profil -->
+                <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
+                    <!-- Butang Loceng dengan Badge Angka 3 -->
+                    <Grid WidthRequest="36" HeightRequest="36">
+                        <Border StrokeShape="RoundRectangle 10"
+                                Stroke="#E7E5E4"
+                                BackgroundColor="#F5F5F4"
+                                Padding="0">
+                            <Label Text="🔔" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <!-- Badge Merah (3) -->
+                        <Border StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#E11D48"
+                                Stroke="Transparent"
+                                HeightRequest="16"
+                                WidthRequest="16"
+                                HorizontalOptions="End"
+                                VerticalOptions="Start"
+                                TranslationX="4"
+                                TranslationY="-4">
+                            <Label Text="3" 
+                                   FontSize="9" 
+                                   TextColor="White" 
+                                   FontAttributes="Bold" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center" />
+                        </Border>
+                    </Grid>
+
+                    <!-- Avatar FN -->
+                    <Border StrokeShape="RoundRectangle 18"
+                            BackgroundColor="#065F46"
+                            Stroke="Transparent"
+                            HeightRequest="34"
+                            WidthRequest="34">
+                        <Label Text="FN" 
+                               TextColor="White" 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               HorizontalOptions="Center" 
+                               VerticalOptions="Center" />
+                    </Border>
+                </HorizontalStackLayout>
+
+            </Grid>
+        </Border>
+
+
+        <!-- ================= 2. KANDUNGAN UTAMA (SCROLLABLE) ================= -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- A. KAD AMARAN KECEMASAN (Syabas Water Alert) -->
+                <Border StrokeShape="RoundRectangle 16"
+                        Stroke="#FDE68A"
+                        BackgroundColor="#FFFBEB"
+                        Padding="14">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+                        <!-- Ikon Air -->
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 8"
+                                BackgroundColor="#FEF3C7"
+                                Stroke="Transparent"
+                                HeightRequest="36"
+                                WidthRequest="36"
+                                VerticalOptions="Start">
+                            <Label Text="💧" FontSize="16" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+
+                        <!-- Teks Notis Air -->
+                        <VerticalStackLayout Grid.Column="1" Spacing="3">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" 
+                                       Text="SCHEDULED WATER MAINTENANCE" 
+                                       FontSize="10" 
+                                       FontAttributes="Bold" 
+                                       TextColor="#78350F" />
+                                <Label Grid.Column="1" 
+                                       Text="Today" 
+                                       FontSize="10" 
+                                       TextColor="#92400E" 
+                                       FontAttributes="Bold" />
+                            </Grid>
+
+                            <Label Text="Syabas maintenance active: Sat 10:00 AM – 6:00 PM for Block B &amp; C."
+                                   FontSize="11"
+                                   TextColor="#44403C"
+                                   LineHeight="1.2" />
+
+                            <Label Text="View Syabas Notice ➔"
+                                   FontSize="11"
+                                   FontAttributes="Bold"
+                                   TextColor="#78350F"
+                                   Margin="0, 4, 0, 0" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+
+                <!-- B. QUICK ACTIONS (4 BUTANG SEBARIS) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="QUICK ACTIONS" 
+                           FontSize="11" 
+                           FontAttributes="Bold" 
+                           TextColor="#1C1917" 
+                           CharacterSpacing="1" />
+
+                    <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="8">
+
+                        <!-- 1. Report -->
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="8, 12">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Text="🔧" FontSize="18" HorizontalOptions="Center" />
+                                <Label Text="Report" FontSize="11" FontAttributes="Bold" TextColor="#292524" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- 2. Notices -->
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="8, 12">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Text="📋" FontSize="18" HorizontalOptions="Center" />
+                                <Label Text="Notices" FontSize="11" FontAttributes="Bold" TextColor="#292524" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- 3. Events -->
+                        <Border Grid.Column="2" StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="8, 12">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Text="📅" FontSize="18" HorizontalOptions="Center" />
+                                <Label Text="Events" FontSize="11" FontAttributes="Bold" TextColor="#292524" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- 4. JiranBot -->
+                        <Border Grid.Column="3" StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="8, 12">
+                            <VerticalStackLayout Spacing="6" HorizontalOptions="Center">
+                                <Label Text="🤖" FontSize="18" HorizontalOptions="Center" />
+                                <Label Text="JiranBot" FontSize="11" FontAttributes="Bold" TextColor="#292524" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                    </Grid>
+                </VerticalStackLayout>
+
+
+                <!-- C. NEIGHBOURHOOD PULSE FEED -->
+                <VerticalStackLayout Spacing="10">
+                    <!-- Tajuk Pulse dengan Bintik Hijau -->
+                    <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                        <BoxView Color="#059669" CornerRadius="4" WidthRequest="8" HeightRequest="8" VerticalOptions="Center" />
+                        <Label Text="NEIGHBOURHOOD PULSE" 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               TextColor="#1C1917" 
+                               CharacterSpacing="1" />
+                    </HorizontalStackLayout>
+
+                    <!-- Feed 1: Kucing Hilang -->
+                    <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="14">
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 6" BackgroundColor="#FEF3C7" Stroke="#FDE68A" Padding="6, 2">
+                                    <Label Text="LOST &amp; FOUND" FontSize="9" FontAttributes="Bold" TextColor="#78350F" />
+                                </Border>
+                                <Label Grid.Column="1" Text="12m ago" FontSize="10" TextColor="#78716C" HorizontalOptions="End" VerticalOptions="Center" />
+                            </Grid>
+
+                            <Label Text="Persian Cat (&quot;Miko&quot;) Missing at Block C Playground" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#1C1917" />
+
+                            <Label Text="Friendly orange tabby with a blue bell collar. Slipped out during delivery." 
+                                   FontSize="11" 
+                                   TextColor="#57534E" 
+                                   LineHeight="1.2" />
+
+                            <BoxView HeightRequest="1" Color="#F5F5F4" Margin="0, 4" />
+
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" Text="By: Puan Aisyah (Unit B-12)" FontSize="10" TextColor="#78716C" />
+                                <Label Grid.Column="1" Text="❤️ 4 Helpful" FontSize="10" FontAttributes="Bold" TextColor="#047857" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Feed 2: Lubang Jalan (Pothole) -->
+                    <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="14">
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 6" BackgroundColor="#E0F2FE" Stroke="#BAE6FD" Padding="6, 2">
+                                    <Label Text="ROAD &amp; MAINTENANCE" FontSize="9" FontAttributes="Bold" TextColor="#0369A1" />
+                                </Border>
+                                <Label Grid.Column="1" Text="45m ago" FontSize="10" TextColor="#78716C" HorizontalOptions="End" VerticalOptions="Center" />
+                            </Grid>
+
+                            <Label Text="Deep Pothole along Main Exit near Gate 3" 
+                                   FontSize="12" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#1C1917" />
+
+                            <BoxView HeightRequest="1" Color="#F5F5F4" Margin="0, 4" />
+
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" Text="Status: JMB Assigned Contractor" FontSize="10" TextColor="#78716C" />
+                                <Label Grid.Column="1" Text="💬 3 Notes" FontSize="10" FontAttributes="Bold" TextColor="#0284C7" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+
+        <!-- ================= 3. BOTTOM TAB NAVIGATION BAR ================= -->
+        <Border Grid.Row="2"
+                Stroke="#E7E5E4"
+                StrokeThickness="1"
+                BackgroundColor="White"
+                Padding="0, 8">
+            <Grid ColumnDefinitions="*, *, *, *, *">
+
+                <!-- Tab 1: Home (Aktif) -->
+                <VerticalStackLayout Grid.Column="0" Spacing="3" HorizontalOptions="Center">
+                    <Label Text="🏠" FontSize="16" HorizontalOptions="Center" />
+                    <Label Text="Home" FontSize="10" FontAttributes="Bold" TextColor="#047857" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!-- Tab 2: Feed -->
+                <VerticalStackLayout Grid.Column="1" Spacing="3" HorizontalOptions="Center">
+                    <Label Text="📰" FontSize="16" HorizontalOptions="Center" />
+                    <Label Text="Feed" FontSize="10" TextColor="#78716C" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!-- Tab 3: Chat & AI -->
+                <VerticalStackLayout Grid.Column="2" Spacing="3" HorizontalOptions="Center">
+                    <Label Text="💬" FontSize="16" HorizontalOptions="Center" />
+                    <Label Text="Chat &amp; AI" FontSize="10" TextColor="#78716C" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!-- Tab 4: Alerts -->
+                <VerticalStackLayout Grid.Column="3" Spacing="3" HorizontalOptions="Center">
+                    <Label Text="⚠️" FontSize="16" HorizontalOptions="Center" />
+                    <Label Text="Alerts" FontSize="10" TextColor="#78716C" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+                <!-- Tab 5: Profile -->
+                <VerticalStackLayout Grid.Column="4" Spacing="3" HorizontalOptions="Center">
+                    <Label Text="👤" FontSize="16" HorizontalOptions="Center" />
+                    <Label Text="Profile" FontSize="10" TextColor="#78716C" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>
