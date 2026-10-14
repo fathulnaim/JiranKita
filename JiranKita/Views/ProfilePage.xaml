@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JiranKita.Views.ProfilePage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="True">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- ================= 1. HEADER ATAS ================= -->
+        <Border Grid.Row="0"
+                Stroke="#E7E5E4"
+                StrokeThickness="1"
+                BackgroundColor="White"
+                Padding="16, 12">
+            <Grid ColumnDefinitions="*, Auto">
+                <Label Grid.Column="0" 
+                       Text="PROFILE &amp; SETTINGS" 
+                       FontSize="12" 
+                       FontAttributes="Bold" 
+                       TextColor="#1C1917" 
+                       CharacterSpacing="1" 
+                       VerticalOptions="Center" />
+
+                <!-- Butang Tetapan Cepat (Gear) -->
+                <Label Grid.Column="1" 
+                       Text="⚙️" 
+                       FontSize="16" 
+                       VerticalOptions="Center" />
+            </Grid>
+        </Border>
+
+
+        <!-- ================= 2. KANDUNGAN UTAMA (SCROLLABLE) ================= -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="16" Spacing="16">
+
+                <!-- KAD PROFIL PENGGUNA -->
+                <Border StrokeShape="RoundRectangle 16"
+                        Stroke="#E7E5E4"
+                        BackgroundColor="White"
+                        Padding="14">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
+
+                        <!-- [DB: user.initials / avatar] -->
+                        <Border Grid.Column="0"
+                                StrokeShape="RoundRectangle 14"
+                                BackgroundColor="#065F46"
+                                Stroke="Transparent"
+                                HeightRequest="48"
+                                WidthRequest="48">
+                            <Label Text="FN" 
+                                   TextColor="White" 
+                                   FontSize="14" 
+                                   FontAttributes="Bold" 
+                                   HorizontalOptions="Center" 
+                                   VerticalOptions="Center" />
+                        </Border>
+
+                        <VerticalStackLayout Grid.Column="1" Spacing="3" VerticalOptions="Center">
+                            <!-- [DB: user.full_name] -->
+                            <Label Text="Muhammad Fathul" 
+                                   FontSize="13" 
+                                   FontAttributes="Bold" 
+                                   TextColor="#1C1917" />
+
+                            <!-- [DB: user.unit_no & precinct_name] -->
+                            <Label Text="Unit: B-12-04, Residensi SK" 
+                                   FontSize="10" 
+                                   TextColor="#78716C" />
+
+                            <HorizontalStackLayout Spacing="6" Margin="0, 3, 0, 0">
+                                <!-- [DB: user.is_verified] Badge Hijau -->
+                                <Border StrokeShape="RoundRectangle 4"
+                                        BackgroundColor="#ECFDF5"
+                                        Stroke="#A7F3D0"
+                                        Padding="6, 2">
+                                    <Label Text="✓ VERIFIED RESIDENT" 
+                                           FontSize="9" 
+                                           FontAttributes="Bold" 
+                                           TextColor="#065F46" />
+                                </Border>
+
+                                <!-- [DB: user.masked_mykad] -->
+                                <Label Text="MyKad: 010825-10-5231" 
+                                       FontSize="9" 
+                                       TextColor="#78716C" 
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+
+
+                <!-- SEKSYEN 1: RESIDENCY MANAGEMENT -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="RESIDENCY MANAGEMENT" 
+                           FontSize="10" 
+                           FontAttributes="Bold" 
+                           TextColor="#78716C" 
+                           CharacterSpacing="1" />
+
+                    <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="0">
+                        <VerticalStackLayout Spacing="0">
+
+                            <!-- Baris 1: Registered Unit [DB: user.unit_address] -->
+                            <Grid ColumnDefinitions="*, Auto" Padding="14, 12">
+                                <Label Grid.Column="0" Text="Registered Unit: Block B, #12-04" FontSize="11" TextColor="#292524" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="➔" FontSize="11" TextColor="#A8A29E" VerticalOptions="Center" />
+                            </Grid>
+                            <BoxView HeightRequest="1" Color="#F5F5F4" />
+
+                            <!-- Baris 2: Household Members [DB: household.count] -->
+                            <Grid ColumnDefinitions="*, Auto" Padding="14, 12">
+                                <Label Grid.Column="0" Text="Household Members: 3 registered" FontSize="11" TextColor="#292524" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="➔" FontSize="11" TextColor="#A8A29E" VerticalOptions="Center" />
+                            </Grid>
+                            <BoxView HeightRequest="1" Color="#F5F5F4" />
+
+                            <!-- Baris 3: Vehicle RFID [DB: vehicle.summary] -->
+                            <Grid ColumnDefinitions="*, Auto" Padding="14, 12">
+                                <Label Grid.Column="0" Text="Vehicle RFID: 2 cars (WXX 8182)" FontSize="11" TextColor="#292524" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="➔" FontSize="11" TextColor="#A8A29E" VerticalOptions="Center" />
+                            </Grid>
+                            <BoxView HeightRequest="1" Color="#F5F5F4" />
+
+                            <!-- Baris 4: Switch Community [DB: user.current_community] -->
+                            <Grid ColumnDefinitions="*, Auto" Padding="14, 12">
+                                <Label Grid.Column="0" Text="Switch Community: Taman SK" FontSize="11" TextColor="#292524" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="➔" FontSize="11" TextColor="#A8A29E" VerticalOptions="Center" />
+                            </Grid>
+
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+
+                <!-- SEKSYEN 2: COMMUNITY PREFERENCES -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="COMMUNITY PREFERENCES" 
+                           FontSize="10" 
+                           FontAttributes="Bold" 
+                           TextColor="#78716C" 
+                           CharacterSpacing="1" />
+
+                    <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="0">
+                        <VerticalStackLayout Spacing="0">
+
+                            <!-- Baris 1: Emergency Push Alerts [DB: preferences.emergency_alerts] -->
+                            <Grid ColumnDefinitions="*, Auto" Padding="14, 12">
+                                <Label Grid.Column="0" Text="Emergency Push Alerts" FontSize="11" TextColor="#292524" VerticalOptions="Center" />
+                                <Border Grid.Column="1" StrokeShape="RoundRectangle 12" BackgroundColor="#ECFDF5" Stroke="#A7F3D0" Padding="8, 2">
+                                    <Label Text="ON" FontSize="9" FontAttributes="Bold" TextColor="#065F46" />
+                                </Border>
+                            </Grid>
+                            <BoxView HeightRequest="1" Color="#F5F5F4" />
+
+                            <!-- Baris 2: Mask Phone Number [DB: preferences.mask_phone] -->
+                            <Grid ColumnDefinitions="*, Auto" Padding="14, 12">
+                                <Label Grid.Column="0" Text="Mask My Phone Number" FontSize="11" TextColor="#292524" VerticalOptions="Center" />
+                                <Border Grid.Column="1" StrokeShape="RoundRectangle 12" BackgroundColor="#ECFDF5" Stroke="#A7F3D0" Padding="8, 2">
+                                    <Label Text="ON" FontSize="9" FontAttributes="Bold" TextColor="#065F46" />
+                                </Border>
+                            </Grid>
+                            <BoxView HeightRequest="1" Color="#F5F5F4" />
+
+                            <!-- Baris 3: Language [DB: preferences.language] -->
+                            <Grid ColumnDefinitions="*, Auto" Padding="14, 12">
+                                <Label Grid.Column="0" Text="Language: English (EN)" FontSize="11" TextColor="#292524" VerticalOptions="Center" />
+                                <Label Grid.Column="1" Text="➔" FontSize="11" TextColor="#A8A29E" VerticalOptions="Center" />
+                            </Grid>
+
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+
+                <!-- SEKSYEN 3: JMB COMMITTEE TOOLS (Hanya Nampak Jika User = Admin) [DB: user.is_jmb_admin] -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="JMB COMMITTEE TOOLS (Admin)" 
+                           FontSize="10" 
+                           FontAttributes="Bold" 
+                           TextColor="#581C87" 
+                           CharacterSpacing="1" />
+
+                    <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                        <!-- Butang 1: Issue Notice -->
+                        <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#E9D5FF" BackgroundColor="White" Padding="10, 12">
+                            <Label Text="📢 Issue Official Notice" FontSize="10" FontAttributes="Bold" TextColor="#3B0764" LineHeight="1.2" />
+                        </Border>
+
+                        <!-- Butang 2: Approvals Queue [DB: pending_approvals.count] -->
+                        <Border Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="#E9D5FF" BackgroundColor="White" Padding="10, 12">
+                            <Label Text="👥 Approvals Queue (2 pending)" FontSize="10" FontAttributes="Bold" TextColor="#3B0764" LineHeight="1.2" />
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+
+
+                <!-- SEKSYEN 4: BUTANG ABOUT -->
+                <Border StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="14, 12">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" Text="ℹ️ About JiranKita (MAD6102)" FontSize="11" FontAttributes="Bold" TextColor="#292524" VerticalOptions="Center" />
+                        <Label Grid.Column="1" Text="➔" FontSize="11" TextColor="#047857" VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+
+                <!-- SEKSYEN 5: BUTANG LOG KELUAR (LOGOUT) -->
+                <Button Text="🚪 LOG OUT OF ACCOUNT" 
+                        Clicked="OnLogoutClicked"
+                        BackgroundColor="#FFF1F2" 
+                        TextColor="#9F1239" 
+                        BorderColor="#FECDD3"
+                        BorderWidth="1"
+                        FontAttributes="Bold" 
+                        FontSize="11" 
+                        CornerRadius="12" 
+                        HeightRequest="44" 
+                        Margin="0, 4, 0, 10" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>
