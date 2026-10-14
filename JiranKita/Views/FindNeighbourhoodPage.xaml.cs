@@ -50,8 +50,8 @@ public partial class FindNeighbourhoodPage : ContentPage
                 // Masukkan kod ke kotak invite code
                 HiddenOtpEntry.Text = qrText.ToUpper();
 
-                await DisplayAlert("BERJAYA!", $"Kod Komuniti Dikesan: {qrText.ToUpper()}", "OK");
-                await Shell.Current.GoToAsync(nameof(Views.HomePage));
+                await DisplayAlert("BERJAYA!", $"Kod Komuniti Dikesan: {qrText.ToUpper()}", "Lets Go!");
+                await Shell.Current.GoToAsync("//HomePage");
             });
         }
         else
@@ -91,7 +91,7 @@ public partial class FindNeighbourhoodPage : ContentPage
         {
             HiddenOtpEntry.Unfocus();
             await DisplayAlert("Pengesahan Kod", $"Kod '{text}' berjaya disahkan!", "OK");
-            await Shell.Current.GoToAsync(nameof(Views.HomePage));
+            await Shell.Current.GoToAsync("//HomePage");
         }
     }
 

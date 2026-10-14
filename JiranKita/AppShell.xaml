@@ -6,26 +6,36 @@
     xmlns:local="clr-namespace:JiranKita"
     xmlns:views="clr-namespace:JiranKita.Views"
     Shell.FlyoutBehavior="Disabled"
-    Title="JiranKita">
+    Title="JiranKita"
+    
+    Shell.TabBarBackgroundColor="White"
+    Shell.TabBarForegroundColor="#047857"
+    Shell.TabBarTitleColor="#047857"
+    Shell.TabBarUnselectedColor="#78716C">
 
-	<ShellContent
-    Title="Welcome"
-    ContentTemplate="{DataTemplate views:WelcomePage}"
-    Route="WelcomePage" />
-	
-	<ShellContent
-        Title="Login"
-        ContentTemplate="{DataTemplate views:login}"
-        Route="login" />
-
+    <!-- 1. SKRIN PERMULAAN / AUTH (Tab bar disorok di sini) -->
     <ShellContent
-    Title="FindNeighbourhoodPage"
-    ContentTemplate="{DataTemplate views:FindNeighbourhoodPage}"
-    Route="FindNeighbourhoodPage" />
+        Title="Welcome"
+        ContentTemplate="{DataTemplate views:WelcomePage}"
+        Route="WelcomePage" />
 
-    <ShellContent
-    Title="HomePage"
-    ContentTemplate="{DataTemplate views:HomePage}"
-    Route="HomePage" />
+    <!-- 2. SISTEM TAB MENU ASLI -->
+    <TabBar>
+
+        <!-- Tab 1: Home (Wajib ada Icon!) -->
+        <ShellContent
+            Title="Home"
+            Icon="home.svg"
+            Route="HomePage"
+            ContentTemplate="{DataTemplate views:HomePage}" />
+
+        <!-- Tab 2: Profile (Wajib ada Icon!) -->
+        <ShellContent
+            Title="Profile"
+            Icon="profile.svg"
+            Route="ProfilePage"
+            ContentTemplate="{DataTemplate views:ProfilePage}" />
+
+    </TabBar>
 
 </Shell>

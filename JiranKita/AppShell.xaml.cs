@@ -6,9 +6,9 @@ public partial class AppShell : Shell
     {
         InitializeComponent();
 
-        // Daftar laluan ke skrin login
+        // Hanya daftar skrin yang berada di luar TabBar:
         Routing.RegisterRoute("login", typeof(Views.login));
         Routing.RegisterRoute("FindNeighbourhoodPage", typeof(Views.FindNeighbourhoodPage));
-        Routing.RegisterRoute(nameof(Views.HomePage), typeof(Views.HomePage));
+        Routing.RegisterRoute("WelcomePage", typeof(Views.WelcomePage));
     }
 }
