@@ -10,4 +10,9 @@ public partial class login : ContentPage
     {
         await Shell.Current.GoToAsync("FindNeighbourhoodPage");
     }
+
+    private async void OnSignUpLinkClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(Views.SignUpPage));
+    }
 }

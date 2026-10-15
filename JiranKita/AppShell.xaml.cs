@@ -11,5 +11,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("FindNeighbourhoodPage", typeof(Views.FindNeighbourhoodPage));
         Routing.RegisterRoute("WelcomePage", typeof(Views.WelcomePage));
         Routing.RegisterRoute(nameof(Views.AboutPage), typeof(Views.AboutPage));
+        Routing.RegisterRoute(nameof(Views.SignUpPage), typeof(Views.SignUpPage));
     }
 }

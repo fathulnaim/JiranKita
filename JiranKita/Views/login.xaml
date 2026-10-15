@@ -45,40 +45,6 @@
                        FontSize="12" 
                        TextColor="#78716C" />
             </VerticalStackLayout>
-
-            <!-- Butang signin signup -->
-            <Border StrokeShape="RoundRectangle 16"
-                    Stroke="#E7E5E4"
-                    BackgroundColor="#E7E5E4"
-                    Padding="3">
-                <Grid ColumnDefinitions="*, *">
-                    <!-- Boldkan apa yang aktif -->
-                    <Border Grid.Column="0" 
-                            StrokeShape="RoundRectangle 12" 
-                            Stroke="Transparent" 
-                            BackgroundColor="White" 
-                            Padding="0, 8">
-                        <Label Text="Sign In" 
-                               TextColor="#1C1917" 
-                               FontAttributes="Bold" 
-                               FontSize="12" 
-                               HorizontalOptions="Center" />
-                    </Border>
-                    <!-- Tab signup -->
-                    <Border Grid.Column="1" 
-                            StrokeShape="RoundRectangle 12" 
-                            Stroke="Transparent" 
-                            BackgroundColor="Transparent" 
-                            Padding="0, 8">
-                        <Label Text="Sign Up" 
-                               TextColor="#78716C" 
-                               FontAttributes="Bold" 
-                               FontSize="12" 
-                               HorizontalOptions="Center" />
-                    </Border>
-                </Grid>
-            </Border>
-
             <!-- Tempat isi maklumat -->
 
             <!-- Email sahaja -->
@@ -153,6 +119,19 @@
                     HeightRequest="48" 
                     Margin="0, 8, 0, 0" 
                     Clicked="OnContinueClicked" />
+
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4" Margin="0, 8, 0, 0">
+                <Label Text="Don't have a registered unit?" FontSize="12" TextColor="#78716C" VerticalOptions="Center" />
+                <Label Text="Register Resident" 
+           FontSize="12" 
+           FontAttributes="Bold" 
+           TextColor="#047857" 
+           VerticalOptions="Center">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSignUpLinkClicked" />
+                    </Label.GestureRecognizers>
+                </Label>
+            </HorizontalStackLayout>
 
             <!-- Option lain -->
             <Grid ColumnDefinitions="*, Auto, *" Margin="0, 6">
