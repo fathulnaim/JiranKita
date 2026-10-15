@@ -17,4 +17,10 @@ public partial class ProfilePage : ContentPage
             await Shell.Current.GoToAsync("//WelcomePage");
         }
     }
+
+    private async void OnAboutClicked(object sender, EventArgs e)
+    {
+        // Buka skrin AboutPage
+        await Shell.Current.GoToAsync(nameof(Views.AboutPage));
+    }
 }
