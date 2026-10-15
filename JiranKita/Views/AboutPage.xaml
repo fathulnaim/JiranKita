@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:JiranKita.Controls"
+             x:Class="JiranKita.Views.AboutPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- ================= 1. TOP BAR ================= -->
+        <Border Grid.Row="0"
+                Stroke="#E7E5E4"
+                StrokeThickness="1"
+                BackgroundColor="White"
+                Padding="16, 10">
+            <!-- Grid 3 Lajur: Kiri (Back), Tengah (Tajuk), Kanan (Spacer kosong supaya tajuk duduk tengah) -->
+            <Grid ColumnDefinitions="Auto, *, Auto">
+
+                <!-- Guna Reusable BackButton kita -->
+                <controls:BackButton Grid.Column="0" />
+
+                <!-- Tajuk Tengah -->
+                <Label Grid.Column="1" 
+                       Text="ABOUT JIRANKITA" 
+                       FontSize="15" 
+                       FontAttributes="Bold" 
+                       TextColor="#1C1917" 
+                       CharacterSpacing="1" 
+                       HorizontalOptions="Center" 
+                       VerticalOptions="Center" />
+
+                <!-- Kotak dummy kosong untuk imbangkan kedudukan tajuk di tengah -->
+                <BoxView Grid.Column="2" WidthRequest="40" Color="White" />
+            </Grid>
+        </Border>
+
+
+        <!-- ================= 2. CONTENT AREA (SCROLLABLE) ================= -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Padding="20" Spacing="20">
+
+                <!-- BAHAGIAN A: LOGO APP & VERSI -->
+                <VerticalStackLayout Spacing="6" HorizontalOptions="Center" Margin="0, 10, 0, 0">
+
+                    <!-- Kad Bingkai Logo Hijau -->
+                    <Border StrokeShape="RoundRectangle 18"
+                            Stroke="#065F46"
+                            StrokeThickness="2"
+                            BackgroundColor="White"
+                            HeightRequest="72"
+                            WidthRequest="72"
+                            Padding="8"
+                            HorizontalOptions="Center">
+                        <Image Source="logo_jirankita.png"
+                               HeightRequest="60"
+                               WidthRequest="60"
+                               Aspect="AspectFit"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center" />
+                    </Border>
+
+                    <!-- Nama Aplikasi -->
+                    <Label Text="JiranKita"
+                           FontSize="18"
+                           FontAttributes="Bold"
+                           TextColor="#1C1917"
+                           HorizontalOptions="Center"
+                           Margin="0, 4, 0, 0" />
+
+                    <!-- Badge Versi (Boleh baca automatik dari sistem atau statik) -->
+                    <Border StrokeShape="RoundRectangle 12"
+                            BackgroundColor="#ECFDF5"
+                            Stroke="#A7F3D0"
+                            Padding="10, 3"
+                            HorizontalOptions="Center">
+                        <Label Text="v2.4.0 (Build 108)"
+                               FontSize="10"
+                               FontAttributes="Bold"
+                               TextColor="#065F46" />
+                    </Border>
+                </VerticalStackLayout>
+
+
+                <!-- BAHAGIAN B: KAD PENYERAHAN TUGASAN AKADEMIK -->
+                <Border StrokeShape="RoundRectangle 16"
+                        Stroke="#6EE7B7"
+                        StrokeThickness="1.5"
+                        BackgroundColor="White"
+                        Padding="18">
+                    <VerticalStackLayout Spacing="14">
+
+                        <!-- Header Kad -->
+                        <VerticalStackLayout Spacing="8">
+                            <Label Text="ACADEMIC COURSEWORK SUBMISSION"
+                                   FontSize="10"
+                                   FontAttributes="Bold"
+                                   TextColor="#065F46"
+                                   CharacterSpacing="1" />
+                            <BoxView HeightRequest="1" Color="#F5F5F4" />
+                        </VerticalStackLayout>
+
+                        <!-- Medan 1: Nama Pembangun Pelajar -->
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="Student Name:"
+                                   FontSize="10"
+                                   TextColor="#78716C" />
+                            <Label Text="Muhammad Fathul Naim bin Abdul Rahim"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="#1C1917" />
+                        </VerticalStackLayout>
+
+                        <!-- Medan 2: No. ID Matrik -->
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="Student ID:"
+                                   FontSize="10"
+                                   TextColor="#78716C" />
+                            <Label Text="BSW01085231"
+                                   FontSize="13"
+                                   FontAttributes="Bold"
+                                   TextColor="Black" />
+                        </VerticalStackLayout>
+                        <!-- Medan 3: Modul Kursus -->
+                        <VerticalStackLayout Spacing="3">
+                            <Label Text="Coursework Module:"
+                                   FontSize="10"
+                                   TextColor="#78716C" />
+                            <!-- Simbol & ditulis sebagai &amp; dalam XAML -->
+                            <Label Text="Milestone 3: Mobile App Development (CSNB5123)"
+                                   FontSize="11"
+                                   TextColor="#292524"
+                                   LineHeight="1.3" />
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

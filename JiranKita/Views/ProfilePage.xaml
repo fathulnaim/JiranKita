@@ -200,6 +200,9 @@
 
                 <!-- SEKSYEN 4: BUTANG ABOUT -->
                 <Border StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="14, 12">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnAboutClicked" />
+                    </Border.GestureRecognizers>
                     <Grid ColumnDefinitions="*, Auto">
                         <Label Grid.Column="0" Text="ℹ️ About JiranKita (MAD6102)" FontSize="11" FontAttributes="Bold" TextColor="#292524" VerticalOptions="Center" />
                         <Label Grid.Column="1" Text="➔" FontSize="11" TextColor="#047857" VerticalOptions="Center" />
