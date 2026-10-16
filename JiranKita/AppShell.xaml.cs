@@ -12,5 +12,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("WelcomePage", typeof(Views.WelcomePage));
         Routing.RegisterRoute(nameof(Views.AboutPage), typeof(Views.AboutPage));
         Routing.RegisterRoute(nameof(Views.SignUpPage), typeof(Views.SignUpPage));
+        Routing.RegisterRoute(nameof(Views.JiranBotPage), typeof(Views.JiranBotPage));
     }
 }

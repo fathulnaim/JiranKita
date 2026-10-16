@@ -29,6 +29,12 @@
             Route="HomePage"
             ContentTemplate="{DataTemplate views:HomePage}" />
 
+        <ShellContent
+            Title="Chat &amp; AI"
+            Icon="chat.svg"
+            Route="ChatPage"
+            ContentTemplate="{DataTemplate views:ChatPage}" />
+
         <!-- Tab 2: Profile (Wajib ada Icon!) -->
         <ShellContent
             Title="Profile"
