@@ -2,12 +2,12 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:controls="clr-namespace:JiranKita.Controls"
+             xmlns:models="clr-namespace:JiranKita.Models"
              x:Class="JiranKita.Views.ChatPage"
              BackgroundColor="#FAFAF9"
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="True">
 
-    <!-- Grid 3 Baris: Header (Auto), Mesej Chat (*), Kotak Taip (Auto) -->
     <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- ================= 1. CHAT HEADER ================= -->
@@ -17,102 +17,114 @@
                 BackgroundColor="White"
                 Padding="14, 10">
             <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                <controls:BackButton Grid.Column="0" />
 
-                <!-- Info Komuniti [DB: precinct.name, total_members, online_count] -->
                 <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
                     <Label Text="Taman Seri Kembangan" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" />
                     <HorizontalStackLayout Spacing="4">
-                        <Label Text="342 neighbours ·" FontSize="10" TextColor="#78716C" />
-                        <Label Text="18 online" FontSize="10" FontAttributes="Bold" TextColor="#047857" />
+                        <Label Text="Neighbourhood Chat ·" FontSize="10" TextColor="#78716C" />
+                        <Label Text="Firebase Live 🟢" FontSize="10" FontAttributes="Bold" TextColor="#047857" />
                     </HorizontalStackLayout>
                 </VerticalStackLayout>
 
-                <!-- Ikon Kanan: Robot & Menu -->
-                <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
-
-                    <!-- IKON ROBOT JIRANBOT (BILA DITEKAN LOMPAT KE SKRIN BOT) -->
-                    <Border StrokeShape="RoundRectangle 10"
-                            BackgroundColor="#F3E8FF"
-                            Stroke="#E9D5FF"
-                            HeightRequest="36"
-                            WidthRequest="36">
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Tapped="OnRobotClicked" />
-                        </Border.GestureRecognizers>
-                        <Label Text="🤖" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Border>
-
-                    <!-- Menu 3 Titik -->
-                    <Label Text="⋮" FontSize="18" FontAttributes="Bold" TextColor="#78716C" VerticalOptions="Center" Margin="2,0" />
-                </HorizontalStackLayout>
-
+                <!-- Ikon Robot JiranBot -->
+                <Border Grid.Column="2"
+                        StrokeShape="RoundRectangle 10"
+                        BackgroundColor="#F3E8FF"
+                        Stroke="#E9D5FF"
+                        HeightRequest="36"
+                        WidthRequest="36">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRobotClicked" />
+                    </Border.GestureRecognizers>
+                    <Label Text="🤖" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
             </Grid>
         </Border>
 
 
-        <!-- ================= 2. RUANG MESEJ (SCROLLABLE) ================= -->
-        <ScrollView Grid.Row="1" Padding="14">
-            <VerticalStackLayout Spacing="12">
+        <!-- ================= 2. SENARAI MESEJ LIVE FIREBASE ================= -->
+        <CollectionView x:Name="MessagesCollectionView"
+                        Grid.Row="1"
+                        SelectionMode="None"
+                        Margin="14, 8">
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ChatMessage">
+                    <Grid Margin="0, 4">
 
-                <!-- Pembahagi Tarikh / Masa [DB: message.date_group] -->
-                <Border StrokeShape="RoundRectangle 10" BackgroundColor="#F5F5F4" Stroke="Transparent" Padding="8, 3" HorizontalOptions="Center" Margin="0, 4">
-                    <Label Text="Yesterday, 10:14 AM" FontSize="10" TextColor="#78716C" />
-                </Border>
+                        <!-- A. MESEJ DARI JIRAN LAIN (Keluar Sebelah Kiri) -->
+                        <VerticalStackLayout HorizontalOptions="Start" MaximumWidthRequest="280" Spacing="3">
+                            <VerticalStackLayout.Triggers>
+                                <!-- Jika ini mesej kita sendiri, sorokkan panel kiri ini -->
+                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding IsSelf}" Value="True">
+                                    <Setter Property="IsVisible" Value="False" />
+                                </DataTrigger>
+                            </VerticalStackLayout.Triggers>
 
-                <!-- MESEJ JIRAN LAIN (Masuk Kiri) [DB: messages table] -->
-                <VerticalStackLayout HorizontalOptions="Start" Spacing="4" MaximumWidthRequest="280">
-                    <!-- Nama & Unit Pengirim -->
-                    <Label Text="Uncle Lim (Unit A-03)" FontSize="10" FontAttributes="Bold" TextColor="#78716C" Margin="4, 0, 0, 0" />
-                    <!-- Kotak Mesej Putih (Bucu bawah kiri tajam) -->
-                    <Border StrokeShape="RoundRectangle 16 16 16 0"
-                            Stroke="#E7E5E4"
-                            BackgroundColor="White"
-                            Padding="12, 10">
-                        <Label Text="Anyone experiencing low tap water pressure today?" FontSize="12" TextColor="#1C1917" LineHeight="1.2" />
-                    </Border>
-                </VerticalStackLayout>
+                            <Label Text="{Binding SenderName}" FontSize="10" FontAttributes="Bold" TextColor="#78716C" Margin="4, 0, 0, 0" />
 
-                <!-- MESEJ KITA SENDIRI (Keluar Kanan) [DB: messages (sender = current_user)] -->
-                <VerticalStackLayout HorizontalOptions="End" Spacing="4" MaximumWidthRequest="280" Margin="0, 4, 0, 0">
-                    <!-- Kotak Mesej Hijau (Bucu bawah kanan tajam) -->
-                    <Border StrokeShape="RoundRectangle 16 16 0 16"
+                            <Border StrokeShape="RoundRectangle 16 16 16 0"
+                                    Stroke="#E7E5E4"
+                                    BackgroundColor="White"
+                                    Padding="12, 10">
+                                <Label Text="{Binding MessageText}" FontSize="12" TextColor="#1C1917" LineHeight="1.2" />
+                            </Border>
+
+                            <Label Text="{Binding Timestamp, StringFormat='{0:hh:mm tt}'}" FontSize="9" TextColor="#A8A29E" Margin="4, 0, 0, 0" />
+                        </VerticalStackLayout>
+
+
+                        <!-- B. MESEJ KITA SENDIRI (Kotak Hijau) -->
+                        <VerticalStackLayout HorizontalOptions="End" MaximumWidthRequest="280" Spacing="3" IsVisible="False">
+                            <VerticalStackLayout.Triggers>
+                                <DataTrigger TargetType="VerticalStackLayout" Binding="{Binding IsSelf}" Value="True">
+                                    <Setter Property="IsVisible" Value="True" />
+                                </DataTrigger>
+                            </VerticalStackLayout.Triggers>
+
+                            <!-- KOTAK HIJAU: GUNA PENGESAN TEKAN LAMA (LONG PRESS) -->
+                            <Border StrokeShape="RoundRectangle 16 16 0 16"
                             BackgroundColor="#047857"
                             Stroke="Transparent"
                             Padding="12, 10">
-                        <Label Text="Yes, since 8:30am. Syabas maintenance is ongoing." FontSize="12" TextColor="White" LineHeight="1.2" />
-                    </Border>
-                </VerticalStackLayout>
+                                <Border.GestureRecognizers>
+                                    <PointerGestureRecognizer PointerPressed="OnMessagePointerPressed"
+                                      PointerReleased="OnMessagePointerReleased"
+                                      PointerExited="OnMessagePointerReleased" />
+                                </Border.GestureRecognizers>
 
-            </VerticalStackLayout>
-        </ScrollView>
+                                <Label Text="{Binding MessageText}" FontSize="12" TextColor="White" LineHeight="1.2" />
+                            </Border>
+
+                            <Label Text="{Binding Timestamp, StringFormat='{0:hh:mm tt}'}" FontSize="9" TextColor="#A8A29E" HorizontalOptions="End" Margin="0, 0, 4, 0" />
+                        </VerticalStackLayout>
+
+                    </Grid>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
 
-        <!-- ================= 3. KOTAK TAIP MESEJ BAWAH ================= -->
+        <!-- ================= 3. KOTAK INPUT TAIP MESEJ ================= -->
         <Border Grid.Row="2"
                 Stroke="#E7E5E4"
                 StrokeThickness="1"
                 BackgroundColor="White"
                 Padding="12, 8">
-            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
 
-                <!-- Butang Tambah Dokumen/Gambar (+) -->
-                <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" HeightRequest="38" WidthRequest="38">
-                    <Label Text="+" FontSize="18" FontAttributes="Bold" TextColor="#57534E" HorizontalOptions="Center" VerticalOptions="Center" />
-                </Border>
-
-                <!-- Kotak Input Taip [DB: message.text] -->
-                <Border Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
+                <!-- Kotak Taip -->
+                <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
                     <Entry x:Name="TxtChatMessage" 
                            Placeholder="Type message to neighbours..." 
                            PlaceholderColor="#A8A29E" 
                            FontSize="12" 
                            TextColor="#1C1917"
-                           Focused="OnInputFocused" 
-                           Unfocused="OnInputUnfocused" />
+                           ReturnCommand="{Binding SendCommand}" />
                 </Border>
 
-                <!-- Butang Hantar Mesej (Send) -->
-                <Border Grid.Column="2" StrokeShape="RoundRectangle 12" BackgroundColor="#047857" Stroke="Transparent" HeightRequest="38" WidthRequest="38">
+                <!-- Butang Send (➤) -->
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 12" BackgroundColor="#047857" Stroke="Transparent" HeightRequest="38" WidthRequest="38">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnSendMessageClicked" />
                     </Border.GestureRecognizers>
