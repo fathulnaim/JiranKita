@@ -15,4 +15,9 @@ public partial class login : ContentPage
     {
         await Shell.Current.GoToAsync(nameof(Views.SignUpPage));
     }
+
+    private async void OnForgotPasswordClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(Views.ForgotPasswordPage));
+    }
 }

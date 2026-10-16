@@ -163,10 +163,15 @@
                        TextColor="#78716C"
                        HorizontalOptions="Center" />
                 <Label Text="+ Register New Neighbourhood Community"
-                       FontSize="12"
-                       FontAttributes="Bold"
-                       TextColor="#065F46"
-                       HorizontalOptions="Center" />
+                   FontSize="12"
+                   FontAttributes="Bold"
+                   TextColor="#065F46"
+                   HorizontalOptions="Center">
+                    <!-- TAMBAH INI: -->
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRegisterCommunityClicked" />
+                    </Label.GestureRecognizers>
+                </Label>
             </VerticalStackLayout>
 
         </VerticalStackLayout>

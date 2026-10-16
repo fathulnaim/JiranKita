@@ -120,4 +120,10 @@ public partial class FindNeighbourhoodPage : ContentPage
             await DisplayAlert("Berjaya", "Gambar dipilih dari galeri!", "OK");
         }
     }
+
+    private async void OnRegisterCommunityClicked(object sender, EventArgs e)
+    {
+        QrScanner.CameraEnabled = false;
+        await Shell.Current.GoToAsync(nameof(Views.RegisterCommunityPage));
+    }
 }

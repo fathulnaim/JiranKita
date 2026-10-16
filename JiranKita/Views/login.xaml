@@ -102,11 +102,17 @@
                 </HorizontalStackLayout>
 
                 <Label Grid.Column="1" 
-                       Text="Forgot password?" 
-                       TextColor="#065F46" 
-                       FontAttributes="Bold" 
-                       FontSize="12" 
-                       VerticalOptions="Center" />
+                   Text="Forgot?" 
+                   TextColor="#065F46" 
+                   FontAttributes="Bold" 
+                   FontSize="12" 
+                   VerticalOptions="Center">
+                    <!-- TAMBAH INI: -->
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnForgotPasswordClicked" />
+                    </Label.GestureRecognizers>
+                </Label>
+
             </Grid>
 
             <!-- Buton sign up -->

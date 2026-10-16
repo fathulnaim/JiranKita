@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:JiranKita.Controls"
+             x:Class="JiranKita.Views.RegisterCommunityPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- Header -->
+        <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <controls:BackButton Grid.Column="0" />
+                <Label Grid.Column="1" Text="REGISTER COMMUNITY" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Border Grid.Column="2" StrokeShape="RoundRectangle 12" BackgroundColor="#F3E8FF" Stroke="#E9D5FF" Padding="8, 3">
+                    <Label Text="JMB / RA" FontSize="10" FontAttributes="Bold" TextColor="#581C87" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- Borang Pendaftaran (Scrollable) -->
+        <ScrollView Grid.Row="1" Padding="16">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Penerangan -->
+                <VerticalStackLayout Spacing="3">
+                    <Label Text="Daftar Komuniti Baharu" FontSize="20" FontAttributes="Bold" TextColor="#1C1917" />
+                    <Label Text="Pendaftaran rasmi badan pengurusan (JMB/MC/RA) untuk mendapatkan kod jemputan penduduk &amp; sistem sekuriti RFID." FontSize="11" TextColor="#78716C" LineHeight="1.3" />
+                </VerticalStackLayout>
+
+                <!-- Kad Borang -->
+                <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="16">
+                    <VerticalStackLayout Spacing="14">
+
+                        <!-- Nama Komuniti [DB: precincts.name] -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Official Community / Property Name *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
+                                <Entry x:Name="TxtCommunityName" Placeholder="Contoh: Kondominium Vista Seri Kembangan" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917"
+                                       Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Jenis Hartanah [DB: precincts.property_type] -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Property Architecture Type *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
+                                <Picker x:Name="PickerPropertyType" FontSize="12" TextColor="#1C1917" Title="Pilih Jenis Kediaman">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>High-Rise Strata (Condominium / Apartment)</x:String>
+                                            <x:String>Landed Gated &amp; Guarded (Taman Perumahan)</x:String>
+                                            <x:String>Townhouse / Commercial Strata</x:String>
+                                            <x:String>Public Housing (PPR / PKNS)</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                    <Picker.SelectedIndex>0</Picker.SelectedIndex>
+                                </Picker>
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Jumlah Unit & No. Pendaftaran COB [DB: precincts.total_units & precincts.cob_reg_number] -->
+                        <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                            <VerticalStackLayout Grid.Column="0" Spacing="4">
+                                <Label Text="Total Units *" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
+                                <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
+                                    <Entry x:Name="TxtTotalUnits" Placeholder="Contoh: 350" PlaceholderColor="#A8A29E" Keyboard="Numeric" FontSize="12" TextColor="#1C1917"
+                                           Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Grid.Column="1" Spacing="4">
+                                <Label Text="COB / ROS Reg. No. *" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
+                                <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
+                                    <Entry x:Name="TxtCobNumber" Placeholder="JMB/SEL/2024/09" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917"
+                                           Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Alamat Penuh [DB: precincts.address & postcode] -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Property Full Address *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12">
+                                <Editor x:Name="TxtAddress" Placeholder="Alamat jalan, poskod, dan bandar..." PlaceholderColor="#A8A29E" HeightRequest="65" FontSize="12" TextColor="#1C1917" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Maklumat Wakil JMB [DB: jmb_committee_contacts] -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="JMB Representative / Chairman Contact *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 10" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
+                                    <Entry x:Name="TxtRepName" Placeholder="Representative Name" PlaceholderColor="#A8A29E" FontSize="11" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                </Border>
+                                <Border Grid.Column="1" StrokeShape="RoundRectangle 10" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
+                                    <Entry x:Name="TxtRepPhone" Placeholder="Official Phone (+60)" PlaceholderColor="#A8A29E" Keyboard="Telephone" FontSize="11" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                </Border>
+                            </Grid>
+                        </VerticalStackLayout>
+
+                        <!-- Muat Naik Sijil COB / SSM [DB: precincts.certificate_document_url] -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Upload JMB Certificate / Form 5A (COB) *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#047857" StrokeThickness="1.5" StrokeDashArray="4, 2" BackgroundColor="#ECFDF5" Padding="14">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnUploadCertificateClicked" />
+                                </Border.GestureRecognizers>
+                                <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
+                                    <Label Text="📁" FontSize="20" HorizontalOptions="Center" />
+                                    <Label x:Name="LblCertFileName" Text="Attach Certificate (PDF / Image)" FontSize="11" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" />
+                                    <Label Text="Pihak JiranKita akan menyemak kesahan pendaftaran ini" FontSize="9" TextColor="#78716C" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Butang Hantar Di Bawah -->
+        <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 10">
+            <Button Text="SUBMIT FOR JIRANKITA VERIFICATION 🏛️" 
+                    Clicked="OnSubmitCommunityClicked"
+                    BackgroundColor="#047857" 
+                    TextColor="White" 
+                    FontAttributes="Bold" 
+                    FontSize="12" 
+                    CornerRadius="12" 
+                    HeightRequest="48" />
+        </Border>
+
+    </Grid>
+
+</ContentPage>
