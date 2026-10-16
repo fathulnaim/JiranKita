@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:JiranKita.Controls"
+             x:Class="JiranKita.Views.PostDetailPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- Header -->
+        <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="14, 10">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <controls:BackButton Grid.Column="0" />
+                <BoxView Grid.Column="1" Color="white" />
+                <HorizontalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                    <Label Text="🔖" FontSize="16" />
+                    <Label Text="🔗" FontSize="16" />
+                </HorizontalStackLayout>
+            </Grid>
+        </Border>
+
+        <!-- Kandungan Pos (Scrollable) -->
+        <ScrollView Grid.Row="1" Padding="16">
+            <VerticalStackLayout Spacing="14">
+
+                <!-- Hero Photo -->
+                <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="#F5F5F4" HeightRequest="160">
+                    <Grid>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="4">
+                            <Label Text="🐱" FontSize="40" HorizontalOptions="Center" />
+                            <Label Text="Orange Tabby (&quot;Miko&quot;)" FontSize="11" TextColor="#78716C" HorizontalOptions="Center" />
+                        </VerticalStackLayout>
+                        <Border StrokeShape="RoundRectangle 6" BackgroundColor="White" Padding="6, 2" HorizontalOptions="Start" VerticalOptions="End" Margin="10">
+                            <Label Text="1 / 3 Photos" FontSize="9" TextColor="#57534E" />
+                        </Border>
+                    </Grid>
+                </Border>
+
+                <!-- Status Tags -->
+                <Grid ColumnDefinitions="Auto, *">
+                    <Border Grid.Column="0" StrokeShape="RoundRectangle 4" BackgroundColor="#FEF3C7" Stroke="#FDE68A" Padding="6, 2">
+                        <Label Text="LOST &amp; FOUND" FontSize="9" FontAttributes="Bold" TextColor="#92400E" />
+                    </Border>
+                    <Border Grid.Column="1" StrokeShape="RoundRectangle 4" BackgroundColor="#ECFDF5" Stroke="#A7F3D0" Padding="6, 2" HorizontalOptions="End">
+                        <Label Text="Status: ACTIVE" FontSize="10" FontAttributes="Bold" TextColor="#065F46" />
+                    </Border>
+                </Grid>
+
+                <!-- Tajuk Pos -->
+                <Label Text="Orange Tabby with Blue Collar Lost at Block C Playground" FontSize="14" FontAttributes="Bold" TextColor="#1C1917" LineHeight="1.2" />
+
+                <!-- Maklumat Penulis & Tarikh Publish -->
+                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="8" Padding="0, 4">
+                    <!-- Avatar Penulis -->
+                    <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#047857" HeightRequest="32" WidthRequest="32">
+                        <Label Text="PA" TextColor="White" FontSize="11" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                    </Border>
+
+                    <!-- Nama & Status Pengesahan -->
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                        <Label Text="Puan Aisyah (Unit B-12)" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" />
+                        <Label Text="✓ Verified Resident" FontSize="9" TextColor="#047857" />
+                    </VerticalStackLayout>
+
+                    <!-- [DB: post.created_at] TARIKH & MASA DI SINI -->
+                    <VerticalStackLayout Grid.Column="2" HorizontalOptions="End" VerticalOptions="Center" Spacing="1">
+                        <Label Text="16/10/2026" FontSize="10" FontAttributes="Bold" TextColor="#1C1917" HorizontalOptions="End" />
+                        <Label Text="8:00 AM (2h ago)" FontSize="9" TextColor="#78716C" HorizontalOptions="End" />
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Penerangan -->
+                <Label Text="Our 2-year old indoor cat 'Miko' slipped out through the front grille during grocery delivery around 8:00 AM today. He is friendly but skittish. Wearing a reflective blue collar with a small brass bell. Please contact if sighted!" 
+                       FontSize="12" TextColor="#44403C" LineHeight="1.3" />
+
+                <!-- Butang Hubungi Pemilik (WhatsApp / Call) -->
+                <Button Text="📞 Contact Owner (WhatsApp / Call)" Clicked="OnContactOwnerClicked" BackgroundColor="#047857" TextColor="White" FontAttributes="Bold" FontSize="11" CornerRadius="12" HeightRequest="44" />
+
+                <!-- Komen Jiran -->
+                <VerticalStackLayout Spacing="8" Margin="0, 6, 0, 0">
+                    <Label Text="Resident Replies (1)" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" />
+
+                    <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="12">
+                        <VerticalStackLayout Spacing="3">
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" Text="Haris (B-08)" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" />
+                                <Label Grid.Column="1" Text="15m ago" FontSize="10" TextColor="#78716C" />
+                            </Grid>
+                            <Label Text="Saw an orange cat resting near the recycling bins behind Block C around 20 mins ago!" FontSize="11" TextColor="#44403C" LineHeight="1.2" />
+                        </VerticalStackLayout>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- Kotak Taip Komen Di Bawah -->
+        <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="12, 8">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
+                    <Entry Placeholder="Write a helpful reply..." PlaceholderColor="#A8A29E" FontSize="11" TextColor="#1C1917" />
+                </Border>
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 12" BackgroundColor="#047857" HeightRequest="38" WidthRequest="38">
+                    <Label Text="➤" TextColor="White" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>

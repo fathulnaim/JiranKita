@@ -13,5 +13,7 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(Views.AboutPage), typeof(Views.AboutPage));
         Routing.RegisterRoute(nameof(Views.SignUpPage), typeof(Views.SignUpPage));
         Routing.RegisterRoute(nameof(Views.JiranBotPage), typeof(Views.JiranBotPage));
+        Routing.RegisterRoute(nameof(Views.CreatePostPage), typeof(Views.CreatePostPage));
+        Routing.RegisterRoute(nameof(Views.PostDetailPage), typeof(Views.PostDetailPage));
     }
 }

@@ -30,6 +30,12 @@
             ContentTemplate="{DataTemplate views:HomePage}" />
 
         <ShellContent
+            Title="Feed"
+            Icon="feed.svg"
+            Route="FeedPage"
+            ContentTemplate="{DataTemplate views:FeedPage}" />
+        
+        <ShellContent
             Title="Chat &amp; AI"
             Icon="chat.svg"
             Route="ChatPage"

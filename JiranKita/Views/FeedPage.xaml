@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JiranKita.Views.FeedPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="True">
+
+    <!-- Grid 3 Baris: Search (Auto), Filter (Auto), Senarai Pos (*) -->
+    <Grid RowDefinitions="Auto, Auto, *">
+
+        <!-- ================= 1. SEARCH & FILTER BAR ================= -->
+        <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="14, 10">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="10">
+                <!-- Kotak Carian -->
+                <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="#FAFAF9" Padding="10, 0">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Label Grid.Column="0" Text="🔍" FontSize="12" TextColor="#A8A29E" VerticalOptions="Center" Margin="0, 0, 6, 0" />
+                        <Entry Grid.Column="1" Placeholder="Search feed, tags, items..." PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" />
+                    </Grid>
+                </Border>
+
+                <!-- Butang Tetapan Carian -->
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" HeightRequest="38" WidthRequest="38">
+                    <Label Text="⚙️" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ================= 2. FILTER PILLS BAR ================= -->
+        <Border Grid.Row="1" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="#F5F5F4" Padding="12, 8">
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="8">
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="#D6D3D1" Padding="10, 6">
+                        <Label Text="All" FontSize="11" TextColor="#44403C" />
+                    </Border>
+                    <!-- Tag Aktif: Lost & Found -->
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="#D97706" Stroke="Transparent" Padding="10, 6">
+                        <Label Text="Lost &amp; Found" FontSize="11" FontAttributes="Bold" TextColor="White" />
+                    </Border>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="#D6D3D1" Padding="10, 6">
+                        <Label Text="Road &amp; Maint" FontSize="11" TextColor="#44403C" />
+                    </Border>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="#D6D3D1" Padding="10, 6">
+                        <Label Text="Events" FontSize="11" TextColor="#44403C" />
+                    </Border>
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="#D6D3D1" Padding="10, 6">
+                        <Label Text="Official" FontSize="11" TextColor="#44403C" />
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- ================= 3. SENARAI POS & BUTANG TERAPUNG ================= -->
+        <Grid Grid.Row="2">
+
+            <ScrollView Padding="14">
+                <VerticalStackLayout Spacing="12">
+
+                    <Label Text="Showing: &quot;Lost &amp; Found&quot; (14 posts)" FontSize="11" TextColor="#78716C" Margin="2, 0" />
+
+                    <!-- POS 1: KUCING MIKO (BILA DITEKAN BUKA POST DETAIL) [DB: posts table] -->
+                    <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="14">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnPost1Clicked" />
+                        </Border.GestureRecognizers>
+
+                        <VerticalStackLayout Spacing="8">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 4" BackgroundColor="#FEF3C7" Stroke="#FDE68A" Padding="6, 2">
+                                    <Label Text="LOST PET" FontSize="9" FontAttributes="Bold" TextColor="#92400E" />
+                                </Border>
+
+                                <!-- [DB: post.created_at] TARIKH PENERBITAN DI SINI -->
+                                <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" Spacing="4">
+                                    <Label Text="16/10/2026" FontSize="10" FontAttributes="Bold" TextColor="#1C1917" />
+                                    <Label Text="· 2h ago" FontSize="10" TextColor="#78716C" />
+                                </HorizontalStackLayout>
+                            </Grid>
+
+                            <Label Text="&quot;Orange Tabby with Blue Collar&quot; Lost at Block C" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" LineHeight="1.2" />
+                            <Label Text="Last seen near Playground Block C. Friendly indoor cat answers to &quot;Miko&quot;." FontSize="11" TextColor="#57534E" LineHeight="1.2" />
+
+                            <!-- Gambar Pos -->
+                            <Border StrokeShape="RoundRectangle 12" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" HeightRequest="110" Padding="8">
+                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="4">
+                                    <Label Text="🐱" FontSize="30" HorizontalOptions="Center" />
+                                    <Label Text="Miko_photo_blk_c.jpg" FontSize="10" TextColor="#78716C" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Border>
+
+                            <!-- Badge Lokasi -->
+                            <Border StrokeShape="RoundRectangle 6" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" Padding="8, 3" HorizontalOptions="Start">
+                                <Label Text="📍 Blk C Playground" FontSize="10" TextColor="#44403C" />
+                            </Border>
+
+                            <BoxView HeightRequest="1" Color="#F5F5F4" Margin="0, 2" />
+
+                            <!-- Footer Komen & Share -->
+                            <Grid ColumnDefinitions="*, Auto">
+                                <Label Grid.Column="0" Text="💬 8 comments" FontSize="11" TextColor="#78716C" />
+                                <Label Grid.Column="1" Text="🔗 Share" FontSize="11" TextColor="#78716C" />
+                            </Grid>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- POS 2: KUNCI MOTOR -->
+                    <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="14">
+                        <VerticalStackLayout Spacing="6">
+                            <Grid ColumnDefinitions="Auto, *">
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 4" BackgroundColor="#E0F2FE" Stroke="#BAE6FD" Padding="6, 2">
+                                    <Label Text="FOUND KEYS" FontSize="9" FontAttributes="Bold" TextColor="#0369A1" />
+                                </Border>
+
+                                <!-- [DB: post.created_at] TARIKH PENERBITAN -->
+                                <HorizontalStackLayout Grid.Column="1" HorizontalOptions="End" VerticalOptions="Center" Spacing="4">
+                                    <Label Text="16/10/2026" FontSize="10" FontAttributes="Bold" TextColor="#1C1917" />
+                                    <Label Text="· 5h ago" FontSize="10" TextColor="#78716C" />
+                                </HorizontalStackLayout>
+                            </Grid>
+
+                            <Label Text="Motorcycle Key set deposited at Gate 2 Guardhouse" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" />
+                        </VerticalStackLayout>
+                    </Border>
+
+                </VerticalStackLayout>
+            </ScrollView>
+
+            <!-- BUTANG TERAPUNG (+ CREATE POST) -->
+            <Border StrokeShape="RoundRectangle 24"
+                    BackgroundColor="#047857"
+                    Stroke="Transparent"
+                    Padding="16, 10"
+                    HorizontalOptions="End"
+                    VerticalOptions="End"
+                    Margin="0, 0, 16, 20"
+                    Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.25}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnCreatePostClicked" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <Label Text="+" TextColor="White" FontSize="16" FontAttributes="Bold" VerticalOptions="Center" />
+                    <Label Text="CREATE" TextColor="White" FontSize="11" FontAttributes="Bold" CharacterSpacing="1" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
+        </Grid>
+
+    </Grid>
+
+</ContentPage>
