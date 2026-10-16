@@ -34,6 +34,12 @@
             Icon="chat.svg"
             Route="ChatPage"
             ContentTemplate="{DataTemplate views:ChatPage}" />
+        
+         <ShellContent
+            Title="Alerts"
+            Icon="alert.svg"
+            Route="AlertsPage"
+            ContentTemplate="{DataTemplate views:AlertsPage}" />
 
         <!-- Tab 2: Profile (Wajib ada Icon!) -->
         <ShellContent

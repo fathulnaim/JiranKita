@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JiranKita.Views.AlertsPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="True">
+
+    <!-- Grid 4 Baris: Header (Auto), Filter (Auto), Kanvas Peta (Auto), Senarai Alert (*) -->
+    <Grid RowDefinitions="Auto, Auto, Auto, *">
+
+        <!-- ================= 1. HEADER ATAS ================= -->
+        <Border Grid.Row="0"
+                Stroke="#E7E5E4"
+                StrokeThickness="1"
+                BackgroundColor="White"
+                Padding="16, 12">
+            <Grid ColumnDefinitions="*, Auto">
+                <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
+                    <Label Text="📍" FontSize="16" TextColor="#047857" VerticalOptions="Center" />
+                    <!-- [DB: precinct.name] -->
+                    <Label Text="GIS Map: Seri Kembangan" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+
+                <!-- Butang Re-center GPS -->
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" HeightRequest="32" WidthRequest="32">
+                    <Label Text="🎯" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+
+        <!-- ================= 2. FILTER TAGS BAR ================= -->
+        <Border Grid.Row="1" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="#F5F5F4" Padding="12, 8">
+            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                <HorizontalStackLayout Spacing="8">
+                    <!-- Tag All (Aktif) -->
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="#047857" Stroke="Transparent" Padding="12, 6">
+                        <Label Text="All" FontSize="10" FontAttributes="Bold" TextColor="White" />
+                    </Border>
+
+                    <!-- Tag Road -->
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="#D6D3D1" Padding="10, 6">
+                        <Label Text="🚧 Road" FontSize="10" FontAttributes="Bold" TextColor="#78350F" />
+                    </Border>
+
+                    <!-- Tag Hazards -->
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="#D6D3D1" Padding="10, 6">
+                        <Label Text="⚠️ Hazards" FontSize="10" FontAttributes="Bold" TextColor="#9F1239" />
+                    </Border>
+
+                    <!-- Tag Security -->
+                    <Border StrokeShape="RoundRectangle 8" BackgroundColor="White" Stroke="#D6D3D1" Padding="10, 6">
+                        <Label Text="🚨 Security" FontSize="10" FontAttributes="Bold" TextColor="#0369A1" />
+                    </Border>
+                </HorizontalStackLayout>
+            </ScrollView>
+        </Border>
+
+
+        <!-- ================= 3. KANVAS PETA GIS (MOCK MAP) ================= -->
+        <Grid Grid.Row="2" HeightRequest="180" BackgroundColor="#E8ECE9">
+
+            <!-- Garisan Jalan Raya Simulasi -->
+            <BoxView HeightRequest="6" Color="#D6D3D1" VerticalOptions="Center" HorizontalOptions="Fill" />
+            <BoxView WidthRequest="6" Color="#D6D3D1" HorizontalOptions="Center" Margin="-120, 0, 0, 0" VerticalOptions="Fill" />
+
+            <!-- PIN 1: Pothole [DB: incident.coordinates (Road)] -->
+            <VerticalStackLayout HorizontalOptions="Start" VerticalOptions="Start" Margin="70, 20, 0, 0" Spacing="2">
+                <Border StrokeShape="RoundRectangle 12" BackgroundColor="#F59E0B" Stroke="Transparent" HeightRequest="24" WidthRequest="24" HorizontalOptions="Center">
+                    <Label Text="🚧" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <Border StrokeShape="RoundRectangle 4" BackgroundColor="White" Stroke="#FCD34D" Padding="4, 1">
+                    <Label Text="Pothole" FontSize="9" FontAttributes="Bold" TextColor="#78350F" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- PIN 2: Water Surge [DB: incident.coordinates (Hazard)] -->
+            <VerticalStackLayout HorizontalOptions="End" VerticalOptions="Start" Margin="0, 30, 80, 0" Spacing="2">
+                <Border StrokeShape="RoundRectangle 12" BackgroundColor="#E11D48" Stroke="White" StrokeThickness="2" HeightRequest="26" WidthRequest="26" HorizontalOptions="Center">
+                    <Label Text="🚨" FontSize="12" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+                <Border StrokeShape="RoundRectangle 4" BackgroundColor="White" Stroke="#FDA4AF" Padding="4, 1">
+                    <Label Text="Water Surge" FontSize="9" FontAttributes="Bold" TextColor="#9F1239" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- PIN 3: You Are Here (GPS Semasa Pengguna) [DB/GPS: user.current_location] -->
+            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="End" Margin="0, 0, 0, 25" Spacing="2">
+                <Border StrokeShape="RoundRectangle 10" BackgroundColor="#0284C7" Stroke="White" StrokeThickness="2" HeightRequest="18" WidthRequest="18" HorizontalOptions="Center" />
+                <Border StrokeShape="RoundRectangle 4" BackgroundColor="White" Stroke="#BAE6FD" Padding="4, 1">
+                    <Label Text="You are here" FontSize="9" FontAttributes="Bold" TextColor="#0369A1" />
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Badge Radius Geofence -->
+            <Border StrokeShape="RoundRectangle 4" BackgroundColor="White" Stroke="#E7E5E4" Padding="6, 2" HorizontalOptions="End" VerticalOptions="End" Margin="10">
+                <Label Text="Radius: 500m geofence active" FontSize="9" TextColor="#57534E" />
+            </Border>
+        </Grid>
+
+
+        <!-- ================= 4. SENARAI AMARAN & BUTANG SOS ================= -->
+        <ScrollView Grid.Row="3" Padding="16">
+            <VerticalStackLayout Spacing="14">
+
+                <!-- KAD AMARAN TAHAP TINGGI (HIGH ALERT) [DB: alerts table] -->
+                <Border StrokeShape="RoundRectangle 16"
+                        Stroke="#FECDD3"
+                        BackgroundColor="#FFF1F2"
+                        Padding="14">
+                    <VerticalStackLayout Spacing="6">
+
+                        <Grid ColumnDefinitions="*, Auto">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 4" BackgroundColor="#E11D48" Stroke="Transparent" Padding="6, 2" HorizontalOptions="Start">
+                                <Label Text="HIGH ALERT: FLASH WATER SURGE" FontSize="9" FontAttributes="Bold" TextColor="White" />
+                            </Border>
+                            <Label Grid.Column="1" Text="18m ago" FontSize="10" FontAttributes="Bold" TextColor="#9F1239" VerticalOptions="Center" />
+                        </Grid>
+
+                        <!-- [DB: alert.location_name] -->
+                        <Label Text="Location: Jalan SK 3/2 (River Bank Drainage)" 
+                               FontSize="12" 
+                               FontAttributes="Bold" 
+                               TextColor="#1C1917" 
+                               Margin="0, 2, 0, 0" />
+
+                        <!-- [DB: alert.distance & advisory_notes] -->
+                        <Label Text="Distance: 280m from your block. Advisory: Avoid low basement car park." 
+                               FontSize="11" 
+                               TextColor="#57534E" 
+                               LineHeight="1.2" />
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- BUTANG SOS KECEMASAN (GUARDHOUSE) -->
+                <Button Text="🚨 SOS EMERGENCY CALL: GUARDHOUSE" 
+                        Clicked="OnSosCallClicked"
+                        BackgroundColor="#BE123C" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        FontSize="11" 
+                        CornerRadius="12" 
+                        HeightRequest="48" 
+                        Margin="0, 4, 0, 10" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>
