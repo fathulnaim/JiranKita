@@ -1,9 +1,12 @@
+using JiranKita.Models;
+using JiranKita.Services;
+
 namespace JiranKita.Views;
 
 public partial class SignUpPage : ContentPage
 {
     private int _currentStep = 1;
-    private int _occupantsCount = 3;
+    private int _occupantsCount = 1;
     private string _selectedOwnership = "Owner";
     private int _vehicleCount = 0;
 
@@ -12,46 +15,46 @@ public partial class SignUpPage : ContentPage
         InitializeComponent();
         UpdateStepUI();
 
-        // Tambah 2 kereta contoh secara automatik bila dibuka
+        // Tambah 2 kenderaan contoh
         AddVehicleItem("WXX 8182", "Proton X50");
         AddVehicleItem("VAA 2341", "Perodua Bezza");
     }
 
     // ==========================================
-    // 1. INDIKATOR FOKUS HIJAU (BILA PENGGUNA TAP/TAIP)
+    // 1. INPUT FOCUS INDICATOR (GREEN BORDER)
     // ==========================================
     private void OnInputFocused(object sender, FocusEventArgs e)
     {
-        if (sender is Entry entry && entry.Parent is Border border)
+        if (sender is Entry input && input.Parent is Border border)
         {
-            border.Stroke = Color.FromArgb("#047857"); // Tukar garisan jadi Hijau Emerald
+            border.Stroke = Color.FromArgb("#047857");
             border.StrokeThickness = 2;
         }
     }
 
     private void OnInputUnfocused(object sender, FocusEventArgs e)
     {
-        if (sender is Entry entry && entry.Parent is Border border)
+        if (sender is Entry input && input.Parent is Border border)
         {
-            border.Stroke = Color.FromArgb("#D6D3D1"); // Kembali jadi kelabu tenang
+            border.Stroke = Color.FromArgb("#D6D3D1");
             border.StrokeThickness = 1;
         }
     }
 
     // ==========================================
-    // 2. PILIHAN STATUS PEMILIKAN (OWNERSHIP)
+    // 2. RESIDENCY OWNERSHIP SELECTION
     // ==========================================
     private void OnSelectOwnership(object sender, TappedEventArgs e)
     {
         _selectedOwnership = e.Parameter?.ToString() ?? "Owner";
 
-        // Reset semua warna kotak jadi kelabu
+        // Reset all options to default gray
         ResetOwnershipCard(CardOwner, LblOwner, "Owner-Occupier (Pemilik)");
         ResetOwnershipCard(CardTenant, LblTenant, "Tenant (Penyewa)");
         ResetOwnershipCard(CardFamily, LblFamily, "Family Dependant");
         ResetOwnershipCard(CardJmb, LblJmb, "JMB Committee");
 
-        // Jadikan kotak yang ditekan hijau & bold
+        // Highlight selected option in green
         if (_selectedOwnership == "Owner") SetOwnershipActive(CardOwner, LblOwner);
         else if (_selectedOwnership == "Tenant") SetOwnershipActive(CardTenant, LblTenant);
         else if (_selectedOwnership == "Family") SetOwnershipActive(CardFamily, LblFamily);
@@ -77,17 +80,17 @@ public partial class SignUpPage : ContentPage
     }
 
     // ==========================================
-    // 3. TAMBAH & PADAM KENDERAAN DINAMIK (+ Add Vehicle)
+    // 3. DYNAMIC VEHICLES (+ Add / Delete)
     // ==========================================
     private void OnAddVehicleClicked(object sender, EventArgs e)
     {
         AddVehicleItem("", "");
     }
 
-    private void AddVehicleItem(string plate, string model)
+    private void AddVehicleItem(string plateNo, string model)
     {
         _vehicleCount++;
-        int vehicleIndex = _vehicleCount;
+        int index = _vehicleCount;
 
         var card = new Border
         {
@@ -99,47 +102,52 @@ public partial class SignUpPage : ContentPage
 
         var stack = new VerticalStackLayout { Spacing = 6 };
 
-        var headerGrid = new Grid { ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) } };
-        headerGrid.Add(new Label { Text = $"Vehicle #{vehicleIndex} (CAR)", FontSize = 11, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#44403C") }, 0, 0);
+        var header = new Grid { ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Auto) } };
+        header.Add(new Label { Text = $"Vehicle #{index} (CAR)", FontSize = 11, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#44403C") }, 0, 0);
 
         var btnDelete = new Label { Text = "🗑️", FontSize = 12, VerticalOptions = LayoutOptions.Center };
         btnDelete.GestureRecognizers.Add(new TapGestureRecognizer
         {
             Command = new Command(() => VehiclesContainer.Children.Remove(card))
         });
-        headerGrid.Add(btnDelete, 1, 0);
+        header.Add(btnDelete, 1, 0);
 
-        var inputsGrid = new Grid { ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 6 };
+        var inputs = new Grid { ColumnDefinitions = new ColumnDefinitionCollection { new ColumnDefinition(GridLength.Star), new ColumnDefinition(GridLength.Star) }, ColumnSpacing = 6 };
 
-        // Input Plat
         var borderPlate = new Border { StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 8 }, Stroke = Color.FromArgb("#D6D3D1"), BackgroundColor = Colors.White, Padding = new Thickness(8, 2) };
-        var entryPlate = new Entry { Text = plate, Placeholder = "Plate No.", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#065F46") };
+        var entryPlate = new Entry { Text = plateNo, Placeholder = "Plate No.", FontSize = 12, FontAttributes = FontAttributes.Bold, TextColor = Color.FromArgb("#065F46") };
         entryPlate.Focused += OnInputFocused;
         entryPlate.Unfocused += OnInputUnfocused;
         borderPlate.Content = entryPlate;
 
-        // Input Model
         var borderModel = new Border { StrokeShape = new Microsoft.Maui.Controls.Shapes.RoundRectangle { CornerRadius = 8 }, Stroke = Color.FromArgb("#D6D3D1"), BackgroundColor = Colors.White, Padding = new Thickness(8, 2) };
         var entryModel = new Entry { Text = model, Placeholder = "Car Model", FontSize = 12, TextColor = Color.FromArgb("#44403C") };
         entryModel.Focused += OnInputFocused;
         entryModel.Unfocused += OnInputUnfocused;
         borderModel.Content = entryModel;
 
-        inputsGrid.Add(borderPlate, 0, 0);
-        inputsGrid.Add(borderModel, 1, 0);
+        inputs.Add(borderPlate, 0, 0);
+        inputs.Add(borderModel, 1, 0);
 
-        stack.Add(headerGrid);
-        stack.Add(inputsGrid);
+        stack.Add(header);
+        stack.Add(inputs);
         card.Content = stack;
 
         VehiclesContainer.Children.Add(card);
     }
 
     // ==========================================
-    // 4. KAWALAN PERPINDAHAN LANGKAH (STEP WIZARD)
+    // 4. STEP WIZARD NAVIGATION & VALIDATION
     // ==========================================
-    private void OnStep1NextClicked(object sender, EventArgs e)
+    private async void OnStep1NextClicked(object sender, EventArgs e)
     {
+        // Semak kata laluan DAHULU sebelum benarkan lompat ke Step 2
+        if (string.IsNullOrWhiteSpace(TxtPassword.Text) || TxtPassword.Text.Length < 6)
+        {
+            await DisplayAlert("Kata Laluan Diperlukan", "Sila cipta kata laluan sekurang-kurangnya 6 aksara.", "OK");
+            return;
+        }
+
         _currentStep = 2;
         UpdateStepUI();
     }
@@ -152,7 +160,7 @@ public partial class SignUpPage : ContentPage
 
     private void OnStep3NextClicked(object sender, EventArgs e)
     {
-        // Update Ringkasan di Langkah 4 secara automatik
+        // Auto-update maklumat ringkasan di Langkah 4
         LblSummaryName.Text = TxtFullName.Text;
         LblSummaryUnit.Text = $"{TxtUnitNo.Text} ({PickerPrecinct.SelectedItem})";
 
@@ -246,6 +254,9 @@ public partial class SignUpPage : ContentPage
         }
     }
 
+    // ==========================================
+    // 5. FINAL SUBMIT TO FIREBASE
+    // ==========================================
     private async void OnFinalSubmitClicked(object sender, EventArgs e)
     {
         if (!ChkPdpa.IsChecked)
@@ -254,7 +265,41 @@ public partial class SignUpPage : ContentPage
             return;
         }
 
-        await DisplayAlert("Pendaftaran Berjaya", "Permohonan pendaftaran residensi anda telah dihantar kepada JMB untuk semakan & kelulusan.", "Teruskan");
-        await Shell.Current.GoToAsync("FindNeighbourhoodPage");
+        // Kumpul semua data borang 4-langkah
+        var newUser = new UserModel
+        {
+            FullName = TxtFullName.Text?.Trim() ?? "",
+            IcNumber = TxtICNumber.Text?.Trim() ?? "",
+            Email = TxtEmail.Text?.Trim() ?? "",
+            Phone = TxtPhone.Text?.Trim() ?? "",
+            Password = TxtPassword.Text?.Trim() ?? "",
+
+            HousingArea = PickerPrecinct.SelectedItem?.ToString() ?? "Taman Seri Kembangan",
+            Block = TxtBlock.Text?.Trim() ?? "",
+            Level = TxtLevel.Text?.Trim() ?? "",
+            UnitNo = TxtUnitNo.Text?.Trim() ?? "",
+            OwnershipStatus = _selectedOwnership,
+
+            OccupantsCount = _occupantsCount,
+            EmergencyName = TxtEmergName.Text?.Trim() ?? "",
+            EmergencyRelation = TxtEmergRel.Text?.Trim() ?? "",
+            EmergencyPhone = TxtEmergPhone.Text?.Trim() ?? ""
+        };
+
+        try
+        {
+            // Hantar data pendaftaran terus ke Firebase
+            var fbService = new FirebaseService();
+            await fbService.RegisterUserAsync(newUser);
+
+            await DisplayAlert("Pendaftaran Berjaya", "Permohonan pendaftaran residensi anda telah dihantar kepada JMB untuk semakan & kelulusan.", "Teruskan");
+
+            // Bawa pengguna ke skrin imbas QR / semak komuniti
+            await Shell.Current.GoToAsync("FindNeighbourhoodPage");
+        }
+        catch (Exception error)
+        {
+            await DisplayAlert("Ralat Firebase", $"Gagal mendaftar: {error.Message}", "OK");
+        }
     }
 }

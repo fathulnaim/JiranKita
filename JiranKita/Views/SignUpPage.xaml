@@ -89,7 +89,7 @@
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Full Name (as per MyKad / Passport) *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
-                                <Entry x:Name="TxtFullName" Text="Muhammad Fathul Naim bin Abdul Rahim" FontSize="13" TextColor="#1C1917"
+                                <Entry x:Name="TxtFullName" Placeholder="Contoh: Ahmad bin Ali" PlaceholderColor="#A8A29E" FontSize="13" TextColor="#1C1917"
                                        Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                             </Border>
                         </VerticalStackLayout>
@@ -101,7 +101,7 @@
                                 <Label Grid.Column="1" Text="YYMMDD-PB-####" FontSize="10" TextColor="#065F46" FontAttributes="Bold" />
                             </Grid>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
-                                <Entry x:Name="TxtICNumber" Text="010825-10-5231" MaxLength="14" FontSize="13" TextColor="#1C1917" Keyboard="Numeric"
+                                <Entry x:Name="TxtICNumber" Placeholder="010825-10-5231" PlaceholderColor="#A8A29E" MaxLength="14" FontSize="13" TextColor="#1C1917" Keyboard="Numeric"
                                        Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                             </Border>
                             <Label Text="Encrypted for resident authentication in compliance with PDPA 2010." FontSize="10" TextColor="#78716C" />
@@ -112,7 +112,7 @@
                             <VerticalStackLayout Grid.Column="0" Spacing="6">
                                 <Label Text="Email Address *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
-                                    <Entry x:Name="TxtEmail" Text="naim.student@uniten.edu.my" FontSize="12" TextColor="#1C1917" Keyboard="Email"
+                                    <Entry x:Name="TxtEmail" Placeholder="nama@email.com" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" Keyboard="Email"
                                            Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </VerticalStackLayout>
@@ -120,11 +120,26 @@
                             <VerticalStackLayout Grid.Column="1" Spacing="6">
                                 <Label Text="Phone (+60) *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
-                                    <Entry x:Name="TxtPhone" Text="+60 12-845 9214" FontSize="12" TextColor="#1C1917" Keyboard="Telephone"
+                                    <Entry x:Name="TxtPhone" Placeholder="+60 12-345 6789" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" Keyboard="Telephone"
                                            Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </VerticalStackLayout>
                         </Grid>
+
+                        <!-- KOTAK PASSWORD DISINI -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Create Password *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
+                                <Entry x:Name="TxtPassword" 
+                                       Placeholder="Minimum 6 characters" 
+                                       PlaceholderColor="#A8A29E" 
+                                       IsPassword="True" 
+                                       FontSize="13" 
+                                       TextColor="#1C1917"
+                                       Focused="OnInputFocused" 
+                                       Unfocused="OnInputUnfocused" />
+                            </Border>
+                        </VerticalStackLayout>
 
                         <Button Text="PROCEED TO ADDRESS &amp; UNIT ➔" Clicked="OnStep1NextClicked" BackgroundColor="#047857" TextColor="White" FontAttributes="Bold" FontSize="12" CornerRadius="12" HeightRequest="48" Margin="0, 8, 0, 0" />
                     </VerticalStackLayout>
@@ -135,11 +150,11 @@
                         <Label Text="STEP 2: RESIDENTIAL PROPERTY DETAILS" FontSize="11" FontAttributes="Bold" TextColor="#047857" CharacterSpacing="1" />
                         <BoxView HeightRequest="1" Color="#F5F5F4" Margin="0, -4, 0, 0" />
 
-                        <!-- Precinct Picker -->
+                        <!-- Property / Housing Area (Gaya Shopee/Grab - Tiada lagi Precinct) -->
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Housing Estate / Condominium Precinct *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Label Text="Property / Housing Area *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
-                                <Picker x:Name="PickerPrecinct" FontSize="12" TextColor="#1C1917" Title="Pilih Komuniti">
+                                <Picker x:Name="PickerPrecinct" FontSize="12" TextColor="#1C1917" Title="Pilih Kondo / Taman">
                                     <Picker.ItemsSource>
                                         <x:Array Type="{x:Type x:String}">
                                             <x:String>Taman Seri Kembangan (Zone B)</x:String>
@@ -155,32 +170,31 @@
                         <!-- Blok / Tingkat / Unit -->
                         <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
                             <VerticalStackLayout Grid.Column="0" Spacing="4">
-                                <Label Text="Block" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
+                                <Label Text="Block / Phase" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="8, 2">
-                                    <Entry x:Name="TxtBlock" Text="Block B" FontSize="12" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                    <Entry x:Name="TxtBlock" Placeholder="Block B" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="1" Spacing="4">
-                                <Label Text="Level" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
+                                <Label Text="Floor / Level" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="8, 2">
-                                    <Entry x:Name="TxtLevel" Text="Level 12" FontSize="12" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                    <Entry x:Name="TxtLevel" Placeholder="Level 12" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="2" Spacing="4">
-                                <Label Text="Unit No." FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
-                                <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="8, 2">
-                                    <Entry x:Name="TxtUnitNo" Text="B-12-04" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                <Label Text="Unit / House No. *" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
+                                <Border StrokeShape="RoundRectangle 12" Stroke="#047857" BackgroundColor="#ECFDF5" Padding="8, 2">
+                                    <Entry x:Name="TxtUnitNo" Placeholder="B-12-04" PlaceholderColor="#A8A29E" FontSize="12" FontAttributes="Bold" TextColor="#065F46" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </VerticalStackLayout>
                         </Grid>
 
-                        <!-- STATUS PEMILIKAN (BOLEH DIKLIK!) -->
+                        <!-- STATUS PEMILIKAN -->
                         <VerticalStackLayout Spacing="8">
                             <Label Text="Residency Ownership Status *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="8" RowSpacing="8">
-                                <!-- Option 1: Owner -->
                                 <Border x:Name="CardOwner" Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#047857" StrokeThickness="2" BackgroundColor="#ECFDF5" Padding="10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnSelectOwnership" CommandParameter="Owner" />
@@ -188,7 +202,6 @@
                                     <Label x:Name="LblOwner" Text="Owner-Occupier (Pemilik)" FontSize="11" FontAttributes="Bold" TextColor="#065F46" />
                                 </Border>
 
-                                <!-- Option 2: Tenant -->
                                 <Border x:Name="CardTenant" Grid.Row="0" Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="#FAFAF9" Padding="10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnSelectOwnership" CommandParameter="Tenant" />
@@ -196,7 +209,6 @@
                                     <Label x:Name="LblTenant" Text="Tenant (Penyewa)" FontSize="11" TextColor="#44403C" />
                                 </Border>
 
-                                <!-- Option 3: Family -->
                                 <Border x:Name="CardFamily" Grid.Row="1" Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="#FAFAF9" Padding="10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnSelectOwnership" CommandParameter="Family" />
@@ -204,7 +216,6 @@
                                     <Label x:Name="LblFamily" Text="Family Dependant" FontSize="11" TextColor="#44403C" />
                                 </Border>
 
-                                <!-- Option 4: JMB -->
                                 <Border x:Name="CardJmb" Grid.Row="1" Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="#FAFAF9" Padding="10">
                                     <Border.GestureRecognizers>
                                         <TapGestureRecognizer Tapped="OnSelectOwnership" CommandParameter="JMB" />
@@ -227,7 +238,7 @@
                         <Label Text="STEP 3: HOUSEHOLD &amp; REGISTERED VEHICLES" FontSize="11" FontAttributes="Bold" TextColor="#047857" CharacterSpacing="1" />
                         <BoxView HeightRequest="1" Color="#F5F5F4" Margin="0, -4, 0, 0" />
 
-                        <!-- Penghuni Rumah (Counter Stepper) -->
+                        <!-- Penghuni Rumah -->
                         <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="#FAFAF9" Padding="12">
                             <Grid ColumnDefinitions="*, Auto">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2" VerticalOptions="Center">
@@ -237,7 +248,7 @@
 
                                 <HorizontalStackLayout Grid.Column="1" Spacing="8" VerticalOptions="Center">
                                     <Button Text="-" Clicked="OnDecrementOccupants" WidthRequest="32" HeightRequest="32" CornerRadius="8" BackgroundColor="White" TextColor="#1C1917" BorderColor="#D6D3D1" BorderWidth="1" Padding="0" />
-                                    <Label x:Name="LblOccupantsCount" Text="3" FontSize="14" FontAttributes="Bold" TextColor="#065F46" VerticalOptions="Center" WidthRequest="18" HorizontalTextAlignment="Center" />
+                                    <Label x:Name="LblOccupantsCount" Text="1" FontSize="14" FontAttributes="Bold" TextColor="#065F46" VerticalOptions="Center" WidthRequest="18" HorizontalTextAlignment="Center" />
                                     <Button Text="+" Clicked="OnIncrementOccupants" WidthRequest="32" HeightRequest="32" CornerRadius="8" BackgroundColor="White" TextColor="#1C1917" BorderColor="#D6D3D1" BorderWidth="1" Padding="0" />
                                 </HorizontalStackLayout>
                             </Grid>
@@ -247,19 +258,19 @@
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Emergency Contact Person *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Grid ColumnDefinitions="*, *, *" ColumnSpacing="6">
-                                <Border StrokeShape="RoundRectangle 10" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="8, 2">
-                                    <Entry x:Name="TxtEmergName" Text="Abdul Rahim" FontSize="11" TextColor="#1C1917" Placeholder="Name" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                <Border Grid.Column="0" StrokeShape="RoundRectangle 10" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="8, 2">
+                                    <Entry x:Name="TxtEmergName" Placeholder="Nama Waris" PlaceholderColor="#A8A29E" FontSize="11" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                                 <Border Grid.Column="1" StrokeShape="RoundRectangle 10" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="8, 2">
-                                    <Entry x:Name="TxtEmergRel" Text="Father" FontSize="11" TextColor="#1C1917" Placeholder="Relation" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                    <Entry x:Name="TxtEmergRel" Placeholder="Hubungan" PlaceholderColor="#A8A29E" FontSize="11" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                                 <Border Grid.Column="2" StrokeShape="RoundRectangle 10" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="8, 2">
-                                    <Entry x:Name="TxtEmergPhone" Text="+60 12-309 8812" FontSize="11" TextColor="#1C1917" Placeholder="Phone" Keyboard="Telephone" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                    <Entry x:Name="TxtEmergPhone" Placeholder="No. Telefon" PlaceholderColor="#A8A29E" FontSize="11" TextColor="#1C1917" Keyboard="Telephone" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </Grid>
                         </VerticalStackLayout>
 
-                        <!-- SENARAI KENDERAAN (Boleh Tambah & Padam!) -->
+                        <!-- SENARAI KENDERAAN -->
                         <VerticalStackLayout Spacing="8">
                             <Grid ColumnDefinitions="*, Auto">
                                 <Label Grid.Column="0" Text="🚗 Registered Vehicles (RFID Access)" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" VerticalOptions="Center" />
@@ -296,8 +307,8 @@
                                 </Border.GestureRecognizers>
                                 <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
                                     <Label Text="📄" FontSize="24" HorizontalOptions="Center" />
-                                    <Label x:Name="LblDocFileName" Text="Attached: cukai_taksiran_residency.pdf" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" HorizontalOptions="Center" />
-                                    <Label Text="Supports PDF, JPG, PNG up to 10MB (Tap to upload)" FontSize="10" TextColor="#78716C" HorizontalOptions="Center" />
+                                    <Label x:Name="LblDocFileName" Text="Tap to attach document (PDF/Image)" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" HorizontalOptions="Center" />
+                                    <Label Text="Supports PDF, JPG, PNG up to 10MB" FontSize="10" TextColor="#78716C" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
                         </VerticalStackLayout>
@@ -310,12 +321,12 @@
 
                                 <Grid ColumnDefinitions="Auto, *">
                                     <Label Grid.Column="0" Text="Applicant: " FontSize="11" TextColor="#78716C" />
-                                    <Label x:Name="LblSummaryName" Grid.Column="1" Text="Muhammad Fathul Naim" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" HorizontalOptions="End" />
+                                    <Label x:Name="LblSummaryName" Grid.Column="1" Text="(Sila isi di Langkah 1)" FontSize="11" FontAttributes="Bold" TextColor="#78716C" HorizontalOptions="End" />
                                 </Grid>
 
                                 <Grid ColumnDefinitions="Auto, *">
                                     <Label Grid.Column="0" Text="Unit: " FontSize="11" TextColor="#78716C" />
-                                    <Label x:Name="LblSummaryUnit" Grid.Column="1" Text="B-12-04 (Taman Seri Kembangan)" FontSize="11" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="End" />
+                                    <Label x:Name="LblSummaryUnit" Grid.Column="1" Text="(Sila isi di Langkah 2)" FontSize="11" FontAttributes="Bold" TextColor="#78716C" HorizontalOptions="End" />
                                 </Grid>
                             </VerticalStackLayout>
                         </Border>
@@ -323,7 +334,7 @@
                         <!-- PDPA Declaration -->
                         <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="#FAFAF9" Padding="12">
                             <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
-                                <CheckBox x:Name="ChkPdpa" IsChecked="True" Color="#047857" VerticalOptions="Start" />
+                                <CheckBox x:Name="ChkPdpa" IsChecked="False" Color="#047857" VerticalOptions="Start" />
                                 <Label Grid.Column="1" 
                                        Text="I hereby declare that the information provided is accurate and consent to JiranKita and the Joint Management Body (JMB) processing my personal data in accordance with the Malaysian Personal Data Protection Act (PDPA 2010)." 
                                        FontSize="10" 

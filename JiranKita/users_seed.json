@@ -1,0 +1,38 @@
+{
+  "user_resident_01": {
+    "FullName": "Muhammad Fathul",
+    "Email": "naim.student@uniten.edu.my",
+    "Password": "ResidentSecret2026!",
+    "Phone": "+60 12-845 9214",
+    "IcNumber": "010825-10-5231",
+    "HousingArea": "Taman Seri Kembangan (Zone B)",
+    "Block": "Block B",
+    "Level": "Level 12",
+    "UnitNo": "B-12-04",
+    "OwnershipStatus": "Owner",
+    "OccupantsCount": 3,
+    "EmergencyName": "Abdul Rahim",
+    "EmergencyRelation": "Father",
+    "EmergencyPhone": "+60 12-309 8812",
+    "IsVerified": true,
+    "Role": "Resident"
+  },
+  "user_admin_01": {
+    "FullName": "En. Kamaruddin (JMB Chairman)",
+    "Email": "admin.jmb@jirankita.my",
+    "Password": "AdminSecret2026!",
+    "Phone": "+60 19-332 1100",
+    "IcNumber": "780412-10-5543",
+    "HousingArea": "Taman Seri Kembangan (Zone B)",
+    "Block": "Management Office",
+    "Level": "Ground Floor",
+    "UnitNo": "JMB-HQ",
+    "OwnershipStatus": "JMB Committee",
+    "OccupantsCount": 1,
+    "EmergencyName": "Security Guardhouse",
+    "EmergencyRelation": "Security",
+    "EmergencyPhone": "+60 12-345 6789",
+    "IsVerified": true,
+    "Role": "Admin"
+  }
+}
