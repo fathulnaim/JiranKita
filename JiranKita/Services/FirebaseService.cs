@@ -104,5 +104,65 @@ public class FirebaseService
         return null; // Tiada komuniti dengan kod ini
     }
 
+    // --- TAMBAH 2 FUNGSI INI DALAM KELAS FirebaseService.cs ---
 
+    // 1. HANTAR POS BAHARU KE FIREBASE (Dahan 'CommunityPosts')
+    public async Task CreatePostAsync(PostModel post)
+    {
+        await _firebaseClient
+            .Child("CommunityPosts")
+            .PostAsync(post);
+    }
+
+    // 2. TARIK SEMUA SENARAI POS DARI FIREBASE
+    public async Task<List<PostModel>> GetAllPostsAsync()
+    {
+        var postList = await _firebaseClient
+            .Child("CommunityPosts")
+            .OnceAsync<PostModel>();
+
+        var results = new List<PostModel>();
+        foreach (var item in postList)
+        {
+            var post = item.Object;
+            post.FirebaseKey = item.Key;
+            results.Add(post);
+        }
+
+        // Susun hantaran paling terkini di atas sekali
+        return results.OrderByDescending(p => p.CreatedAt).ToList();
+    }
+
+    // --- TAMBAH FUNGSI KOMEN INI DALAM KELAS FirebaseService.cs ---
+
+    // 1. HANTAR KOMEN KE POS SPESIFIK
+    public async Task AddCommentAsync(string postFirebaseKey, CommentModel comment)
+    {
+        if (string.IsNullOrEmpty(postFirebaseKey)) return;
+
+        await _firebaseClient
+            .Child("CommunityPosts")
+            .Child(postFirebaseKey)
+            .Child("Comments")
+            .PostAsync(comment);
+    }
+
+    // 2. TARIK SEMUA KOMEN BAGI POS TERSEBUT
+    public async Task<List<CommentModel>> GetCommentsAsync(string postFirebaseKey)
+    {
+        if (string.IsNullOrEmpty(postFirebaseKey)) return new List<CommentModel>();
+
+        var list = await _firebaseClient
+            .Child("CommunityPosts")
+            .Child(postFirebaseKey)
+            .Child("Comments")
+            .OnceAsync<CommentModel>();
+
+        var comments = new List<CommentModel>();
+        foreach (var item in list)
+        {
+            comments.Add(item.Object);
+        }
+        return comments.OrderBy(c => c.CreatedAt).ToList();
+    }
 }
