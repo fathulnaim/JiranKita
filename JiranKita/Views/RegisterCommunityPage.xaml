@@ -176,15 +176,29 @@
                            LineHeight="1.2" />
 
                     <!-- Butang Selesai -->
-                    <Button Text="SELESAI &amp; KELUAR" 
-                            Clicked="OnCloseSuccessModalClicked"
-                            BackgroundColor="#047857" 
-                            TextColor="White" 
-                            FontAttributes="Bold" 
-                            FontSize="11" 
-                            CornerRadius="12" 
-                            HeightRequest="42" 
-                            Margin="0, 6, 0, 0" />
+                    <!-- Butang Muat Turun / Kongsi QR -->
+                    <Button Text="📥 SIMPAN / KONGSI QR CODE" 
+                        Clicked="OnDownloadQrClicked"
+                        BackgroundColor="#065F46" 
+                        TextColor="White" 
+                        FontAttributes="Bold" 
+                        FontSize="11" 
+                        CornerRadius="12" 
+                        HeightRequest="42" 
+                        Margin="0, 4, 0, 0" />
+
+                                    <!-- Butang Selesai Keluar -->
+                                    <Button Text="SELESAI &amp; KELUAR" 
+                        Clicked="OnCloseSuccessModalClicked"
+                        BackgroundColor="White" 
+                        TextColor="#44403C" 
+                        BorderColor="#D6D3D1"
+                        BorderWidth="1"
+                        FontAttributes="Bold" 
+                        FontSize="11" 
+                        CornerRadius="12" 
+                        HeightRequest="42" 
+                        Margin="0, 6, 0, 0" />
                 </VerticalStackLayout>
             </Border>
         </Grid>

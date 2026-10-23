@@ -82,4 +82,27 @@ public class FirebaseService
             .Child("Communities")
             .PostAsync(community);
     }
+
+    public async Task<CommunityModel?> FindCommunityByInviteCodeAsync(string inviteCode)
+    {
+        // 1. Tarik semua senarai komuniti dari Firebase
+        var communities = await _firebaseClient
+            .Child("Communities")
+            .OnceAsync<CommunityModel>();
+
+        // 2. Cari komuniti yang mempunyai InviteCode yang sepadan
+        foreach (var item in communities)
+        {
+            if (item.Object.InviteCode.Equals(inviteCode, StringComparison.OrdinalIgnoreCase))
+            {
+                var community = item.Object;
+                community.FirebaseKey = item.Key;
+                return community; // Jumpa!
+            }
+        }
+
+        return null; // Tiada komuniti dengan kod ini
+    }
+
+
 }

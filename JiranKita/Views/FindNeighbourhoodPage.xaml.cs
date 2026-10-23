@@ -1,9 +1,14 @@
 using BarcodeScanning;
+using JiranKita.Models;
+using JiranKita.Services;
 
 namespace JiranKita.Views;
 
 public partial class FindNeighbourhoodPage : ContentPage
 {
+    private readonly FirebaseService fbService = new FirebaseService();
+    private bool isChecking = false; // Elak semakan bertindih serentak
+
     public FindNeighbourhoodPage()
     {
         InitializeComponent();
@@ -12,7 +17,7 @@ public partial class FindNeighbourhoodPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        // Minta kebenaran kamera rasmi Google ML Kit automatik
+        // Minta kebenaran kamera Google ML Kit
         await Methods.AskForRequiredPermissionAsync();
         QrScanner.CameraEnabled = true;
     }
@@ -23,7 +28,9 @@ public partial class FindNeighbourhoodPage : ContentPage
         QrScanner.CameraEnabled = false;
     }
 
-    // FUNGSI PENGESANAN GOOGLE ML KIT (Sangat laju & stabil)
+    // ==========================================
+    // 1. PENGESANAN KAMERA GOOGLE ML KIT
+    // ==========================================
     private void OnDetectionFinished(object sender, OnDetectionFinishedEventArg e)
     {
         var firstResult = e.BarcodeResults.FirstOrDefault();
@@ -31,52 +38,26 @@ public partial class FindNeighbourhoodPage : ContentPage
 
         string qrText = firstResult.DisplayValue?.Trim() ?? "";
 
-        // 1. TOLAK jika ia adalah link website (https / http)
-        if (qrText.StartsWith("http://", StringComparison.OrdinalIgnoreCase) ||
-            qrText.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-        {
-            // Abaikan link web, biarkan kamera terus mencari QR yang betul
-            return;
-        }
+        // Tolak pautan web biasa (cth: https://)
+        if (qrText.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return;
 
-        // 2. PENAPIS KHUSUS: Pastikan kod tepat 5 huruf/nombor sahaja (Contoh: KAJ82)
+        // Jika kod tepat 5 aksara, proses semakan
         if (qrText.Length == 5 && qrText.All(char.IsLetterOrDigit))
         {
             MainThread.BeginInvokeOnMainThread(async () =>
             {
-                // Matikan kamera sekejap supaya tak scan berulang
                 QrScanner.CameraEnabled = false;
-
-                // Masukkan kod ke kotak invite code
                 HiddenOtpEntry.Text = qrText.ToUpper();
 
-                await DisplayAlert("BERJAYA!", $"Kod Komuniti Dikesan: {qrText.ToUpper()}", "Lets Go!");
-                await Shell.Current.GoToAsync("//HomePage");
-            });
-        }
-        else
-        {
-            // Jika orang imbas QR lain yang salah (contohnya QR menu kedai / MySejahtera)
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                // Pause sekejap supaya amaran tak keluar bertubi-tubi
-                QrScanner.CameraEnabled = false;
-
-                await DisplayAlert("QR Tidak Sah", "Sila imbas QR Notis JiranKita yang sah sahaja.", "Cuba Lagi");
-
-                // Hidupkan semula kamera untuk imbas semula
-                QrScanner.CameraEnabled = true;
+                // Semak kod QR yang diimbas terus dengan Firebase!
+                await CheckCodeWithFirebase(qrText.ToUpper());
             });
         }
     }
 
-    // Butang Flash Lampu Picit
-    private void OnTorchToggleClicked(object sender, EventArgs e)
-    {
-        QrScanner.TorchOn = !QrScanner.TorchOn;
-    }
-
-    // Kotak OTP 5-digit auto lompat & auto-submit
+    // ==========================================
+    // 2. KOTAK OTP 5-DIGIT & AUTO-SUBMIT
+    // ==========================================
     private async void OnHiddenOtpTextChanged(object sender, TextChangedEventArgs e)
     {
         string text = e.NewTextValue?.ToUpper() ?? "";
@@ -87,21 +68,21 @@ public partial class FindNeighbourhoodPage : ContentPage
         Lbl4.Text = text.Length > 3 ? text[3].ToString() : "";
         Lbl5.Text = text.Length > 4 ? text[4].ToString() : "";
 
+        // Bila genap 5 digit ditaip: Terus semak dengan Firebase!
         if (text.Length == 5)
         {
             HiddenOtpEntry.Unfocus();
-            await DisplayAlert("Pengesahan Kod", $"Kod '{text}' berjaya disahkan!", "OK");
-            await Shell.Current.GoToAsync("//HomePage");
+            await CheckCodeWithFirebase(text);
         }
     }
 
-    // Butang Manual Join Now
+    // Butang manual "Join Now"
     private async void OnVerifyButtonClicked(object sender, EventArgs e)
     {
-        string text = HiddenOtpEntry.Text?.ToUpper() ?? "";
+        string text = HiddenOtpEntry.Text?.Trim().ToUpper() ?? "";
         if (text.Length == 5)
         {
-            await DisplayAlert("Pengesahan Kod", $"Kod '{text}' berjaya disahkan!", "OK");
+            await CheckCodeWithFirebase(text);
         }
         else
         {
@@ -109,21 +90,71 @@ public partial class FindNeighbourhoodPage : ContentPage
         }
     }
 
+    // ==========================================
+    // 3. FUNGSI SEMAK DENGAN DATABASE FIREBASE
+    // ==========================================
+    private async Task CheckCodeWithFirebase(string inviteCode)
+    {
+        if (isChecking) return;
+        isChecking = true;
+
+        try
+        {
+            // Tanya Firebase: Ada tak komuniti dengan kod ini?
+            CommunityModel? matchedCommunity = await fbService.FindCommunityByInviteCodeAsync(inviteCode);
+
+            if (matchedCommunity != null)
+            {
+                // ✅ KOD WUJUD & JUMPA DALAM FIREBASE!
+                await DisplayAlert(
+                    "Komuniti Ditemui! 🎉",
+                    $"Selamat datang ke:\n\n{matchedCommunity.CommunityName}\n({matchedCommunity.PropertyType})\n\nMenyambungkan anda ke dashboard komuniti...",
+                    "Masuk Sekarang"
+                );
+
+                // Masuk terus ke HomePage (TabBar rasmi akan aktif)
+                await Shell.Current.GoToAsync("//HomePage");
+            }
+            else
+            {
+                // ❌ KOD SALAH / TIADA DALAM DATABASE
+                await DisplayAlert("Kod Tidak Sah", $"Tiada komuniti ditemui dengan kod '{inviteCode}'. Sila semak semula notis JMB anda.", "Cuba Lagi");
+
+                // Kosongkan kotak supaya boleh taip semula
+                HiddenOtpEntry.Text = string.Empty;
+                QrScanner.CameraEnabled = true; // Hidupkan balik kamera
+            }
+        }
+        catch (Exception error)
+        {
+            await DisplayAlert("Ralat Firebase", $"Gagal menyemak kod: {error.Message}", "OK");
+        }
+        finally
+        {
+            isChecking = false;
+        }
+    }
+
+    // Butang Flash
+    private void OnTorchToggleClicked(object sender, EventArgs e)
+    {
+        QrScanner.TorchOn = !QrScanner.TorchOn;
+    }
+
     // Butang Gallery
     private async void OnGalleryClicked(object sender, EventArgs e)
     {
         FileResult photo = await MediaPicker.Default.PickPhotoAsync();
-
         if (photo != null)
         {
-            string localFilePath = photo.FullPath;
-            await DisplayAlert("Berjaya", "Gambar dipilih dari galeri!", "OK");
+            await DisplayAlert("Galeri", "Gambar telah dipilih.", "OK");
         }
     }
 
+    // Pendaftaran Komuniti Baharu (JMB)
     private async void OnRegisterCommunityClicked(object sender, EventArgs e)
     {
-        QrScanner.CameraEnabled = false;
+        QrScanner.CameraEnabled = false; // Matikan kamera dulu supaya laju
         await Shell.Current.GoToAsync(nameof(Views.RegisterCommunityPage));
     }
 }
