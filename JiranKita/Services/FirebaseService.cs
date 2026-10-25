@@ -16,11 +16,145 @@ public class FirebaseService
     }
 
     // ==========================================
-    // 1. USER AUTH (SIGN UP & SIGN IN) -> INI YANG BARU DITAMBAH!
+    // 1. SEMAK DAN DAFTAR KOMUNITI (BUBBLE)
+    // ==========================================
+    public async Task<CommunityModel?> FindCommunityByInviteCodeAsync(string inviteCode)
+    {
+        // Cari terus ke dahan komuniti kod tersebut
+        var communityData = await _firebaseClient
+            .Child("Communities")
+            .Child(inviteCode.ToUpper())
+            .Child("Info")
+            .OnceSingleAsync<CommunityModel>();
+
+        if (communityData != null)
+        {
+            communityData.InviteCode = inviteCode.ToUpper();
+            return communityData;
+        }
+
+        return null;
+    }
+
+    public async Task RegisterCommunityAsync(CommunityModel community)
+    {
+        // Cipta bubble baharu menggunakan InviteCode sebagai nama dahan
+        await _firebaseClient
+            .Child("Communities")
+            .Child(community.InviteCode.ToUpper())
+            .Child("Info")
+            .PutAsync(community);
+    }
+
+    // ==========================================
+    // 2. CHAT DALAM BUBBLE (IKUT KOMUNITI SAHAJA)
+    // ==========================================
+    // 1. HANTAR MESEJ HANYA KE BUBBLE KOMUNITI SPESIFIK
+    public async Task SendMessageAsync(string communityCode, ChatMessage message)
+    {
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("Chat")
+            .PostAsync(message);
+    }
+
+    // 2. PADAM MESEJ DALAM BUBBLE KOMUNITI SPESIFIK
+    public async Task DeleteMessageAsync(string communityCode, string firebaseKey)
+    {
+        if (string.IsNullOrEmpty(firebaseKey)) return;
+
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("Chat")
+            .Child(firebaseKey)
+            .DeleteAsync();
+    }
+
+    // 3. DENGAR MESEJ HANYA DARI BUBBLE KOMUNITI SPESIFIK
+    public IDisposable SubscribeToMessages(string communityCode, Action<FirebaseEvent<ChatMessage>> onEventReceived)
+    {
+        return _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("Chat")
+            .AsObservable<ChatMessage>()
+            .Subscribe(onEventReceived);
+    }
+
+    // ==========================================
+    // 3. FEED POS DALAM BUBBLE (IKUT KOMUNITI SAHAJA)
+    // ==========================================
+    public async Task CreatePostAsync(string communityCode, PostModel post)
+    {
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode)
+            .Child("Posts")
+            .PostAsync(post);
+    }
+
+    public async Task<List<PostModel>> GetAllPostsAsync(string communityCode)
+    {
+        var postList = await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode)
+            .Child("Posts")
+            .OnceAsync<PostModel>();
+
+        var results = new List<PostModel>();
+        foreach (var item in postList)
+        {
+            var post = item.Object;
+            post.FirebaseKey = item.Key;
+            results.Add(post);
+        }
+
+        return results.OrderByDescending(p => p.CreatedAt).ToList();
+    }
+
+    // ==========================================
+    // 4. KOMEN DALAM BUBBLE
+    // ==========================================
+    public async Task AddCommentAsync(string communityCode, string postFirebaseKey, CommentModel comment)
+    {
+        if (string.IsNullOrEmpty(postFirebaseKey)) return;
+
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode)
+            .Child("Posts")
+            .Child(postFirebaseKey)
+            .Child("Comments")
+            .PostAsync(comment);
+    }
+
+    public async Task<List<CommentModel>> GetCommentsAsync(string communityCode, string postFirebaseKey)
+    {
+        if (string.IsNullOrEmpty(postFirebaseKey)) return new List<CommentModel>();
+
+        var list = await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode)
+            .Child("Posts")
+            .Child(postFirebaseKey)
+            .Child("Comments")
+            .OnceAsync<CommentModel>();
+
+        var comments = new List<CommentModel>();
+        foreach (var item in list)
+        {
+            comments.Add(item.Object);
+        }
+        return comments.OrderBy(c => c.CreatedAt).ToList();
+    }
+
+    // ==========================================
+    // 5. AUTH PENGGUNA
     // ==========================================
     public async Task RegisterUserAsync(UserModel user)
     {
-        // Simpan data pendaftaran ke dahan 'Users' di Firebase
         await _firebaseClient
             .Child("Users")
             .PostAsync(user);
@@ -28,7 +162,6 @@ public class FirebaseService
 
     public async Task<UserModel?> LoginUserAsync(string email, string password)
     {
-        // Cari pengguna berdasarkan email & password
         var userList = await _firebaseClient
             .Child("Users")
             .OnceAsync<UserModel>();
@@ -44,125 +177,5 @@ public class FirebaseService
             }
         }
         return null;
-    }
-
-    // ==========================================
-    // 2. CHAT KOMUNITI (YANG SEDIA ADA)
-    // ==========================================
-    public async Task SendMessageAsync(ChatMessage message)
-    {
-        await _firebaseClient
-            .Child("NeighbourhoodChat")
-            .PostAsync(message);
-    }
-
-    public async Task DeleteMessageAsync(string firebaseKey)
-    {
-        if (string.IsNullOrEmpty(firebaseKey)) return;
-
-        await _firebaseClient
-            .Child("NeighbourhoodChat")
-            .Child(firebaseKey)
-            .DeleteAsync();
-    }
-
-    public IDisposable SubscribeToMessages(Action<FirebaseEvent<ChatMessage>> onEventReceived)
-    {
-        return _firebaseClient
-            .Child("NeighbourhoodChat")
-            .AsObservable<ChatMessage>()
-            .Subscribe(onEventReceived);
-    }
-
-    // TAMBAH FUNGSI INI DALAM KELAS FirebaseService.cs:
-    public async Task RegisterCommunityAsync(CommunityModel community)
-    {
-        // Simpan komuniti baharu ke dalam dahan 'Communities'
-        await _firebaseClient
-            .Child("Communities")
-            .PostAsync(community);
-    }
-
-    public async Task<CommunityModel?> FindCommunityByInviteCodeAsync(string inviteCode)
-    {
-        // 1. Tarik semua senarai komuniti dari Firebase
-        var communities = await _firebaseClient
-            .Child("Communities")
-            .OnceAsync<CommunityModel>();
-
-        // 2. Cari komuniti yang mempunyai InviteCode yang sepadan
-        foreach (var item in communities)
-        {
-            if (item.Object.InviteCode.Equals(inviteCode, StringComparison.OrdinalIgnoreCase))
-            {
-                var community = item.Object;
-                community.FirebaseKey = item.Key;
-                return community; // Jumpa!
-            }
-        }
-
-        return null; // Tiada komuniti dengan kod ini
-    }
-
-    // --- TAMBAH 2 FUNGSI INI DALAM KELAS FirebaseService.cs ---
-
-    // 1. HANTAR POS BAHARU KE FIREBASE (Dahan 'CommunityPosts')
-    public async Task CreatePostAsync(PostModel post)
-    {
-        await _firebaseClient
-            .Child("CommunityPosts")
-            .PostAsync(post);
-    }
-
-    // 2. TARIK SEMUA SENARAI POS DARI FIREBASE
-    public async Task<List<PostModel>> GetAllPostsAsync()
-    {
-        var postList = await _firebaseClient
-            .Child("CommunityPosts")
-            .OnceAsync<PostModel>();
-
-        var results = new List<PostModel>();
-        foreach (var item in postList)
-        {
-            var post = item.Object;
-            post.FirebaseKey = item.Key;
-            results.Add(post);
-        }
-
-        // Susun hantaran paling terkini di atas sekali
-        return results.OrderByDescending(p => p.CreatedAt).ToList();
-    }
-
-    // --- TAMBAH FUNGSI KOMEN INI DALAM KELAS FirebaseService.cs ---
-
-    // 1. HANTAR KOMEN KE POS SPESIFIK
-    public async Task AddCommentAsync(string postFirebaseKey, CommentModel comment)
-    {
-        if (string.IsNullOrEmpty(postFirebaseKey)) return;
-
-        await _firebaseClient
-            .Child("CommunityPosts")
-            .Child(postFirebaseKey)
-            .Child("Comments")
-            .PostAsync(comment);
-    }
-
-    // 2. TARIK SEMUA KOMEN BAGI POS TERSEBUT
-    public async Task<List<CommentModel>> GetCommentsAsync(string postFirebaseKey)
-    {
-        if (string.IsNullOrEmpty(postFirebaseKey)) return new List<CommentModel>();
-
-        var list = await _firebaseClient
-            .Child("CommunityPosts")
-            .Child(postFirebaseKey)
-            .Child("Comments")
-            .OnceAsync<CommentModel>();
-
-        var comments = new List<CommentModel>();
-        foreach (var item in list)
-        {
-            comments.Add(item.Object);
-        }
-        return comments.OrderBy(c => c.CreatedAt).ToList();
     }
 }

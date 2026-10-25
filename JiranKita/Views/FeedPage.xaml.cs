@@ -24,7 +24,8 @@ public partial class FeedPage : ContentPage
     {
         try
         {
-            _allMasterPosts = await fbService.GetAllPostsAsync();
+            // Tarik pos milik bubble komuniti semasa sahaja!
+            _allMasterPosts = await fbService.GetAllPostsAsync(AppSession.CurrentCommunityCode);
             ApplyFilterAndSearch();
         }
         catch (Exception error)

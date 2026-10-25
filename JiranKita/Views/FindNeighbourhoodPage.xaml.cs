@@ -106,6 +106,9 @@ public partial class FindNeighbourhoodPage : ContentPage
             if (matchedCommunity != null)
             {
                 // ✅ KOD WUJUD & JUMPA DALAM FIREBASE!
+
+                AppSession.CurrentCommunityCode = matchedCommunity.InviteCode;
+                AppSession.CurrentCommunityName = matchedCommunity.CommunityName;
                 await DisplayAlert(
                     "Komuniti Ditemui! 🎉",
                     $"Selamat datang ke:\n\n{matchedCommunity.CommunityName}\n({matchedCommunity.PropertyType})\n\nMenyambungkan anda ke dashboard komuniti...",

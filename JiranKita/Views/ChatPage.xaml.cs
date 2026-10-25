@@ -9,14 +9,9 @@ public partial class ChatPage : ContentPage
 {
     private readonly FirebaseService servisFirebase = new FirebaseService();
     private IDisposable? sambunganLiveChat;
-
-    // Pemasa untuk mengesan berapa lama jari ditekan pada mesej
     private CancellationTokenSource? pemasaTekanLama;
 
     public ObservableCollection<ChatMessage> SenaraiMesej { get; set; } = new ObservableCollection<ChatMessage>();
-
-    private readonly string namaSaya = "Muhammad Fathul";
-    private readonly string unitSaya = "Unit B-12-04";
 
     public ChatPage()
     {
@@ -28,49 +23,43 @@ public partial class ChatPage : ContentPage
     {
         base.OnAppearing();
 
-        // DENGAR PERISTIWA DARI FIREBASE (Mesej Baru atau Mesej Dipadam)
-        sambunganLiveChat = servisFirebase.SubscribeToMessages((FirebaseEvent<ChatMessage> peristiwa) =>
+        // 1. Ambil kod bubble komuniti aktif (cth: KAJ82 atau BGI99)
+        string activeCode = AppSession.CurrentCommunityCode;
+        LblCommunityTitle.Text = AppSession.CurrentCommunityName;
+        LblBubbleCode.Text = $"Bubble: {activeCode} ·";
+
+        // 2. Kosongkan senarai lama supaya mesej komuniti lain tak terselit
+        SenaraiMesej.Clear();
+        sambunganLiveChat?.Dispose();
+
+        // 3. Dengar mesej HANYA dari bubble komuniti ini
+        sambunganLiveChat = servisFirebase.SubscribeToMessages(activeCode, (FirebaseEvent<ChatMessage> peristiwa) =>
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                // JIKA MESEJ DIPADAM DI FIREBASE: Padamkan dari skrin telefon serta-merta
+                // JIKA MESEJ DIPADAM:
                 if (peristiwa.EventType == FirebaseEventType.Delete)
                 {
-                    ChatMessage? mesejUntukDibuang = null;
-                    foreach (ChatMessage item in SenaraiMesej)
+                    var mesejBuang = SenaraiMesej.FirstOrDefault(m => m.FirebaseKey == peristiwa.Key);
+                    if (mesejBuang != null)
                     {
-                        if (item.FirebaseKey == peristiwa.Key)
-                        {
-                            mesejUntukDibuang = item;
-                            break;
-                        }
-                    }
-
-                    if (mesejUntukDibuang != null)
-                    {
-                        SenaraiMesej.Remove(mesejUntukDibuang);
+                        SenaraiMesej.Remove(mesejBuang);
+                        UpdateDateHeaders();
                     }
                 }
-                // JIKA MESEJ BARU MASUK:
+                // JIKA MESEJ MASUK:
                 else if (peristiwa.Object != null)
                 {
                     ChatMessage mesejMasuk = peristiwa.Object;
-                    mesejMasuk.FirebaseKey = peristiwa.Key; // Simpan kunci Firebase
+                    mesejMasuk.FirebaseKey = peristiwa.Key;
+                    mesejMasuk.IsSelf = (mesejMasuk.SenderName == AppSession.CurrentUserName);
 
-                    bool sudahAda = false;
-                    foreach (ChatMessage m in SenaraiMesej)
+                    // Semak jika mesej belum ada dalam senarai
+                    if (!SenaraiMesej.Any(m => m.FirebaseKey == peristiwa.Key))
                     {
-                        if (m.FirebaseKey == peristiwa.Key)
-                        {
-                            sudahAda = true;
-                            break;
-                        }
-                    }
+                        // SELESAIKAN MISTERI 1: SUSUN MENGIKUT WAKTU (Kronologi Tepat!)
+                        InsertMessageSorted(mesejMasuk);
 
-                    if (!sudahAda)
-                    {
-                        mesejMasuk.IsSelf = (mesejMasuk.SenderName == namaSaya);
-                        SenaraiMesej.Add(mesejMasuk);
                         MessagesCollectionView.ScrollTo(mesejMasuk, position: ScrollToPosition.End, animate: true);
                     }
                 }
@@ -84,106 +73,127 @@ public partial class ChatPage : ContentPage
         sambunganLiveChat?.Dispose();
     }
 
-    // ==========================================
-    // 1. BILA JARI MULA TEKAN MESEJ (MULA KIRA MASA)
-    // ==========================================
-    private async void OnMessagePointerPressed(object sender, PointerEventArgs e)
+    // ==============================================================
+    // FUNGSI PENYELAMAT: Susun mesej supaya soalan sentiasa di atas jawapan!
+    // ==============================================================
+    private void InsertMessageSorted(ChatMessage msg)
     {
-        pemasaTekanLama = new CancellationTokenSource();
-        Border? kotakMesej = sender as Border;
-        ChatMessage? mesejPilihan = kotakMesej?.BindingContext as ChatMessage;
-
-        if (mesejPilihan == null) return;
-
-        try
+        int index = 0;
+        // Cari kedudukan yang betul mengikut waktu
+        while (index < SenaraiMesej.Count && SenaraiMesej[index].Timestamp <= msg.Timestamp)
         {
-            // Tunggu 500ms (0.5 saat) untuk sahkan sebagai "Tekan Lama"
-            await Task.Delay(500, pemasaTekanLama.Token);
-
-            // JIKA BERJAYA TAHAN 0.5 SAAT:
-            MainThread.BeginInvokeOnMainThread(async () =>
-            {
-                // A. Getarkan telefon sikit (Haptic Feedback)
-                try
-                {
-                    HapticFeedback.Default.Perform(HapticFeedbackType.LongPress);
-                }
-                catch { /* sesetengah peranti/emulator tiada vibration motor */ }
-
-                // B. Buka menu pilihan WhatsApp dari bawah
-                string pilihan = await DisplayActionSheet(
-                    "Pilihan Mesej",
-                    "Batal",
-                    "Padam Untuk Semua 🗑️",
-                    "Salin Teks 📋"
-                );
-
-                // Jika pilih Salin
-                if (pilihan == "Salin Teks 📋")
-                {
-                    await Clipboard.Default.SetTextAsync(mesejPilihan.MessageText);
-                    await DisplayAlert("Disalin", "Teks mesej telah disalin.", "OK");
-                }
-                // Jika pilih Padam
-                else if (pilihan == "Padam Untuk Semua 🗑️")
-                {
-                    try
-                    {
-                        await servisFirebase.DeleteMessageAsync(mesejPilihan.FirebaseKey);
-                    }
-                    catch (Exception ralat)
-                    {
-                        await DisplayAlert("Ralat", $"Gagal memadam: {ralat.Message}", "OK");
-                    }
-                }
-            });
+            index++;
         }
-        catch (TaskCanceledException)
-        {
-            // Jari diangkat sebelum sempat 0.5 saat (tekan biasa)
-        }
+        SenaraiMesej.Insert(index, msg);
+
+        UpdateDateHeaders();
     }
 
     // ==========================================
-    // 2. BILA JARI DIANGKAT (BATALKAN JIKA TEKAN SEKEJAP)
-    // ==========================================
-    private void OnMessagePointerReleased(object sender, PointerEventArgs e)
-    {
-        pemasaTekanLama?.Cancel();
-    }
-
-    // ==========================================
-    // 3. BUTANG HANTAR MESEJ (➤)
+    // HANTAR MESEJ HANYA KE BUBBLE KOMUNITI AKTIF
     // ==========================================
     private async void OnSendMessageClicked(object sender, EventArgs e)
     {
-        string teksDitaip = TxtChatMessage.Text?.Trim() ?? "";
-        if (string.IsNullOrWhiteSpace(teksDitaip)) return;
+        string text = TxtChatMessage.Text?.Trim() ?? "";
+        if (string.IsNullOrWhiteSpace(text)) return;
 
         TxtChatMessage.Text = string.Empty;
 
-        ChatMessage mesejBaru = new ChatMessage
+        var newMsg = new ChatMessage
         {
-            SenderName = namaSaya,
-            SenderUnit = unitSaya,
-            MessageText = teksDitaip,
-            Timestamp = DateTime.Now,
+            SenderName = AppSession.CurrentUserName,
+            SenderUnit = AppSession.CurrentUserUnit,
+            MessageText = text,
+            Timestamp = DateTime.Now, // Guna UtcNow untuk elak isu beza jam
             IsSelf = true
         };
 
         try
         {
-            await servisFirebase.SendMessageAsync(mesejBaru);
+            // SELESAIKAN MISTERI 2: Hantar ke bubble aktif sahaja!
+            await servisFirebase.SendMessageAsync(AppSession.CurrentCommunityCode, newMsg);
         }
-        catch (Exception ralat)
+        catch (Exception error)
         {
-            await DisplayAlert("Ralat", $"Mesej gagal dihantar: {ralat.Message}", "OK");
+            await DisplayAlert("Ralat", $"Gagal hantar: {error.Message}", "OK");
         }
     }
 
-    // Buka skrin JiranBot bila tekan robot 🤖
+    private async void OnMessagePointerPressed(object sender, PointerEventArgs e)
+    {
+        pemasaTekanLama = new CancellationTokenSource();
+        Border? border = sender as Border;
+        ChatMessage? msg = border?.BindingContext as ChatMessage;
+        if (msg == null) return;
+
+        try
+        {
+            await Task.Delay(500, pemasaTekanLama.Token);
+
+            MainThread.BeginInvokeOnMainThread(async () =>
+            {
+                try { HapticFeedback.Default.Perform(HapticFeedbackType.LongPress); } catch { }
+
+                string pilihan = await DisplayActionSheet("Pilihan Mesej", "Batal", "Padam Untuk Semua 🗑️", "Salin Teks 📋");
+
+                if (pilihan == "Salin Teks 📋")
+                {
+                    await Clipboard.Default.SetTextAsync(msg.MessageText);
+                    await DisplayAlert("Disalin", "Teks mesej disalin.", "OK");
+                }
+                else if (pilihan == "Padam Untuk Semua 🗑️")
+                {
+                    await servisFirebase.DeleteMessageAsync(AppSession.CurrentCommunityCode, msg.FirebaseKey);
+                }
+            });
+        }
+        catch (TaskCanceledException) { }
+    }
+
+    private void OnMessagePointerReleased(object sender, PointerEventArgs e)
+    {
+        pemasaTekanLama?.Cancel();
+    }
+
     private async void OnRobotClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.JiranBotPage));
+    }
+
+    // ==============================================================
+    // LOGIK WHATSAPP: Kira dan paparkan pembahagi tarikh jika hari bertukar
+    // ==============================================================
+    private void UpdateDateHeaders()
+    {
+        DateTime? previousDate = null;
+
+        for (int i = 0; i < SenaraiMesej.Count; i++)
+        {
+            var msg = SenaraiMesej[i];
+            var msgDate = msg.Timestamp.ToLocalTime().Date;
+
+            // Jika mesej pertama atau tarikh berbeza daripada mesej sebelumnya:
+            if (previousDate == null || msgDate != previousDate.Value)
+            {
+                msg.ShowDateHeader = true;
+                msg.DateHeaderDisplay = GetFriendlyDateString(msgDate);
+                previousDate = msgDate;
+            }
+            else
+            {
+                msg.ShowDateHeader = false;
+            }
+        }
+    }
+
+    private string GetFriendlyDateString(DateTime date)
+    {
+        if (date == DateTime.Today)
+            return "Today";
+        if (date == DateTime.Today.AddDays(-1))
+            return "Yesterday";
+
+        // Contoh: "23 October 2026"
+        return date.ToString("dd MMMM yyyy");
     }
 }

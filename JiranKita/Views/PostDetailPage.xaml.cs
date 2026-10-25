@@ -35,7 +35,7 @@ public partial class PostDetailPage : ContentPage
 
         try
         {
-            var commentList = await fbService.GetCommentsAsync(Post.FirebaseKey);
+            var commentList = await fbService.GetCommentsAsync(AppSession.CurrentCommunityCode, Post.FirebaseKey);
             Comments.Clear();
             foreach (var comment in commentList)
             {
@@ -65,7 +65,7 @@ public partial class PostDetailPage : ContentPage
 
         try
         {
-            await fbService.AddCommentAsync(Post.FirebaseKey, newComment);
+            await fbService.AddCommentAsync(AppSession.CurrentCommunityCode, Post.FirebaseKey, newComment);
             Comments.Add(newComment);
         }
         catch (Exception error)

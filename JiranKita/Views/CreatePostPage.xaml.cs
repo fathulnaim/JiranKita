@@ -116,7 +116,8 @@ public partial class CreatePostPage : ContentPage
 
         try
         {
-            await fbService.CreatePostAsync(newPost);
+            // Hantar pos baharu terus masuk ke bubble komuniti semasa!
+            await fbService.CreatePostAsync(AppSession.CurrentCommunityCode, newPost);
             await DisplayAlert("Berjaya!", "Hantaran anda telah diterbitkan kepada komuniti.", "OK");
             await Shell.Current.GoToAsync("..");
         }
