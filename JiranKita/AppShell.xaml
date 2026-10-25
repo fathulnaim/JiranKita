@@ -38,7 +38,7 @@
         <!-- Tab 3: Chat & AI (GUNA ChatInboxPage SEBAGAI SENARAI INBOX!) -->
         <ShellContent
             Title="Chat &amp; AI"
-            Icon="icon_chat.svg"
+            Icon="chat.svg"
             Route="ChatInboxPage"
             ContentTemplate="{DataTemplate views:ChatInboxPage}" />
 

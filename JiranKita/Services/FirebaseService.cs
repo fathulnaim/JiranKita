@@ -249,4 +249,37 @@ public class FirebaseService
             .Child(firebaseKey)
             .DeleteAsync();
     }
+
+    // ==========================================
+    // TARIK AMARAN BENCANA/KESELAMATAN DARI BUBBLE
+    // ==========================================
+    public async Task<List<AlertModel>> GetCommunityAlertsAsync(string communityCode)
+    {
+        try
+        {
+            var alertList = await _firebaseClient
+                .Child("Communities")
+                .Child(communityCode.ToUpper())
+                .Child("Alerts")
+                .OnceAsync<AlertModel>();
+
+            var results = new List<AlertModel>();
+            foreach (var item in alertList)
+            {
+                var alert = item.Object;
+                alert.FirebaseKey = item.Key;
+
+                // Hanya ambil amaran yang aktif
+                if (alert.IsActive)
+                {
+                    results.Add(alert);
+                }
+            }
+            return results;
+        }
+        catch
+        {
+            return new List<AlertModel>();
+        }
+    }
 }
