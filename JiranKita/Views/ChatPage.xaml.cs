@@ -5,11 +5,19 @@ using JiranKita.Services;
 
 namespace JiranKita.Views;
 
+[QueryProperty(nameof(TargetRoomId), "RoomId")]
+[QueryProperty(nameof(TargetUserName), "TargetName")]
+[QueryProperty(nameof(TargetUserUnit), "TargetUnit")]
 public partial class ChatPage : ContentPage
 {
     private readonly FirebaseService servisFirebase = new FirebaseService();
     private IDisposable? sambunganLiveChat;
     private CancellationTokenSource? pemasaTekanLama;
+
+    // Parameter jika ini adalah 1-on-1 chat
+    public string TargetRoomId { get; set; } = "Group"; // Default: Group Chat
+    public string TargetUserName { get; set; } = string.Empty;
+    public string TargetUserUnit { get; set; } = string.Empty;
 
     public ObservableCollection<ChatMessage> SenaraiMesej { get; set; } = new ObservableCollection<ChatMessage>();
 
@@ -23,47 +31,55 @@ public partial class ChatPage : ContentPage
     {
         base.OnAppearing();
 
-        // 1. Ambil kod bubble komuniti aktif (cth: KAJ82 atau BGI99)
-        string activeCode = AppSession.CurrentCommunityCode;
-        LblCommunityTitle.Text = AppSession.CurrentCommunityName;
-        LblBubbleCode.Text = $"Bubble: {activeCode} ·";
-
-        // 2. Kosongkan senarai lama supaya mesej komuniti lain tak terselit
+        string communityCode = AppSession.CurrentCommunityCode;
         SenaraiMesej.Clear();
         sambunganLiveChat?.Dispose();
 
-        // 3. Dengar mesej HANYA dari bubble komuniti ini
-        sambunganLiveChat = servisFirebase.SubscribeToMessages(activeCode, (FirebaseEvent<ChatMessage> peristiwa) =>
+        // JIKA INI CHAT 1-ON-1 DENGAN JIRAN SPESIFIK
+        if (!string.IsNullOrEmpty(TargetUserName) && TargetRoomId != "Group")
         {
-            MainThread.BeginInvokeOnMainThread(() =>
+            LblCommunityTitle.Text = TargetUserName;
+            LblBubbleCode.Text = $"{TargetUserUnit} · Direct Chat 🔒";
+
+            // Dengar mesej dari bilik 1-on-1
+            sambunganLiveChat = servisFirebase.SubscribeToDirectMessages(communityCode, TargetRoomId, HandleIncomingMessage);
+        }
+        // JIKA INI GROUP CHAT KOMUNITI BIASA
+        else
+        {
+            LblCommunityTitle.Text = AppSession.CurrentCommunityName;
+            LblBubbleCode.Text = $"Bubble: {communityCode} · Community Group";
+
+            // Dengar mesej dari Group Chat
+            sambunganLiveChat = servisFirebase.SubscribeToMessages(communityCode, HandleIncomingMessage);
+        }
+    }
+
+    private void HandleIncomingMessage(FirebaseEvent<ChatMessage> peristiwa)
+    {
+        MainThread.BeginInvokeOnMainThread(() =>
+        {
+            if (peristiwa.EventType == FirebaseEventType.Delete)
             {
-                // JIKA MESEJ DIPADAM:
-                if (peristiwa.EventType == FirebaseEventType.Delete)
+                var mesejBuang = SenaraiMesej.FirstOrDefault(m => m.FirebaseKey == peristiwa.Key);
+                if (mesejBuang != null)
                 {
-                    var mesejBuang = SenaraiMesej.FirstOrDefault(m => m.FirebaseKey == peristiwa.Key);
-                    if (mesejBuang != null)
-                    {
-                        SenaraiMesej.Remove(mesejBuang);
-                        UpdateDateHeaders();
-                    }
+                    SenaraiMesej.Remove(mesejBuang);
+                    UpdateDateHeaders();
                 }
-                // JIKA MESEJ MASUK:
-                else if (peristiwa.Object != null)
+            }
+            else if (peristiwa.Object != null)
+            {
+                ChatMessage mesejMasuk = peristiwa.Object;
+                mesejMasuk.FirebaseKey = peristiwa.Key;
+                mesejMasuk.IsSelf = (mesejMasuk.SenderName == AppSession.CurrentUserName);
+
+                if (!SenaraiMesej.Any(m => m.FirebaseKey == peristiwa.Key))
                 {
-                    ChatMessage mesejMasuk = peristiwa.Object;
-                    mesejMasuk.FirebaseKey = peristiwa.Key;
-                    mesejMasuk.IsSelf = (mesejMasuk.SenderName == AppSession.CurrentUserName);
-
-                    // Semak jika mesej belum ada dalam senarai
-                    if (!SenaraiMesej.Any(m => m.FirebaseKey == peristiwa.Key))
-                    {
-                        // SELESAIKAN MISTERI 1: SUSUN MENGIKUT WAKTU (Kronologi Tepat!)
-                        InsertMessageSorted(mesejMasuk);
-
-                        MessagesCollectionView.ScrollTo(mesejMasuk, position: ScrollToPosition.End, animate: true);
-                    }
+                    InsertMessageSorted(mesejMasuk);
+                    MessagesCollectionView.ScrollTo(mesejMasuk, position: ScrollToPosition.End, animate: true);
                 }
-            });
+            }
         });
     }
 
@@ -73,24 +89,40 @@ public partial class ChatPage : ContentPage
         sambunganLiveChat?.Dispose();
     }
 
-    // ==============================================================
-    // FUNGSI PENYELAMAT: Susun mesej supaya soalan sentiasa di atas jawapan!
-    // ==============================================================
     private void InsertMessageSorted(ChatMessage msg)
     {
         int index = 0;
-        // Cari kedudukan yang betul mengikut waktu
         while (index < SenaraiMesej.Count && SenaraiMesej[index].Timestamp <= msg.Timestamp)
         {
             index++;
         }
         SenaraiMesej.Insert(index, msg);
-
         UpdateDateHeaders();
     }
 
+    private void UpdateDateHeaders()
+    {
+        DateTime? previousDate = null;
+        for (int i = 0; i < SenaraiMesej.Count; i++)
+        {
+            var msg = SenaraiMesej[i];
+            var msgDate = msg.Timestamp.ToLocalTime().Date;
+
+            if (previousDate == null || msgDate != previousDate.Value)
+            {
+                msg.ShowDateHeader = true;
+                msg.DateHeaderDisplay = msgDate == DateTime.Today ? "Today" : msgDate == DateTime.Today.AddDays(-1) ? "Yesterday" : msgDate.ToString("dd MMMM yyyy");
+                previousDate = msgDate;
+            }
+            else
+            {
+                msg.ShowDateHeader = false;
+            }
+        }
+    }
+
     // ==========================================
-    // HANTAR MESEJ HANYA KE BUBBLE KOMUNITI AKTIF
+    // HANTAR MESEJ (AUTO DETECT GROUP ATAU 1-ON-1)
     // ==========================================
     private async void OnSendMessageClicked(object sender, EventArgs e)
     {
@@ -104,14 +136,22 @@ public partial class ChatPage : ContentPage
             SenderName = AppSession.CurrentUserName,
             SenderUnit = AppSession.CurrentUserUnit,
             MessageText = text,
-            Timestamp = DateTime.Now, // Guna UtcNow untuk elak isu beza jam
+            Timestamp = DateTime.Now,
             IsSelf = true
         };
 
         try
         {
-            // SELESAIKAN MISTERI 2: Hantar ke bubble aktif sahaja!
-            await servisFirebase.SendMessageAsync(AppSession.CurrentCommunityCode, newMsg);
+            // Jika 1-on-1: Hantar ke bilik peribadi
+            if (!string.IsNullOrEmpty(TargetUserName) && TargetRoomId != "Group")
+            {
+                await servisFirebase.SendDirectMessageAsync(AppSession.CurrentCommunityCode, TargetRoomId, newMsg);
+            }
+            // Jika Group: Hantar ke group taman
+            else
+            {
+                await servisFirebase.SendMessageAsync(AppSession.CurrentCommunityCode, newMsg);
+            }
         }
         catch (Exception error)
         {
@@ -119,6 +159,7 @@ public partial class ChatPage : ContentPage
         }
     }
 
+    // PADAM MESEJ (WHATSAPP STYLE)
     private async void OnMessagePointerPressed(object sender, PointerEventArgs e)
     {
         pemasaTekanLama = new CancellationTokenSource();
@@ -143,7 +184,14 @@ public partial class ChatPage : ContentPage
                 }
                 else if (pilihan == "Padam Untuk Semua 🗑️")
                 {
-                    await servisFirebase.DeleteMessageAsync(AppSession.CurrentCommunityCode, msg.FirebaseKey);
+                    if (!string.IsNullOrEmpty(TargetUserName) && TargetRoomId != "Group")
+                    {
+                        await servisFirebase.DeleteDirectMessageAsync(AppSession.CurrentCommunityCode, TargetRoomId, msg.FirebaseKey);
+                    }
+                    else
+                    {
+                        await servisFirebase.DeleteMessageAsync(AppSession.CurrentCommunityCode, msg.FirebaseKey);
+                    }
                 }
             });
         }
@@ -158,42 +206,5 @@ public partial class ChatPage : ContentPage
     private async void OnRobotClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.JiranBotPage));
-    }
-
-    // ==============================================================
-    // LOGIK WHATSAPP: Kira dan paparkan pembahagi tarikh jika hari bertukar
-    // ==============================================================
-    private void UpdateDateHeaders()
-    {
-        DateTime? previousDate = null;
-
-        for (int i = 0; i < SenaraiMesej.Count; i++)
-        {
-            var msg = SenaraiMesej[i];
-            var msgDate = msg.Timestamp.ToLocalTime().Date;
-
-            // Jika mesej pertama atau tarikh berbeza daripada mesej sebelumnya:
-            if (previousDate == null || msgDate != previousDate.Value)
-            {
-                msg.ShowDateHeader = true;
-                msg.DateHeaderDisplay = GetFriendlyDateString(msgDate);
-                previousDate = msgDate;
-            }
-            else
-            {
-                msg.ShowDateHeader = false;
-            }
-        }
-    }
-
-    private string GetFriendlyDateString(DateTime date)
-    {
-        if (date == DateTime.Today)
-            return "Today";
-        if (date == DateTime.Today.AddDays(-1))
-            return "Yesterday";
-
-        // Contoh: "23 October 2026"
-        return date.ToString("dd MMMM yyyy");
     }
 }

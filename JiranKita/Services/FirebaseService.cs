@@ -204,4 +204,49 @@ public class FirebaseService
         var posts = await GetAllPostsAsync(communityCode);
         return posts.Take(limit).ToList();
     }
+
+    // ==========================================
+    // FUNGSI 1-ON-1 DIRECT CHAT (WHATSAPP STYLE)
+    // ==========================================
+
+    // 1. HANTAR MESEJ 1-ON-1
+    public async Task SendDirectMessageAsync(string communityCode, string roomId, ChatMessage message)
+    {
+        // Simpan mesej ke bilik peribadi di Firebase
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("DirectChats")
+            .Child(roomId)
+            .Child("Messages")
+            .PostAsync(message);
+    }
+
+    // 2. DENGAR MESEJ 1-ON-1 SECARA LIVE
+    public IDisposable SubscribeToDirectMessages(string communityCode, string roomId, Action<FirebaseEvent<ChatMessage>> onEventReceived)
+    {
+        return _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("DirectChats")
+            .Child(roomId)
+            .Child("Messages")
+            .AsObservable<ChatMessage>()
+            .Subscribe(onEventReceived);
+    }
+
+    // 3. PADAM MESEJ 1-ON-1
+    public async Task DeleteDirectMessageAsync(string communityCode, string roomId, string firebaseKey)
+    {
+        if (string.IsNullOrEmpty(firebaseKey)) return;
+
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("DirectChats")
+            .Child(roomId)
+            .Child("Messages")
+            .Child(firebaseKey)
+            .DeleteAsync();
+    }
 }

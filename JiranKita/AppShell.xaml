@@ -34,14 +34,15 @@
             Icon="feed.svg"
             Route="FeedPage"
             ContentTemplate="{DataTemplate views:FeedPage}" />
-        
+
+        <!-- Tab 3: Chat & AI (GUNA ChatInboxPage SEBAGAI SENARAI INBOX!) -->
         <ShellContent
             Title="Chat &amp; AI"
-            Icon="chat.svg"
-            Route="ChatPage"
-            ContentTemplate="{DataTemplate views:ChatPage}" />
-        
-         <ShellContent
+            Icon="icon_chat.svg"
+            Route="ChatInboxPage"
+            ContentTemplate="{DataTemplate views:ChatInboxPage}" />
+
+        <ShellContent
             Title="Alerts"
             Icon="alert.svg"
             Route="AlertsPage"

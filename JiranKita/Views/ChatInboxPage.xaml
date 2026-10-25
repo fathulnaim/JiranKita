@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JiranKita.Views.ChatInboxPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="True">
+
+    <Grid RowDefinitions="Auto, *">
+
+        <!-- 1. Header Atas -->
+        <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
+            <Grid ColumnDefinitions="*, Auto">
+                <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
+                    <Label Text="NEIGHBOURHOOD CHATS" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" />
+                    <!-- [AppSession] -->
+                    <Label x:Name="LblCommunitySub" Text="Taman Seri Kembangan" FontSize="10" TextColor="#78716C" />
+                </VerticalStackLayout>
+
+                <!-- Ikon Robot JiranBot -->
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F3E8FF" Stroke="#E9D5FF" HeightRequest="36" WidthRequest="36">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRobotClicked" />
+                    </Border.GestureRecognizers>
+                    <Label Text="🤖" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 2. Senarai Perbualan (Scrollable) -->
+        <ScrollView Grid.Row="1" Padding="14">
+            <VerticalStackLayout Spacing="14">
+
+                <!-- A. GROUP CHAT RASMI TAMAN (PIN DI ATAS SEKALI) -->
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="COMMUNITY GROUP" FontSize="10" FontAttributes="Bold" TextColor="#78716C" CharacterSpacing="1" />
+
+                    <Border StrokeShape="RoundRectangle 16" Stroke="#A7F3D0" BackgroundColor="#ECFDF5" Padding="12">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnOpenGroupChatClicked" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                            <!-- Avatar Group -->
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 14" BackgroundColor="#047857" HeightRequest="44" WidthRequest="44">
+                                <Label Text="🏢" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label x:Name="LblGroupName" Text="Taman Seri Kembangan" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" />
+                                <Label Text="Uncle Lim: Anyone experiencing low water pressure?" FontSize="11" TextColor="#57534E" LineBreakMode="TailTruncation" />
+                            </VerticalStackLayout>
+
+                            <Border Grid.Column="2" StrokeShape="RoundRectangle 8" BackgroundColor="#047857" Padding="6, 2" VerticalOptions="Center">
+                                <Label Text="LIVE" FontSize="9" FontAttributes="Bold" TextColor="White" />
+                            </Border>
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- B. SENARAI CHAT PERIBADI 1-ON-1 (DIRECT MESSAGES) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="DIRECT MESSAGES (1-ON-1)" FontSize="10" FontAttributes="Bold" TextColor="#78716C" CharacterSpacing="1" />
+
+                    <!-- Chat 1: Puan Aisyah -->
+                    <Border StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="12">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnOpenAisyahChatClicked" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#065F46" HeightRequest="40" WidthRequest="40">
+                                <Label Text="PA" TextColor="White" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="Puan Aisyah (Unit B-12)" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" />
+                                <Label Text="Tap to view private messages..." FontSize="11" TextColor="#78716C" LineBreakMode="TailTruncation" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="2" Text="➔" FontSize="12" TextColor="#A8A29E" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Chat 2: Haris -->
+                    <Border StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="12">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnOpenHarisChatClicked" />
+                        </Border.GestureRecognizers>
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                            <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#0369A1" HeightRequest="40" WidthRequest="40">
+                                <Label Text="HB" TextColor="White" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                            </Border>
+
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="Haris (Unit B-08)" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" />
+                                <Label Text="Tap to view private messages..." FontSize="11" TextColor="#78716C" LineBreakMode="TailTruncation" />
+                            </VerticalStackLayout>
+
+                            <Label Grid.Column="2" Text="➔" FontSize="12" TextColor="#A8A29E" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+    </Grid>
+
+</ContentPage>

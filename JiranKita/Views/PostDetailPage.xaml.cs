@@ -76,13 +76,34 @@ public partial class PostDetailPage : ContentPage
 
     private async void OnContactOwnerClicked(object sender, EventArgs e)
     {
-        if (PhoneDialer.Default.IsSupported)
+        string choice = await DisplayActionSheet(
+            $"Hubungi {Post.AuthorName}",
+            "Batal",
+            null,
+            "💬 Mesej Peribadi (1-on-1 Chat)",
+            "📞 Panggilan Telefon Rasmi"
+        );
+
+        if (choice == "💬 Mesej Peribadi (1-on-1 Chat)")
         {
-            PhoneDialer.Default.Open("+60123456789");
+            string directRoomId = AppSession.GetDirectRoomId(AppSession.CurrentUserName, Post.AuthorName);
+
+            var navParams = new Dictionary<string, object>
+            {
+                { "RoomId", directRoomId },
+                { "TargetName", Post.AuthorName },
+                { "TargetUnit", Post.AuthorUnit }
+            };
+
+            // SELESAI CRASH: Lompat ke ChatRoomPage!
+            await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
         }
-        else
+        else if (choice == "📞 Panggilan Telefon Rasmi")
         {
-            await DisplayAlert("Hubungi", "Panggilan ke: +60 12-345 6789", "OK");
+            if (PhoneDialer.Default.IsSupported)
+            {
+                PhoneDialer.Default.Open("+60123456789");
+            }
         }
     }
 }

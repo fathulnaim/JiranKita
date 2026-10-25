@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:JiranKita.Controls"
+             xmlns:models="clr-namespace:JiranKita.Models"
+             x:Class="JiranKita.Views.ChatRoomPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- 1. HEADER BILIK SEMBANG (ADA BUTANG BACK) -->
+        <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="14, 10">
+            <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
+                <controls:BackButton Grid.Column="0" />
+
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                    <Label x:Name="LblTitle" Text="Chat" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" />
+                    <Label x:Name="LblSubtitle" Text="Loading..." FontSize="10" TextColor="#78716C" />
+                </VerticalStackLayout>
+
+                <Border Grid.Column="2" StrokeShape="RoundRectangle 10" BackgroundColor="#F3E8FF" Stroke="#E9D5FF" HeightRequest="36" WidthRequest="36">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnRobotClicked" />
+                    </Border.GestureRecognizers>
+                    <Label Text="🤖" FontSize="18" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- 2. SENARAI MESEJ BUIH (WHATSAPP STYLE) -->
+        <CollectionView x:Name="MessagesCollectionView"
+                        Grid.Row="1"
+                        SelectionMode="None"
+                        Margin="12, 6">
+
+            <CollectionView.EmptyView>
+                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="6" Padding="20">
+                    <Label Text="💬" FontSize="36" HorizontalOptions="Center" />
+                    <Label Text="Belum ada mesej di sini." FontSize="12" FontAttributes="Bold" TextColor="#78716C" HorizontalOptions="Center" />
+                    <Label Text="Hantarkan mesej pertama anda!" FontSize="11" TextColor="#A8A29E" HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:ChatMessage">
+                    <VerticalStackLayout Spacing="4" Margin="0, 2">
+
+                        <!-- Pembahagi Tarikh WhatsApp -->
+                        <Border StrokeShape="RoundRectangle 10" BackgroundColor="#E7E5E4" Stroke="Transparent" Padding="12, 4" HorizontalOptions="Center" Margin="0, 6, 0, 4" IsVisible="{Binding ShowDateHeader}">
+                            <Label Text="{Binding DateHeaderDisplay}" FontSize="10" FontAttributes="Bold" TextColor="#57534E" />
+                        </Border>
+
+                        <Grid>
+                            <!-- Mesej Masuk Kiri (Putih) -->
+                            <VerticalStackLayout HorizontalOptions="Start" MaximumWidthRequest="280" Spacing="2" IsVisible="{Binding IsNotSelf}">
+                                <Label Text="{Binding SenderName}" FontSize="10" FontAttributes="Bold" TextColor="#78716C" Margin="4, 0, 0, 0" />
+                                <Border StrokeShape="RoundRectangle 16 16 16 0" Stroke="#E7E5E4" BackgroundColor="White" Padding="12, 9">
+                                    <Label Text="{Binding MessageText}" FontSize="12" TextColor="#1C1917" LineHeight="1.2" />
+                                </Border>
+                                <Label Text="{Binding Timestamp, StringFormat='{0:hh:mm tt}'}" FontSize="9" TextColor="#A8A29E" Margin="4, 0, 0, 0" />
+                            </VerticalStackLayout>
+
+                            <!-- Mesej Keluar Kanan (Hijau) -->
+                            <VerticalStackLayout HorizontalOptions="End" MaximumWidthRequest="280" Spacing="2" IsVisible="{Binding IsSelf}">
+                                <Border StrokeShape="RoundRectangle 16 16 0 16" BackgroundColor="#047857" Stroke="Transparent" Padding="12, 9">
+                                    <Border.GestureRecognizers>
+                                        <PointerGestureRecognizer PointerPressed="OnMessagePointerPressed" PointerReleased="OnMessagePointerReleased" PointerExited="OnMessagePointerReleased" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="{Binding MessageText}" FontSize="12" TextColor="White" LineHeight="1.2" />
+                                </Border>
+                                <Label Text="{Binding Timestamp, StringFormat='{0:hh:mm tt}'}" FontSize="9" TextColor="#A8A29E" HorizontalOptions="End" Margin="0, 0, 4, 0" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                    </VerticalStackLayout>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- 3. KOTAK INPUT TAIP MESEJ -->
+        <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="12, 8">
+            <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
+                    <Entry x:Name="TxtChatMessage" Placeholder="Type message..." PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" />
+                </Border>
+                <Border Grid.Column="1" StrokeShape="RoundRectangle 12" BackgroundColor="#047857" HeightRequest="38" WidthRequest="38">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnSendMessageClicked" />
+                    </Border.GestureRecognizers>
+                    <Label Text="➤" FontSize="14" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" />
+                </Border>
+            </Grid>
+        </Border>
+
+    </Grid>
+
+</ContentPage>
