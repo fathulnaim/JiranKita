@@ -20,7 +20,7 @@
                         FontSize="12" 
                         HeightRequest="36" />
                 <Label Grid.Column="1" Text="CREATE NEW POST" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" HorizontalOptions="Center" VerticalOptions="Center" />
-                <BoxView Grid.Column="2" WidthRequest="48" Color="Transparent" />
+                <BoxView Grid.Column="2" WidthRequest="48" Color="white" />
             </Grid>
         </Border>
 

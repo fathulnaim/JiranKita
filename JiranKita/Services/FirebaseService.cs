@@ -178,4 +178,30 @@ public class FirebaseService
         }
         return null;
     }
+
+    // --- TAMBAH 2 FUNGSI INI DALAM KELAS FirebaseService.cs ---
+
+    // 1. TARIK AMARAN KECEMASAN (URGENT ALERT) IKUT BUBBLE
+    public async Task<AlertModel?> GetUrgentAlertAsync(string communityCode)
+    {
+        try
+        {
+            return await _firebaseClient
+                .Child("Communities")
+                .Child(communityCode.ToUpper())
+                .Child("UrgentAlert")
+                .OnceSingleAsync<AlertModel>();
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    // 2. TARIK 2 POS PALING TERKINI UNTUK 'NEIGHBOURHOOD PULSE'
+    public async Task<List<PostModel>> GetPulsePostsAsync(string communityCode, int limit = 2)
+    {
+        var posts = await GetAllPostsAsync(communityCode);
+        return posts.Take(limit).ToList();
+    }
 }
