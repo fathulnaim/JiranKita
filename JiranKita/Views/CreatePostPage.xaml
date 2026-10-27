@@ -8,7 +8,7 @@
 
     <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- 1. Header (Butang Cancel Berfungsi) -->
+        <!-- ================= 1. HEADER SECTION ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="12, 10">
             <Grid ColumnDefinitions="Auto, *, Auto">
                 <Button Grid.Column="0" 
@@ -20,15 +20,15 @@
                         FontSize="12" 
                         HeightRequest="36" />
                 <Label Grid.Column="1" Text="CREATE NEW POST" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" HorizontalOptions="Center" VerticalOptions="Center" />
-                <BoxView Grid.Column="2" WidthRequest="48" Color="white" />
+                <BoxView Grid.Column="2" WidthRequest="48" Color="White" />
             </Grid>
         </Border>
 
-        <!-- 2. Borang Input (Scrollable) -->
+        <!-- ================= 2. INPUT FORM (SCROLLABLE) ================= -->
         <ScrollView Grid.Row="1" Padding="16">
             <VerticalStackLayout Spacing="16">
 
-                <!-- 1. PILIH KATEGORI (BUTANG RESPONSIF) -->
+                <!-- Category Selection Bar -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Choose Category *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
@@ -42,13 +42,13 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <!-- 2. TAJUK (KOSONG DENGAN PLACEHOLDER) -->
+                <!-- Post Title Input -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Post Title *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                     <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White" Padding="12, 2">
                         <Entry x:Name="TxtTitle" 
                                Text="" 
-                               Placeholder="Contoh: Kucing Hilang / Lampu Jalan Rosak" 
+                               Placeholder="Example: Lost Cat / Broken Street Light" 
                                PlaceholderColor="#A8A29E" 
                                MaxLength="70" 
                                FontSize="12" 
@@ -58,13 +58,13 @@
                     <Label x:Name="LblTitleCount" Text="0 / 70 characters" FontSize="10" TextColor="#78716C" HorizontalOptions="End" />
                 </VerticalStackLayout>
 
-                <!-- 3. DESKRIPSI (KOSONG DENGAN PLACEHOLDER) -->
+                <!-- Detailed Description Input -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Detailed Description *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                     <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White" Padding="12">
                         <Editor x:Name="TxtDescription"
                                 Text=""
-                                Placeholder="Huraikan maklumat aduan atau situasi anda di sini..." 
+                                Placeholder="Describe your issue, report, or situation in detail..." 
                                 PlaceholderColor="#A8A29E"
                                 HeightRequest="95" 
                                 FontSize="12" 
@@ -72,11 +72,11 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- 4. LAMPIRAN GAMBAR & PRATONTON -->
+                <!-- Photo Attachments & Image Preview Card -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Attach Photo" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                     <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
-                        <!-- Kamera -->
+                        <!-- Camera Picker -->
                         <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" StrokeDashArray="4, 2" BackgroundColor="White" HeightRequest="64">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnCameraClicked" />
@@ -87,7 +87,7 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <!-- Galeri -->
+                        <!-- Gallery Picker -->
                         <Border Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" StrokeDashArray="4, 2" BackgroundColor="White" HeightRequest="64">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnGalleryClicked" />
@@ -98,7 +98,7 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <!-- KOTAK PRATONTON GAMBAR SEBENAR (Muncul bila ada gambar) -->
+                        <!-- Image Preview Box (Displays when photo is selected) -->
                         <Grid x:Name="AttachedPhotoCard" Grid.Column="2" HeightRequest="64" IsVisible="False">
                             <Border StrokeShape="RoundRectangle 12" Stroke="#047857" StrokeThickness="1.5" BackgroundColor="#F5F5F4" Padding="0">
                                 <Image x:Name="ImgPreview" Aspect="AspectFill" />
@@ -114,7 +114,7 @@
                     </Grid>
                 </VerticalStackLayout>
 
-                <!-- Lokasi (Kekal) -->
+                <!-- Location Selector Card -->
                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White" Padding="12, 10">
                     <Grid ColumnDefinitions="*, Auto">
                         <Label Grid.Column="0" Text="📍 Location: Block C Lobby" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" VerticalOptions="Center" />
@@ -122,7 +122,7 @@
                     </Grid>
                 </Border>
 
-                <!-- 5. CHECKBOX BERFUNGSI -->
+                <!-- Optional Toggles -->
                 <VerticalStackLayout Spacing="8">
                     <HorizontalStackLayout Spacing="8">
                         <CheckBox x:Name="ChkAllowContact" IsChecked="True" Color="#047857" />
@@ -137,11 +137,10 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Butang Publish -->
+        <!-- Publish Action Button -->
         <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 10">
             <Button Text="🚀 PUBLISH TO COMMUNITY" Clicked="OnPublishClicked" BackgroundColor="#047857" TextColor="White" FontAttributes="Bold" FontSize="12" CornerRadius="12" HeightRequest="48" />
         </Border>
 
     </Grid>
-
 </ContentPage>

@@ -10,102 +10,109 @@ namespace JiranKita.Views;
 [QueryProperty(nameof(TargetUserUnit), "TargetUnit")]
 public partial class ChatPage : ContentPage
 {
-    private readonly FirebaseService servisFirebase = new FirebaseService();
-    private IDisposable? sambunganLiveChat;
-    private CancellationTokenSource? pemasaTekanLama;
+    private readonly FirebaseService _firebaseService = new FirebaseService();
+    private IDisposable? _liveChatSubscription;
+    private CancellationTokenSource? _longPressTimer;
 
-    // Parameter jika ini adalah 1-on-1 chat
-    public string TargetRoomId { get; set; } = "Group"; // Default: Group Chat
+    // Parameters for 1-on-1 direct chat routing (Defaults to "Group")
+    public string TargetRoomId { get; set; } = "Group";
     public string TargetUserName { get; set; } = string.Empty;
     public string TargetUserUnit { get; set; } = string.Empty;
 
-    public ObservableCollection<ChatMessage> SenaraiMesej { get; set; } = new ObservableCollection<ChatMessage>();
+    // Observable collection bound to MessagesCollectionView for real-time UI updates
+    public ObservableCollection<ChatMessage> MessageList { get; set; } = new ObservableCollection<ChatMessage>();
 
+    // Constructor: Initializes XAML layout and binds collection to list view
     public ChatPage()
     {
         InitializeComponent();
-        MessagesCollectionView.ItemsSource = SenaraiMesej;
+        MessagesCollectionView.ItemsSource = MessageList;
     }
 
+    // Lifecycle hook: Sets up header title and subscribes to real-time Firebase chat streams (Direct vs Group)
     protected override void OnAppearing()
     {
         base.OnAppearing();
 
         string communityCode = AppSession.CurrentCommunityCode;
-        SenaraiMesej.Clear();
-        sambunganLiveChat?.Dispose();
+        MessageList.Clear();
+        _liveChatSubscription?.Dispose();
 
-        // JIKA INI CHAT 1-ON-1 DENGAN JIRAN SPESIFIK
+        // Check if current session is a 1-on-1 direct message room
         if (!string.IsNullOrEmpty(TargetUserName) && TargetRoomId != "Group")
         {
             LblCommunityTitle.Text = TargetUserName;
             LblBubbleCode.Text = $"{TargetUserUnit} · Direct Chat 🔒";
 
-            // Dengar mesej dari bilik 1-on-1
-            sambunganLiveChat = servisFirebase.SubscribeToDirectMessages(communityCode, TargetRoomId, HandleIncomingMessage);
+            // Subscribe to private direct message room
+            _liveChatSubscription = _firebaseService.SubscribeToDirectMessages(communityCode, TargetRoomId, HandleIncomingMessage);
         }
-        // JIKA INI GROUP CHAT KOMUNITI BIASA
+        // Fallback to precinct public community group chat
         else
         {
             LblCommunityTitle.Text = AppSession.CurrentCommunityName;
             LblBubbleCode.Text = $"Bubble: {communityCode} · Community Group";
 
-            // Dengar mesej dari Group Chat
-            sambunganLiveChat = servisFirebase.SubscribeToMessages(communityCode, HandleIncomingMessage);
+            // Subscribe to public community group chat
+            _liveChatSubscription = _firebaseService.SubscribeToMessages(communityCode, HandleIncomingMessage);
         }
     }
 
-    private void HandleIncomingMessage(FirebaseEvent<ChatMessage> peristiwa)
+    // Firebase WebSocket streaming callback: Listens for incoming insertions and deletions in real-time
+    private void HandleIncomingMessage(FirebaseEvent<ChatMessage> firebaseEvent)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
-            if (peristiwa.EventType == FirebaseEventType.Delete)
+            if (firebaseEvent.EventType == FirebaseEventType.Delete)
             {
-                var mesejBuang = SenaraiMesej.FirstOrDefault(m => m.FirebaseKey == peristiwa.Key);
-                if (mesejBuang != null)
+                var messageToDelete = MessageList.FirstOrDefault(m => m.FirebaseKey == firebaseEvent.Key);
+                if (messageToDelete != null)
                 {
-                    SenaraiMesej.Remove(mesejBuang);
+                    MessageList.Remove(messageToDelete);
                     UpdateDateHeaders();
                 }
             }
-            else if (peristiwa.Object != null)
+            else if (firebaseEvent.Object != null)
             {
-                ChatMessage mesejMasuk = peristiwa.Object;
-                mesejMasuk.FirebaseKey = peristiwa.Key;
-                mesejMasuk.IsSelf = (mesejMasuk.SenderName == AppSession.CurrentUserName);
+                ChatMessage incomingMsg = firebaseEvent.Object;
+                incomingMsg.FirebaseKey = firebaseEvent.Key;
+                incomingMsg.IsSelf = (incomingMsg.SenderName == AppSession.CurrentUserName);
 
-                if (!SenaraiMesej.Any(m => m.FirebaseKey == peristiwa.Key))
+                if (!MessageList.Any(m => m.FirebaseKey == firebaseEvent.Key))
                 {
-                    InsertMessageSorted(mesejMasuk);
-                    MessagesCollectionView.ScrollTo(mesejMasuk, position: ScrollToPosition.End, animate: true);
+                    InsertMessageSorted(incomingMsg);
+                    MessagesCollectionView.ScrollTo(incomingMsg, position: ScrollToPosition.End, animate: true);
                 }
             }
         });
     }
 
+    // Lifecycle hook: Unsubscribes active Firebase listener when navigating away to prevent memory leaks
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
-        sambunganLiveChat?.Dispose();
+        _liveChatSubscription?.Dispose();
     }
 
+    // In-memory insertion sorting: Places incoming message chronologically by timestamp
     private void InsertMessageSorted(ChatMessage msg)
     {
         int index = 0;
-        while (index < SenaraiMesej.Count && SenaraiMesej[index].Timestamp <= msg.Timestamp)
+        while (index < MessageList.Count && MessageList[index].Timestamp <= msg.Timestamp)
         {
             index++;
         }
-        SenaraiMesej.Insert(index, msg);
+        MessageList.Insert(index, msg);
         UpdateDateHeaders();
     }
 
+    // Dynamic date grouping: Evaluates adjacent message dates to toggle WhatsApp-style date headers ("Today", "Yesterday", or formatted date string)
     private void UpdateDateHeaders()
     {
         DateTime? previousDate = null;
-        for (int i = 0; i < SenaraiMesej.Count; i++)
+        for (int i = 0; i < MessageList.Count; i++)
         {
-            var msg = SenaraiMesej[i];
+            var msg = MessageList[i];
             var msgDate = msg.Timestamp.ToLocalTime().Date;
 
             if (previousDate == null || msgDate != previousDate.Value)
@@ -121,9 +128,7 @@ public partial class ChatPage : ContentPage
         }
     }
 
-    // ==========================================
-    // HANTAR MESEJ (AUTO DETECT GROUP ATAU 1-ON-1)
-    // ==========================================
+    // Action handler: Sends text message via Firebase (routes to either Direct or Group chat room)
     private async void OnSendMessageClicked(object sender, EventArgs e)
     {
         string text = TxtChatMessage.Text?.Trim() ?? "";
@@ -142,55 +147,55 @@ public partial class ChatPage : ContentPage
 
         try
         {
-            // Jika 1-on-1: Hantar ke bilik peribadi
+            // Direct message room routing
             if (!string.IsNullOrEmpty(TargetUserName) && TargetRoomId != "Group")
             {
-                await servisFirebase.SendDirectMessageAsync(AppSession.CurrentCommunityCode, TargetRoomId, newMsg);
+                await _firebaseService.SendDirectMessageAsync(AppSession.CurrentCommunityCode, TargetRoomId, newMsg);
             }
-            // Jika Group: Hantar ke group taman
+            // Public group room routing
             else
             {
-                await servisFirebase.SendMessageAsync(AppSession.CurrentCommunityCode, newMsg);
+                await _firebaseService.SendMessageAsync(AppSession.CurrentCommunityCode, newMsg);
             }
         }
         catch (Exception error)
         {
-            await DisplayAlert("Ralat", $"Gagal hantar: {error.Message}", "OK");
+            await DisplayAlert("Error", $"Failed to send message: {error.Message}", "OK");
         }
     }
 
-    // PADAM MESEJ (WHATSAPP STYLE)
+    // Pointer gesture handler: Implements a 500ms long-press action sheet for copying or deleting messages
     private async void OnMessagePointerPressed(object sender, PointerEventArgs e)
     {
-        pemasaTekanLama = new CancellationTokenSource();
+        _longPressTimer = new CancellationTokenSource();
         Border? border = sender as Border;
         ChatMessage? msg = border?.BindingContext as ChatMessage;
         if (msg == null) return;
 
         try
         {
-            await Task.Delay(500, pemasaTekanLama.Token);
+            await Task.Delay(500, _longPressTimer.Token);
 
             MainThread.BeginInvokeOnMainThread(async () =>
             {
                 try { HapticFeedback.Default.Perform(HapticFeedbackType.LongPress); } catch { }
 
-                string pilihan = await DisplayActionSheet("Pilihan Mesej", "Batal", "Padam Untuk Semua 🗑️", "Salin Teks 📋");
+                string action = await DisplayActionSheet("Message Options", "Cancel", "Delete for Everyone 🗑️", "Copy Text 📋");
 
-                if (pilihan == "Salin Teks 📋")
+                if (action == "Copy Text 📋")
                 {
                     await Clipboard.Default.SetTextAsync(msg.MessageText);
-                    await DisplayAlert("Disalin", "Teks mesej disalin.", "OK");
+                    await DisplayAlert("Copied", "Message text copied to clipboard.", "OK");
                 }
-                else if (pilihan == "Padam Untuk Semua 🗑️")
+                else if (action == "Delete for Everyone 🗑️")
                 {
                     if (!string.IsNullOrEmpty(TargetUserName) && TargetRoomId != "Group")
                     {
-                        await servisFirebase.DeleteDirectMessageAsync(AppSession.CurrentCommunityCode, TargetRoomId, msg.FirebaseKey);
+                        await _firebaseService.DeleteDirectMessageAsync(AppSession.CurrentCommunityCode, TargetRoomId, msg.FirebaseKey);
                     }
                     else
                     {
-                        await servisFirebase.DeleteMessageAsync(AppSession.CurrentCommunityCode, msg.FirebaseKey);
+                        await _firebaseService.DeleteMessageAsync(AppSession.CurrentCommunityCode, msg.FirebaseKey);
                     }
                 }
             });
@@ -198,11 +203,13 @@ public partial class ChatPage : ContentPage
         catch (TaskCanceledException) { }
     }
 
+    // Pointer gesture handler: Cancels long-press timer if touch is released early
     private void OnMessagePointerReleased(object sender, PointerEventArgs e)
     {
-        pemasaTekanLama?.Cancel();
+        _longPressTimer?.Cancel();
     }
 
+    // Navigation handler: Launches JiranBot AI Assistant page
     private async void OnRobotClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.JiranBotPage));

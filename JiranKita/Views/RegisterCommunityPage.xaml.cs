@@ -5,15 +5,17 @@ namespace JiranKita.Views;
 
 public partial class RegisterCommunityPage : ContentPage
 {
-    // Simpan pautan QR dan kod jemputan semasa
+    // Caches generated QR Code URL and 5-digit community invite code
     private string _currentQrUrl = string.Empty;
     private string _currentInviteCode = string.Empty;
 
+    // Constructor: Initializes XAML layout components
     public RegisterCommunityPage()
     {
         InitializeComponent();
     }
 
+    // Media picker handler: Selects JMB certificate image/document and updates label
     private async void OnUploadCertificateClicked(object sender, EventArgs e)
     {
         FileResult file = await MediaPicker.Default.PickPhotoAsync();
@@ -23,22 +25,28 @@ public partial class RegisterCommunityPage : ContentPage
         }
     }
 
-    // ==========================================
-    // 1. HANTAR PENDAFTARAN KOMUNITI KE FIREBASE
-    // ==========================================
+    // ==============================================================
+    // 1. COMMUNITY REGISTRATION & FIREBASE PERSISTENCE
+    // ==============================================================
     private async void OnSubmitCommunityClicked(object sender, EventArgs e)
     {
+        // 1. Semak borang
         if (string.IsNullOrWhiteSpace(TxtCommunityName.Text) || string.IsNullOrWhiteSpace(TxtCobNumber.Text))
         {
-            await DisplayAlert("Ralat", "Sila lengkapkan nama komuniti dan nombor pendaftaran COB.", "OK");
+            await DisplayAlert("Error", "Please fill in official community name and COB registration number.", "OK");
             return;
         }
 
-        // 1. Jana kod 5-digit rawak (cth: KAJ82)
+        // 2. Jana kod 5-digit rawak (cth: KAJ82)
         string generatedInviteCode = GenerateRandomCode(5);
+
+        // 3. JANA LINK URL QR CODE LEBIH AWAL DI SINI:
+        _currentInviteCode = generatedInviteCode;
+        _currentQrUrl = $"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={generatedInviteCode}";
 
         int.TryParse(TxtTotalUnits.Text?.Trim(), out int unitsCount);
 
+        // 4. Masukkan QrCodeUrl ke dalam model yang akan dihantar ke DB
         var newCommunity = new CommunityModel
         {
             CommunityName = TxtCommunityName.Text?.Trim() ?? "",
@@ -50,70 +58,72 @@ public partial class RegisterCommunityPage : ContentPage
             RepPhone = TxtRepPhone.Text?.Trim() ?? "",
             CertificateFile = LblCertFileName.Text ?? "",
             InviteCode = generatedInviteCode,
-            IsApproved = false
+
+            // SIMPAN LINK QR INI KE DALAM FIREBASE:
+            QrCodeUrl = _currentQrUrl,
+
+            IsApproved = false,
+            CreatedAt = DateTime.Now
         };
 
         try
         {
-            // 2. Simpan ke Firebase
-            var fbService = new FirebaseService();
-            await fbService.RegisterCommunityAsync(newCommunity);
+            // 5. Hantar ke Firebase (Dahan 'Communities')
+            var firebaseService = new FirebaseService();
+            await firebaseService.RegisterCommunityAsync(newCommunity);
 
-            // 3. Simpan maklumat QR dan paparkan pop-up
-            _currentInviteCode = generatedInviteCode;
-            _currentQrUrl = $"https://api.qrserver.com/v1/create-qr-code/?size=300x300&data={generatedInviteCode}";
-
+            // 6. Paparkan pada imej pop-up skrin
             ImgGeneratedQr.Source = _currentQrUrl;
-            LblInviteCodeDisplay.Text = $"KOD: {generatedInviteCode}";
+            LblInviteCodeDisplay.Text = $"CODE: {generatedInviteCode}";
 
-            // Tunjukkan kad pop-up kejayaan
+            // Tunjukkan kad pop-up
             SuccessModal.IsVisible = true;
         }
         catch (Exception error)
         {
-            await DisplayAlert("Ralat Firebase", $"Gagal mendaftar: {error.Message}", "OK");
+            await DisplayAlert("Firebase Error", $"Failed to register community: {error.Message}", "OK");
         }
     }
 
-    // ==========================================
-    // 2. MUAT TURUN / SIMPAN QR KE GALERI TELEFON
-    // ==========================================
+    // ==============================================================
+    // 2. DOWNLOAD & SHARE QR CODE TO GALLERY / MESSAGING
+    // ==============================================================
     private async void OnDownloadQrClicked(object sender, EventArgs e)
     {
         if (string.IsNullOrEmpty(_currentQrUrl)) return;
 
         try
         {
-            // A. Muat turun gambar QR terus ke memori
+            // Fetch raw image stream bytes from QR Server API
             using var httpClient = new HttpClient();
             byte[] imageBytes = await httpClient.GetByteArrayAsync(_currentQrUrl);
 
-            // B. Simpan fail gambar ke storan sementara telefon
+            // Write image file locally to device cache directory
             string fileName = $"QR_JiranKita_{_currentInviteCode}.png";
             string localFilePath = Path.Combine(FileSystem.CacheDirectory, fileName);
             await File.WriteAllBytesAsync(localFilePath, imageBytes);
 
-            // C. Buka menu telefon (Pengguna boleh tekan 'Save Image' untuk simpan ke galeri atau kongsi ke WhatsApp)
+            // Prompt native system sheet to share or save photo to gallery
             await Share.Default.RequestAsync(new ShareFileRequest
             {
-                Title = $"QR Code Notis JiranKita ({_currentInviteCode})",
+                Title = $"JiranKita Notice QR Code ({_currentInviteCode})",
                 File = new ShareFile(localFilePath)
             });
         }
         catch (Exception error)
         {
-            await DisplayAlert("Ralat", $"Gagal memuat turun: {error.Message}", "OK");
+            await DisplayAlert("Error", $"Failed to download QR image: {error.Message}", "OK");
         }
     }
 
-    // Butang tutup pop-up selepas tengok / muat turun QR
+    // Modal dismiss handler: Hides success popup overlay and navigates back to previous screen
     private async void OnCloseSuccessModalClicked(object sender, EventArgs e)
     {
         SuccessModal.IsVisible = false;
         await Shell.Current.GoToAsync("..");
     }
 
-    // Fungsi kecil untuk jana 5 huruf/nombor rawak
+    // Utility helper: Programmatically generates random alphanumeric code string
     private string GenerateRandomCode(int length)
     {
         const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
@@ -122,7 +132,7 @@ public partial class RegisterCommunityPage : ContentPage
             .Select(s => s[random.Next(s.Length)]).ToArray());
     }
 
-    // Indikator Fokus Hijau
+    // Focus state listener: Highlights active input border with emerald green stroke
     private void OnInputFocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry entry && entry.Parent is Border border)
@@ -132,6 +142,7 @@ public partial class RegisterCommunityPage : ContentPage
         }
     }
 
+    // Focus state listener: Resets input border to default gray stroke
     private void OnInputUnfocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry entry && entry.Parent is Border border)

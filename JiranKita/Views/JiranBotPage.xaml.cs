@@ -7,7 +7,7 @@ public partial class JiranBotPage : ContentPage
         InitializeComponent();
     }
 
-    // Bila pengguna tekan mana-mana soalan lazim, auto isi kotak tanya
+    // Automatically populates entry field when a quick inquiry chip is tapped
     private void OnQuickPromptTapped(object sender, TappedEventArgs e)
     {
         string prompt = e.Parameter?.ToString() ?? "";
@@ -18,6 +18,7 @@ public partial class JiranBotPage : ContentPage
         }
     }
 
+    // Focus listener: Highlights input field border with active emerald green stroke
     private void OnInputFocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry entry && entry.Parent is Border border)
@@ -27,6 +28,7 @@ public partial class JiranBotPage : ContentPage
         }
     }
 
+    // Unfocus listener: Resets input field border to neutral stone gray stroke
     private void OnInputUnfocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry entry && entry.Parent is Border border)

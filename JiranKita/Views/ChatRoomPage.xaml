@@ -10,7 +10,7 @@
 
     <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- 1. HEADER BILIK SEMBANG (ADA BUTANG BACK) -->
+        <!-- ================= 1. CHAT ROOM HEADER ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="14, 10">
             <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10">
                 <controls:BackButton Grid.Column="0" />
@@ -20,6 +20,7 @@
                     <Label x:Name="LblSubtitle" Text="Loading..." FontSize="10" TextColor="#78716C" />
                 </VerticalStackLayout>
 
+                <!-- JiranBot AI Assistant Shortcut -->
                 <Border Grid.Column="2" StrokeShape="RoundRectangle 10" BackgroundColor="#F3E8FF" Stroke="#E9D5FF" HeightRequest="36" WidthRequest="36">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnRobotClicked" />
@@ -29,7 +30,7 @@
             </Grid>
         </Border>
 
-        <!-- 2. SENARAI MESEJ BUIH (WHATSAPP STYLE) -->
+        <!-- ================= 2. MESSAGES LIST & BUBBLES ================= -->
         <CollectionView x:Name="MessagesCollectionView"
                         Grid.Row="1"
                         SelectionMode="None"
@@ -38,8 +39,8 @@
             <CollectionView.EmptyView>
                 <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="6" Padding="20">
                     <Label Text="💬" FontSize="36" HorizontalOptions="Center" />
-                    <Label Text="Belum ada mesej di sini." FontSize="12" FontAttributes="Bold" TextColor="#78716C" HorizontalOptions="Center" />
-                    <Label Text="Hantarkan mesej pertama anda!" FontSize="11" TextColor="#A8A29E" HorizontalOptions="Center" />
+                    <Label Text="No messages here yet." FontSize="12" FontAttributes="Bold" TextColor="#78716C" HorizontalOptions="Center" />
+                    <Label Text="Send your first message!" FontSize="11" TextColor="#A8A29E" HorizontalOptions="Center" />
                 </VerticalStackLayout>
             </CollectionView.EmptyView>
 
@@ -47,13 +48,13 @@
                 <DataTemplate x:DataType="models:ChatMessage">
                     <VerticalStackLayout Spacing="4" Margin="0, 2">
 
-                        <!-- Pembahagi Tarikh WhatsApp -->
+                        <!-- WhatsApp-Style Date Header Divider -->
                         <Border StrokeShape="RoundRectangle 10" BackgroundColor="#E7E5E4" Stroke="Transparent" Padding="12, 4" HorizontalOptions="Center" Margin="0, 6, 0, 4" IsVisible="{Binding ShowDateHeader}">
                             <Label Text="{Binding DateHeaderDisplay}" FontSize="10" FontAttributes="Bold" TextColor="#57534E" />
                         </Border>
 
                         <Grid>
-                            <!-- Mesej Masuk Kiri (Putih) -->
+                            <!-- Incoming Left-Aligned Message Bubble (White) -->
                             <VerticalStackLayout HorizontalOptions="Start" MaximumWidthRequest="280" Spacing="2" IsVisible="{Binding IsNotSelf}">
                                 <Label Text="{Binding SenderName}" FontSize="10" FontAttributes="Bold" TextColor="#78716C" Margin="4, 0, 0, 0" />
                                 <Border StrokeShape="RoundRectangle 16 16 16 0" Stroke="#E7E5E4" BackgroundColor="White" Padding="12, 9">
@@ -62,7 +63,7 @@
                                 <Label Text="{Binding Timestamp, StringFormat='{0:hh:mm tt}'}" FontSize="9" TextColor="#A8A29E" Margin="4, 0, 0, 0" />
                             </VerticalStackLayout>
 
-                            <!-- Mesej Keluar Kanan (Hijau) -->
+                            <!-- Outgoing Right-Aligned Message Bubble (Green) -->
                             <VerticalStackLayout HorizontalOptions="End" MaximumWidthRequest="280" Spacing="2" IsVisible="{Binding IsSelf}">
                                 <Border StrokeShape="RoundRectangle 16 16 0 16" BackgroundColor="#047857" Stroke="Transparent" Padding="12, 9">
                                     <Border.GestureRecognizers>
@@ -79,7 +80,7 @@
             </CollectionView.ItemTemplate>
         </CollectionView>
 
-        <!-- 3. KOTAK INPUT TAIP MESEJ -->
+        <!-- ================= 3. MESSAGE COMPOSITION INPUT BAR ================= -->
         <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="12, 8">
             <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                 <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
@@ -95,5 +96,4 @@
         </Border>
 
     </Grid>
-
 </ContentPage>

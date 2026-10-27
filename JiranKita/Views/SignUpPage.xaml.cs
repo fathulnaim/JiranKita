@@ -10,19 +10,18 @@ public partial class SignUpPage : ContentPage
     private string _selectedOwnership = "Owner";
     private int _vehicleCount = 0;
 
+    // Constructor: Initializes components, sets wizard UI state, and populates default sample vehicles
     public SignUpPage()
     {
         InitializeComponent();
         UpdateStepUI();
 
-        // Tambah 2 kenderaan contoh
+        // Populate sample vehicle entries
         AddVehicleItem("WXX 8182", "Proton X50");
         AddVehicleItem("VAA 2341", "Perodua Bezza");
     }
 
-    // ==========================================
-    // 1. INPUT FOCUS INDICATOR (GREEN BORDER)
-    // ==========================================
+    // Input focus event listener: Highlights active entry border in green
     private void OnInputFocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry input && input.Parent is Border border)
@@ -32,6 +31,7 @@ public partial class SignUpPage : ContentPage
         }
     }
 
+    // Input unfocus event listener: Resets entry border back to neutral gray
     private void OnInputUnfocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry input && input.Parent is Border border)
@@ -41,26 +41,25 @@ public partial class SignUpPage : ContentPage
         }
     }
 
-    // ==========================================
-    // 2. RESIDENCY OWNERSHIP SELECTION
-    // ==========================================
+    // Ownership status selection handler: Toggles active visual state among Owner, Tenant, Family, or JMB
     private void OnSelectOwnership(object sender, TappedEventArgs e)
     {
         _selectedOwnership = e.Parameter?.ToString() ?? "Owner";
 
-        // Reset all options to default gray
-        ResetOwnershipCard(CardOwner, LblOwner, "Owner-Occupier (Pemilik)");
-        ResetOwnershipCard(CardTenant, LblTenant, "Tenant (Penyewa)");
+        // Reset all card styles to default
+        ResetOwnershipCard(CardOwner, LblOwner, "Owner-Occupier");
+        ResetOwnershipCard(CardTenant, LblTenant, "Tenant");
         ResetOwnershipCard(CardFamily, LblFamily, "Family Dependant");
         ResetOwnershipCard(CardJmb, LblJmb, "JMB Committee");
 
-        // Highlight selected option in green
+        // Highlight selected ownership type
         if (_selectedOwnership == "Owner") SetOwnershipActive(CardOwner, LblOwner);
         else if (_selectedOwnership == "Tenant") SetOwnershipActive(CardTenant, LblTenant);
         else if (_selectedOwnership == "Family") SetOwnershipActive(CardFamily, LblFamily);
         else if (_selectedOwnership == "JMB") SetOwnershipActive(CardJmb, LblJmb);
     }
 
+    // UI Helper: Sets active green styling for ownership card
     private void SetOwnershipActive(Border card, Label label)
     {
         card.Stroke = Color.FromArgb("#047857");
@@ -70,6 +69,7 @@ public partial class SignUpPage : ContentPage
         label.FontAttributes = FontAttributes.Bold;
     }
 
+    // UI Helper: Resets ownership card to default gray styling
     private void ResetOwnershipCard(Border card, Label label, string text)
     {
         card.Stroke = Color.FromArgb("#E7E5E4");
@@ -79,14 +79,13 @@ public partial class SignUpPage : ContentPage
         label.FontAttributes = FontAttributes.None;
     }
 
-    // ==========================================
-    // 3. DYNAMIC VEHICLES (+ Add / Delete)
-    // ==========================================
+    // Dynamic vehicle list generator: Appends new vehicle entry fields
     private void OnAddVehicleClicked(object sender, EventArgs e)
     {
         AddVehicleItem("", "");
     }
 
+    // Helper: Instantiates programmatic layout controls for vehicle registration
     private void AddVehicleItem(string plateNo, string model)
     {
         _vehicleCount++;
@@ -136,15 +135,12 @@ public partial class SignUpPage : ContentPage
         VehiclesContainer.Children.Add(card);
     }
 
-    // ==========================================
-    // 4. STEP WIZARD NAVIGATION & VALIDATION
-    // ==========================================
+    // Step 1 validation and wizard navigation handler
     private async void OnStep1NextClicked(object sender, EventArgs e)
     {
-        // Semak kata laluan DAHULU sebelum benarkan lompat ke Step 2
         if (string.IsNullOrWhiteSpace(TxtPassword.Text) || TxtPassword.Text.Length < 6)
         {
-            await DisplayAlert("Kata Laluan Diperlukan", "Sila cipta kata laluan sekurang-kurangnya 6 aksara.", "OK");
+            await DisplayAlert("Password Required", "Please create a password with at least 6 characters.", "OK");
             return;
         }
 
@@ -152,15 +148,16 @@ public partial class SignUpPage : ContentPage
         UpdateStepUI();
     }
 
+    // Wizard navigation handler to Step 3
     private void OnStep2NextClicked(object sender, EventArgs e)
     {
         _currentStep = 3;
         UpdateStepUI();
     }
 
+    // Wizard navigation handler to Step 4 (Populates summary review values)
     private void OnStep3NextClicked(object sender, EventArgs e)
     {
-        // Auto-update maklumat ringkasan di Langkah 4
         LblSummaryName.Text = TxtFullName.Text;
         LblSummaryUnit.Text = $"{TxtUnitNo.Text} ({PickerPrecinct.SelectedItem})";
 
@@ -168,6 +165,7 @@ public partial class SignUpPage : ContentPage
         UpdateStepUI();
     }
 
+    // Wizard back navigation handler
     private async void OnStepBackClicked(object sender, EventArgs e)
     {
         if (_currentStep > 1)
@@ -181,6 +179,7 @@ public partial class SignUpPage : ContentPage
         }
     }
 
+    // UI state manager: Toggles visibility of step containers and updates progress indicator circles
     private void UpdateStepUI()
     {
         Step1Container.IsVisible = (_currentStep == 1);
@@ -194,6 +193,7 @@ public partial class SignUpPage : ContentPage
         SetStepCircle(StepCircle4, StepText4, StepLabel4, 4);
     }
 
+    // UI Helper: Configures wizard step circle colors and text state (Active, Completed checkmark, or Pending)
     private void SetStepCircle(Border circle, Label text, Label label, int stepNumber)
     {
         Color emeraldDark = Color.FromArgb("#047857");
@@ -230,12 +230,14 @@ public partial class SignUpPage : ContentPage
         }
     }
 
+    // Stepper counter handler: Increments household occupants count
     private void OnIncrementOccupants(object sender, EventArgs e)
     {
         _occupantsCount++;
         LblOccupantsCount.Text = _occupantsCount.ToString();
     }
 
+    // Stepper counter handler: Decrements household occupants count
     private void OnDecrementOccupants(object sender, EventArgs e)
     {
         if (_occupantsCount > 1)
@@ -245,6 +247,7 @@ public partial class SignUpPage : ContentPage
         }
     }
 
+    // Media picker handler: Selects proof of residency document
     private async void OnUploadDocumentClicked(object sender, EventArgs e)
     {
         FileResult photo = await MediaPicker.Default.PickPhotoAsync();
@@ -254,18 +257,15 @@ public partial class SignUpPage : ContentPage
         }
     }
 
-    // ==========================================
-    // 5. FINAL SUBMIT TO FIREBASE
-    // ==========================================
+    // Final registration handler: Validates PDPA consent, constructs UserModel, and dispatches to Firebase
     private async void OnFinalSubmitClicked(object sender, EventArgs e)
     {
         if (!ChkPdpa.IsChecked)
         {
-            await DisplayAlert("Persetujuan Diperlukan", "Sila tandakan persetujuan Akta PDPA 2010 sebelum meneruskan.", "OK");
+            await DisplayAlert("Consent Required", "Please check the PDPA 2010 consent declaration before proceeding.", "OK");
             return;
         }
 
-        // Kumpul semua data borang 4-langkah
         var newUser = new UserModel
         {
             FullName = TxtFullName.Text?.Trim() ?? "",
@@ -288,18 +288,16 @@ public partial class SignUpPage : ContentPage
 
         try
         {
-            // Hantar data pendaftaran terus ke Firebase
             var fbService = new FirebaseService();
             await fbService.RegisterUserAsync(newUser);
 
-            await DisplayAlert("Pendaftaran Berjaya", "Permohonan pendaftaran residensi anda telah dihantar kepada JMB untuk semakan & kelulusan.", "Teruskan");
+            await DisplayAlert("Registration Successful", "Your residency application has been submitted to the JMB for review & approval.", "Proceed");
 
-            // Bawa pengguna ke skrin imbas QR / semak komuniti
             await Shell.Current.GoToAsync("FindNeighbourhoodPage");
         }
         catch (Exception error)
         {
-            await DisplayAlert("Ralat Firebase", $"Gagal mendaftar: {error.Message}", "OK");
+            await DisplayAlert("Firebase Error", $"Failed to register: {error.Message}", "OK");
         }
     }
 }

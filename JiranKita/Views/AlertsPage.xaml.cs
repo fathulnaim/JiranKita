@@ -9,7 +9,7 @@ public partial class AlertsPage : ContentPage
     private List<AlertModel> _allAlerts = new();
     private string _currentFilter = "All";
 
-    // Koordinat GPS Pusat Komuniti (Seri Kembangan: 3.0249, 101.7012)
+    // GPS coordinates for community center (Seri Kembangan: 3.0249, 101.7012)
     private readonly double _userLat = 3.0249;
     private readonly double _userLng = 101.7012;
 
@@ -21,6 +21,7 @@ public partial class AlertsPage : ContentPage
         BindingContext = this;
     }
 
+    // Lifecycle hook: Automatically called when page appears; refreshes header binding and fetches fresh data
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -28,6 +29,7 @@ public partial class AlertsPage : ContentPage
         await LoadCommunityAlerts();
     }
 
+    // Async data fetcher: Pulls community alert records from Firebase service and triggers rendering
     private async Task LoadCommunityAlerts()
     {
         try
@@ -37,10 +39,11 @@ public partial class AlertsPage : ContentPage
         }
         catch (Exception error)
         {
-            await DisplayAlert("Ralat", $"Gagal memuatkan amaran: {error.Message}", "OK");
+            await DisplayAlert("Error", $"Failed to load alerts: {error.Message}", "OK");
         }
     }
 
+    // Event handler: Triggered when user taps a filter pill button to switch categories
     private void OnFilterAlertClicked(object sender, EventArgs e)
     {
         if (sender is Button btn)
@@ -64,6 +67,7 @@ public partial class AlertsPage : ContentPage
         }
     }
 
+    // UI helper: Resets filter pill button back to unselected default styling
     private void ResetButton(Button btn)
     {
         btn.BackgroundColor = Colors.White;
@@ -73,9 +77,7 @@ public partial class AlertsPage : ContentPage
         btn.FontAttributes = FontAttributes.None;
     }
 
-    // ==============================================================
-    // ENJIN LEAFLET + OPENSTREETMAP: Lukis Peta & Pin Interaktif
-    // ==============================================================
+    // Core engine: Filters alerts with LINQ, syncs CollectionView, builds dynamic Leaflet JS markers, and renders HTML in WebView
     private void FilterAlertsAndRenderMap()
     {
         var filteredList = _allAlerts.AsEnumerable();
@@ -87,7 +89,6 @@ public partial class AlertsPage : ContentPage
         var activeAlerts = filteredList.ToList();
         AlertsCollectionView.ItemsSource = activeAlerts;
 
-        // Bina kod marker JavaScript untuk setiap amaran
         string markersJs = string.Empty;
         foreach (var alert in activeAlerts)
         {
@@ -106,7 +107,6 @@ public partial class AlertsPage : ContentPage
             ";
         }
 
-        // Halaman HTML Leaflet yang dimuatkan ke WebView
         string mapHtml = $@"
         <!DOCTYPE html>
         <html>
@@ -128,7 +128,6 @@ public partial class AlertsPage : ContentPage
                     maxZoom: 19
                 }}).addTo(map);
 
-                // Pin Lokasi Pengguna (Biru GPS)
                 L.circleMarker([{_userLat}, {_userLng}], {{
                     radius: 7,
                     fillColor: '#0284c7',
@@ -138,7 +137,6 @@ public partial class AlertsPage : ContentPage
                     fillOpacity: 1
                 }}).addTo(map).bindPopup('<b>📍 You are here</b><br>{AppSession.CurrentUserUnit}');
 
-                // Bulatan Geofence 500m
                 L.circle([{_userLat}, {_userLng}], {{
                     color: '#047857',
                     fillColor: '#10b981',
@@ -146,7 +144,6 @@ public partial class AlertsPage : ContentPage
                     radius: 500
                 }}).addTo(map);
 
-                // Masukkan pin amaran bencana dari Firebase
                 {markersJs}
             </script>
         </body>
@@ -155,19 +152,20 @@ public partial class AlertsPage : ContentPage
         MapWebView.Source = new HtmlWebViewSource { Html = mapHtml };
     }
 
+    // Event handler: Recenters map view back to user default target GPS coordinates
     private void OnRecenterMapClicked(object sender, EventArgs e)
     {
         FilterAlertsAndRenderMap();
     }
 
-    // Panggilan Kecemasan SOS
+    // Action handler: Displays confirmation dialog and triggers native PhoneDialer API to call guardhouse hotline
     private async void OnSosCallClicked(object sender, EventArgs e)
     {
         bool call = await DisplayAlert(
-            "PANGGILAN KECEMASAN",
-            $"Adakah anda mahu mendail segera ke Pondok Pengawal {AppSession.CurrentCommunityName}?",
-            "PANGGIL SEKARANG",
-            "Batal"
+            "EMERGENCY CALL",
+            $"Do you want to immediately call the {AppSession.CurrentCommunityName} Guardhouse?",
+            "CALL NOW",
+            "Cancel"
         );
 
         if (call)
@@ -182,12 +180,12 @@ public partial class AlertsPage : ContentPage
                 }
                 else
                 {
-                    await DisplayAlert("Hubungi", $"Nombor Guardhouse: {guardhouseNumber}", "OK");
+                    await DisplayAlert("Contact", $"Guardhouse Number: {guardhouseNumber}", "OK");
                 }
             }
             catch (Exception ex)
             {
-                await DisplayAlert("Ralat", $"Gagal mendail: {ex.Message}", "OK");
+                await DisplayAlert("Error", $"Failed to initiate call: {ex.Message}", "OK");
             }
         }
     }

@@ -4,11 +4,13 @@ namespace JiranKita.Views;
 
 public partial class ChatInboxPage : ContentPage
 {
+    // Constructor: Initializes XAML layout components
     public ChatInboxPage()
     {
         InitializeComponent();
     }
 
+    // Lifecycle hook: Automatically updates header and community group labels with active session data when page appears
     protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -16,7 +18,7 @@ public partial class ChatInboxPage : ContentPage
         LblGroupName.Text = AppSession.CurrentCommunityName;
     }
 
-    // Buka Group Chat Komuniti
+    // Navigates to the public Community Group Chat room via Shell parameter routing
     private async void OnOpenGroupChatClicked(object sender, EventArgs e)
     {
         var navParams = new Dictionary<string, object>
@@ -28,7 +30,7 @@ public partial class ChatInboxPage : ContentPage
         await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
     }
 
-    // Buka Chat 1-on-1 dengan Puan Aisyah
+    // Opens a 1-on-1 direct message room with resident Puan Aisyah using a deterministic room ID
     private async void OnOpenAisyahChatClicked(object sender, EventArgs e)
     {
         string roomId = AppSession.GetDirectRoomId(AppSession.CurrentUserName, "Puan Aisyah");
@@ -41,7 +43,7 @@ public partial class ChatInboxPage : ContentPage
         await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
     }
 
-    // Buka Chat 1-on-1 dengan Haris
+    // Opens a 1-on-1 direct message room with resident Haris using a deterministic room ID
     private async void OnOpenHarisChatClicked(object sender, EventArgs e)
     {
         string roomId = AppSession.GetDirectRoomId(AppSession.CurrentUserName, "Haris");
@@ -54,6 +56,7 @@ public partial class ChatInboxPage : ContentPage
         await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
     }
 
+    // Navigates to the JiranBot AI Assistant page
     private async void OnRobotClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.JiranBotPage));

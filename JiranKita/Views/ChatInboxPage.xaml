@@ -8,16 +8,16 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <!-- 1. Header Atas -->
+        <!-- ================= 1. HEADER SECTION ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
             <Grid ColumnDefinitions="*, Auto">
                 <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
                     <Label Text="NEIGHBOURHOOD CHATS" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" />
-                    <!-- [AppSession] -->
-                    <Label x:Name="LblCommunitySub" Text="Taman Seri Kembangan" FontSize="10" TextColor="#78716C" />
+                    <!-- Dynamic Community Name via Code-Behind -->
+                    <Label x:Name="LblCommunitySub" Text="Seri Kembangan Residence" FontSize="10" TextColor="#78716C" />
                 </VerticalStackLayout>
 
-                <!-- Ikon Robot JiranBot -->
+                <!-- JiranBot AI Assistant Shortcut -->
                 <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F3E8FF" Stroke="#E9D5FF" HeightRequest="36" WidthRequest="36">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnRobotClicked" />
@@ -27,11 +27,11 @@
             </Grid>
         </Border>
 
-        <!-- 2. Senarai Perbualan (Scrollable) -->
+        <!-- ================= 2. CONVERSATIONS LIST (SCROLLABLE) ================= -->
         <ScrollView Grid.Row="1" Padding="14">
             <VerticalStackLayout Spacing="14">
 
-                <!-- A. GROUP CHAT RASMI TAMAN (PIN DI ATAS SEKALI) -->
+                <!-- A. PINNED OFFICIAL COMMUNITY GROUP CHAT -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="COMMUNITY GROUP" FontSize="10" FontAttributes="Bold" TextColor="#78716C" CharacterSpacing="1" />
 
@@ -40,13 +40,13 @@
                             <TapGestureRecognizer Tapped="OnOpenGroupChatClicked" />
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
-                            <!-- Avatar Group -->
+                            <!-- Group Avatar Icon -->
                             <Border Grid.Column="0" StrokeShape="RoundRectangle 14" BackgroundColor="#047857" HeightRequest="44" WidthRequest="44">
                                 <Label Text="🏢" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
 
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
-                                <Label x:Name="LblGroupName" Text="Taman Seri Kembangan" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" />
+                                <Label x:Name="LblGroupName" Text="Seri Kembangan Residence" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" />
                                 <Label Text="Uncle Lim: Anyone experiencing low water pressure?" FontSize="11" TextColor="#57534E" LineBreakMode="TailTruncation" />
                             </VerticalStackLayout>
 
@@ -57,7 +57,7 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- B. SENARAI CHAT PERIBADI 1-ON-1 (DIRECT MESSAGES) -->
+                <!-- B. DIRECT MESSAGES (1-ON-1 CHATS) -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="DIRECT MESSAGES (1-ON-1)" FontSize="10" FontAttributes="Bold" TextColor="#78716C" CharacterSpacing="1" />
 
@@ -104,5 +104,4 @@
         </ScrollView>
 
     </Grid>
-
 </ContentPage>

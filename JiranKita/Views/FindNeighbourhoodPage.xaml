@@ -28,7 +28,7 @@
                 </Border>
             </Grid>
 
-            <!-- Tajuk -->
+            <!-- Page Header -->
             <VerticalStackLayout Spacing="4">
                 <Label Text="Find Your Neighbourhood"
                        FontSize="20"
@@ -39,7 +39,7 @@
                        TextColor="#78716C" />
             </VerticalStackLayout>
 
-            <!-- Kad Scanner QR Google ML Kit -->
+            <!-- Google ML Kit QR Scanner Card -->
             <Border StrokeShape="RoundRectangle 16"
                     Stroke="#E7E5E4"
                     BackgroundColor="White"
@@ -47,7 +47,7 @@
                     Margin="0, 4, 0, 0">
                 <VerticalStackLayout Spacing="14" HorizontalOptions="Center">
 
-                    <!-- Garis putus-putus dengan Kamera Asli Google -->
+                    <!-- Camera Viewport Frame -->
                     <Border StrokeShape="RoundRectangle 16"
                             Stroke="#059669"
                             StrokeThickness="2"
@@ -56,7 +56,7 @@
                             HeightRequest="170"
                             WidthRequest="170">
 
-                        <!-- KAMERA GOOGLE ML KIT -->
+                        <!-- Google ML Kit Camera Component -->
                         <barcode:CameraView 
                             x:Name="QrScanner"
                             CameraEnabled="True"
@@ -66,16 +66,16 @@
                             WidthRequest="170" />
                     </Border>
 
-                    <!-- Teks panduan di luar kotak kamera -->
+                    <!-- Scanning Guidance Text -->
                     <Label Text="Point at JMB Notice QR" 
                            FontSize="11" 
                            FontAttributes="Bold" 
                            TextColor="#44403C" 
                            HorizontalOptions="Center" />
 
-                    <!-- Butang Flash & Gallery -->
+                    <!-- Flash & Gallery Action Toolbar -->
                     <HorizontalStackLayout Spacing="10" HorizontalOptions="Center">
-                        <!-- Butang Flash -->
+                        <!-- Flash Toggle Button -->
                         <Border StrokeShape="RoundRectangle 8"
                                 Stroke="#E7E5E4"
                                 BackgroundColor="#F5F5F4"
@@ -89,7 +89,7 @@
                             </HorizontalStackLayout>
                         </Border>
 
-                        <!-- Butang Gallery -->
+                        <!-- Gallery Import Button -->
                         <Border StrokeShape="RoundRectangle 8"
                                 Stroke="#E7E5E4"
                                 BackgroundColor="#F5F5F4"
@@ -107,7 +107,7 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Kotak 5-Digit Invite Code -->
+            <!-- 5-Digit Invite Code Entry Container -->
             <VerticalStackLayout Spacing="8" Margin="0, 4, 0, 0">
                 <Label Text="Or type 5-digit Invite Code:"
                        FontSize="12"
@@ -115,7 +115,7 @@
                        FontAttributes="Bold" />
 
                 <Grid HeightRequest="48">
-                    <!-- 5 Kotak Paparan -->
+                    <!-- 5 Character Visual Display Boxes -->
                     <Grid ColumnDefinitions="*, *, *, *, *" ColumnSpacing="8">
                         <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White">
                             <Label x:Name="Lbl1" FontSize="18" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" VerticalOptions="Center" />
@@ -134,7 +134,7 @@
                         </Border>
                     </Grid>
 
-                    <!-- Kotak Input Halimunan untuk Menaip -->
+                    <!-- Transparent Keyboard Input Overlay -->
                     <Entry x:Name="HiddenOtpEntry"
                            MaxLength="5"
                            Opacity="0.01"
@@ -144,7 +144,7 @@
                 </Grid>
             </VerticalStackLayout>
 
-            <!-- Butang Verify -->
+            <!-- Verification Action Button -->
             <Button Text="Join Now"
                     Clicked="OnVerifyButtonClicked"
                     BackgroundColor="#047857"
@@ -155,7 +155,7 @@
                     HeightRequest="48"
                     Margin="0, 4, 0, 0" />
 
-            <!-- JMB Footer -->
+            <!-- JMB Administration Footer Link -->
             <VerticalStackLayout Spacing="4" Margin="0, 16, 0, 10" HorizontalOptions="Center">
                 <BoxView HeightRequest="1" Color="#E7E5E4" Margin="0, 0, 0, 10" />
                 <Label Text="Are you a Joint Management Body (JMB)?"
@@ -163,11 +163,10 @@
                        TextColor="#78716C"
                        HorizontalOptions="Center" />
                 <Label Text="+ Register New Neighbourhood Community"
-                   FontSize="12"
-                   FontAttributes="Bold"
-                   TextColor="#065F46"
-                   HorizontalOptions="Center">
-                    <!-- TAMBAH INI: -->
+                       FontSize="12"
+                       FontAttributes="Bold"
+                       TextColor="#065F46"
+                       HorizontalOptions="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnRegisterCommunityClicked" />
                     </Label.GestureRecognizers>
@@ -176,5 +175,4 @@
 
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

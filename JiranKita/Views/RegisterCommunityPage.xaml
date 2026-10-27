@@ -9,7 +9,7 @@
 
     <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- Header -->
+        <!-- ================= 1. HEADER SECTION ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
             <Grid ColumnDefinitions="Auto, *, Auto">
                 <controls:BackButton Grid.Column="0" />
@@ -20,38 +20,38 @@
             </Grid>
         </Border>
 
-        <!-- Borang Pendaftaran (Scrollable) -->
+        <!-- ================= 2. REGISTRATION FORM (SCROLLABLE) ================= -->
         <ScrollView Grid.Row="1" Padding="16">
             <VerticalStackLayout Spacing="16">
 
-                <!-- Penerangan -->
+                <!-- Page Subtitle & Description -->
                 <VerticalStackLayout Spacing="3">
-                    <Label Text="Daftar Komuniti Baharu" FontSize="20" FontAttributes="Bold" TextColor="#1C1917" />
-                    <Label Text="Pendaftaran rasmi badan pengurusan (JMB/MC/RA) untuk mendapatkan kod jemputan penduduk &amp; sistem sekuriti RFID." FontSize="11" TextColor="#78716C" LineHeight="1.3" />
+                    <Label Text="Register New Community" FontSize="20" FontAttributes="Bold" TextColor="#1C1917" />
+                    <Label Text="Official management body registration (JMB/MC/RA) to generate resident invite codes &amp; RFID security credentials." FontSize="11" TextColor="#78716C" LineHeight="1.3" />
                 </VerticalStackLayout>
 
-                <!-- Kad Borang -->
+                <!-- Form Card Container -->
                 <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="16">
                     <VerticalStackLayout Spacing="14">
 
-                        <!-- Nama Komuniti [DB: precincts.name] -->
+                        <!-- Community Name [DB: precincts.name] -->
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Official Community / Property Name *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
-                                <Entry x:Name="TxtCommunityName" Placeholder="Contoh: Kondominium Vista Seri Kembangan" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917"
+                                <Entry x:Name="TxtCommunityName" Placeholder="Example: Vista Seri Kembangan Condominium" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917"
                                        Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- Jenis Hartanah [DB: precincts.property_type] -->
+                        <!-- Property Architecture Type [DB: precincts.property_type] -->
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Property Architecture Type *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
-                                <Picker x:Name="PickerPropertyType" FontSize="12" TextColor="#1C1917" Title="Pilih Jenis Kediaman">
+                                <Picker x:Name="PickerPropertyType" FontSize="12" TextColor="#1C1917" Title="Select Property Type">
                                     <Picker.ItemsSource>
                                         <x:Array Type="{x:Type x:String}">
                                             <x:String>High-Rise Strata (Condominium / Apartment)</x:String>
-                                            <x:String>Landed Gated &amp; Guarded (Taman Perumahan)</x:String>
+                                            <x:String>Landed Gated &amp; Guarded (Residential Estate)</x:String>
                                             <x:String>Townhouse / Commercial Strata</x:String>
                                             <x:String>Public Housing (PPR / PKNS)</x:String>
                                         </x:Array>
@@ -61,12 +61,12 @@
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- Jumlah Unit & No. Pendaftaran COB [DB: precincts.total_units & precincts.cob_reg_number] -->
+                        <!-- Total Units & COB/ROS Registration No [DB: precincts.total_units & precincts.cob_reg_number] -->
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
                             <VerticalStackLayout Grid.Column="0" Spacing="4">
                                 <Label Text="Total Units *" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
-                                    <Entry x:Name="TxtTotalUnits" Placeholder="Contoh: 350" PlaceholderColor="#A8A29E" Keyboard="Numeric" FontSize="12" TextColor="#1C1917"
+                                    <Entry x:Name="TxtTotalUnits" Placeholder="Example: 350" PlaceholderColor="#A8A29E" Keyboard="Numeric" FontSize="12" TextColor="#1C1917"
                                            Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </VerticalStackLayout>
@@ -80,15 +80,15 @@
                             </VerticalStackLayout>
                         </Grid>
 
-                        <!-- Alamat Penuh [DB: precincts.address & postcode] -->
+                        <!-- Property Full Address [DB: precincts.address & postcode] -->
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Property Full Address *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12">
-                                <Editor x:Name="TxtAddress" Placeholder="Alamat jalan, poskod, dan bandar..." PlaceholderColor="#A8A29E" HeightRequest="65" FontSize="12" TextColor="#1C1917" />
+                                <Editor x:Name="TxtAddress" Placeholder="Street address, postcode, and city..." PlaceholderColor="#A8A29E" HeightRequest="65" FontSize="12" TextColor="#1C1917" />
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- Maklumat Wakil JMB [DB: jmb_committee_contacts] -->
+                        <!-- JMB Representative Contact [DB: jmb_committee_contacts] -->
                         <VerticalStackLayout Spacing="6">
                             <Label Text="JMB Representative / Chairman Contact *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
@@ -101,7 +101,7 @@
                             </Grid>
                         </VerticalStackLayout>
 
-                        <!-- Muat Naik Sijil COB / SSM [DB: precincts.certificate_document_url] -->
+                        <!-- Upload Certificate COB / Form 5A [DB: precincts.certificate_document_url] -->
                         <VerticalStackLayout Spacing="6">
                             <Label Text="Upload JMB Certificate / Form 5A (COB) *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                             <Border StrokeShape="RoundRectangle 12" Stroke="#047857" StrokeThickness="1.5" StrokeDashArray="4, 2" BackgroundColor="#ECFDF5" Padding="14">
@@ -111,7 +111,7 @@
                                 <VerticalStackLayout Spacing="3" HorizontalOptions="Center">
                                     <Label Text="📁" FontSize="20" HorizontalOptions="Center" />
                                     <Label x:Name="LblCertFileName" Text="Attach Certificate (PDF / Image)" FontSize="11" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" />
-                                    <Label Text="Pihak JiranKita akan menyemak kesahan pendaftaran ini" FontSize="9" TextColor="#78716C" HorizontalOptions="Center" />
+                                    <Label Text="JiranKita administrators will verify the authenticity of this registration" FontSize="9" TextColor="#78716C" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
                         </VerticalStackLayout>
@@ -122,7 +122,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Butang Hantar Di Bawah -->
+        <!-- Submit Button at Bottom -->
         <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 10">
             <Button Text="SUBMIT FOR JIRANKITA VERIFICATION 🏛️" 
                     Clicked="OnSubmitCommunityClicked"
@@ -135,7 +135,7 @@
         </Border>
 
         <!-- ============================================== -->
-        <!-- POP-UP KAD QR CODE (MULA-MULA HALIMUNAN)      -->
+        <!-- SUCCESS MODAL & QR CODE CARD (INITIAL HIDDEN)  -->
         <!-- ============================================== -->
         <Grid x:Name="SuccessModal" 
               Grid.RowSpan="3" 
@@ -143,7 +143,7 @@
               IsVisible="False" 
               Padding="24">
 
-            <!-- Kad Putih di Tengah Skrin -->
+            <!-- Center Modal Card -->
             <Border StrokeShape="RoundRectangle 20" 
                     BackgroundColor="White" 
                     Padding="20" 
@@ -152,11 +152,11 @@
                     WidthRequest="310">
                 <VerticalStackLayout Spacing="12" HorizontalOptions="Center">
 
-                    <Label Text="🎉 Pendaftaran Berjaya!" FontSize="16" FontAttributes="Bold" TextColor="#047857" HorizontalOptions="Center" />
+                    <Label Text="🎉 Registration Successful!" FontSize="16" FontAttributes="Bold" TextColor="#047857" HorizontalOptions="Center" />
 
-                    <Label Text="QR Code Rasmi Notis JMB:" FontSize="11" TextColor="#78716C" HorizontalOptions="Center" />
+                    <Label Text="Official JMB Notice QR Code:" FontSize="11" TextColor="#78716C" HorizontalOptions="Center" />
 
-                    <!-- GAMBAR QR CODE YANG DIJANA SECARA LIVE -->
+                    <!-- LIVE GENERATED QR CODE IMAGE -->
                     <Border StrokeShape="RoundRectangle 14" Stroke="#047857" StrokeThickness="2" BackgroundColor="White" Padding="10">
                         <Image x:Name="ImgGeneratedQr" 
                                HeightRequest="170" 
@@ -164,41 +164,40 @@
                                Aspect="AspectFit" />
                     </Border>
 
-                    <!-- Paparan Kod 5-Digit -->
+                    <!-- 5-Digit Invite Code Display Badge -->
                     <Border StrokeShape="RoundRectangle 8" BackgroundColor="#ECFDF5" Stroke="#A7F3D0" Padding="12, 4">
-                        <Label x:Name="LblInviteCodeDisplay" Text="KOD: KAJ82" FontSize="14" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" />
+                        <Label x:Name="LblInviteCodeDisplay" Text="CODE: KAJ82" FontSize="14" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" />
                     </Border>
 
-                    <Label Text="Penduduk boleh imbas QR ini atau taip kod di atas dalam skrin 'Find Neighbourhood' untuk menyertai komuniti anda." 
+                    <Label Text="Residents can scan this QR code or type the 5-digit code in 'Find Neighbourhood' to join your community." 
                            FontSize="10" 
                            TextColor="#57534E" 
                            HorizontalTextAlignment="Center" 
                            LineHeight="1.2" />
 
-                    <!-- Butang Selesai -->
-                    <!-- Butang Muat Turun / Kongsi QR -->
-                    <Button Text="📥 SIMPAN / KONGSI QR CODE" 
-                        Clicked="OnDownloadQrClicked"
-                        BackgroundColor="#065F46" 
-                        TextColor="White" 
-                        FontAttributes="Bold" 
-                        FontSize="11" 
-                        CornerRadius="12" 
-                        HeightRequest="42" 
-                        Margin="0, 4, 0, 0" />
+                    <!-- Save / Share Action Button -->
+                    <Button Text="📥 SAVE / SHARE QR CODE" 
+                            Clicked="OnDownloadQrClicked"
+                            BackgroundColor="#065F46" 
+                            TextColor="White" 
+                            FontAttributes="Bold" 
+                            FontSize="11" 
+                            CornerRadius="12" 
+                            HeightRequest="42" 
+                            Margin="0, 4, 0, 0" />
 
-                                    <!-- Butang Selesai Keluar -->
-                                    <Button Text="SELESAI &amp; KELUAR" 
-                        Clicked="OnCloseSuccessModalClicked"
-                        BackgroundColor="White" 
-                        TextColor="#44403C" 
-                        BorderColor="#D6D3D1"
-                        BorderWidth="1"
-                        FontAttributes="Bold" 
-                        FontSize="11" 
-                        CornerRadius="12" 
-                        HeightRequest="42" 
-                        Margin="0, 6, 0, 0" />
+                    <!-- Exit / Dismiss Button -->
+                    <Button Text="FINISH &amp; EXIT" 
+                            Clicked="OnCloseSuccessModalClicked"
+                            BackgroundColor="White" 
+                            TextColor="#44403C" 
+                            BorderColor="#D6D3D1"
+                            BorderWidth="1"
+                            FontAttributes="Bold" 
+                            FontSize="11" 
+                            CornerRadius="12" 
+                            HeightRequest="42" 
+                            Margin="0, 6, 0, 0" />
                 </VerticalStackLayout>
             </Border>
         </Grid>

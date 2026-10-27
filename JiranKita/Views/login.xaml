@@ -9,12 +9,12 @@
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
 
-            <!-- Butang back dan bahasa -->
+            <!-- Top Header Bar with Navigation Back & Language Picker -->
             <Grid ColumnDefinitions="Auto, *" Margin="0,10,0,5">
 
                 <controls:BackButton Grid.Column="0" />
 
-                <!-- Pilih bahasa -->
+                <!-- Language Selection Indicator -->
                 <HorizontalStackLayout Grid.Column="1" 
                                        HorizontalOptions="End" 
                                        VerticalOptions="Center" 
@@ -35,7 +35,7 @@
                 </HorizontalStackLayout>
             </Grid>
 
-            <!-- Welcome user kat sini -->
+            <!-- Greeting Banner -->
             <VerticalStackLayout Spacing="4" Margin="0, 5, 0, 5">
                 <Label Text="Welcome Neighbour!" 
                        FontSize="20" 
@@ -45,11 +45,12 @@
                        FontSize="12" 
                        TextColor="#78716C" />
             </VerticalStackLayout>
-            <!-- Tempat isi maklumat -->
 
-            <!-- Email sahaja -->
+            <!-- Authentication Input Fields -->
+
+            <!-- Email Entry -->
             <VerticalStackLayout Spacing="6">
-                <Label Text="Residential/User Email" 
+                <Label Text="Residential / User Email" 
                        FontSize="12" 
                        TextColor="#44403C" 
                        FontAttributes="Bold" />
@@ -57,14 +58,14 @@
                         Stroke="#D6D3D1" 
                         BackgroundColor="White" 
                         Padding="12, 2">
-                    <Entry Placeholder="Enter residential/user email"
+                    <Entry Placeholder="Enter residential / user email"
                            PlaceholderColor="#A8A29E"
                            FontSize="13"
                            TextColor="#1C1917" />
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Tempat password -->
+            <!-- Password Entry -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Password" 
                        FontSize="12" 
@@ -91,7 +92,7 @@
                 </Border>
             </VerticalStackLayout>
 
-            <!-- checkbox ingat dan lupa password -->
+            <!-- Remember Me Checkbox & Forgot Password Link -->
             <Grid ColumnDefinitions="*, Auto">
                 <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
                     <CheckBox IsChecked="True" Color="#047857" />
@@ -102,20 +103,18 @@
                 </HorizontalStackLayout>
 
                 <Label Grid.Column="1" 
-                   Text="Forgot?" 
-                   TextColor="#065F46" 
-                   FontAttributes="Bold" 
-                   FontSize="12" 
-                   VerticalOptions="Center">
-                    <!-- TAMBAH INI: -->
+                       Text="Forgot?" 
+                       TextColor="#065F46" 
+                       FontAttributes="Bold" 
+                       FontSize="12" 
+                       VerticalOptions="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnForgotPasswordClicked" />
                     </Label.GestureRecognizers>
                 </Label>
-
             </Grid>
 
-            <!-- Buton sign up -->
+            <!-- Primary Sign In Action Button -->
             <Button Text="SIGN IN TO JIRANKITA" 
                     BackgroundColor="#047857" 
                     TextColor="White" 
@@ -126,20 +125,21 @@
                     Margin="0, 8, 0, 0" 
                     Clicked="OnContinueClicked" />
 
+            <!-- Resident Registration Navigation Link -->
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="4" Margin="0, 8, 0, 0">
                 <Label Text="Don't have a registered unit?" FontSize="12" TextColor="#78716C" VerticalOptions="Center" />
                 <Label Text="Register Resident" 
-           FontSize="12" 
-           FontAttributes="Bold" 
-           TextColor="#047857" 
-           VerticalOptions="Center">
+                       FontSize="12" 
+                       FontAttributes="Bold" 
+                       TextColor="#047857" 
+                       VerticalOptions="Center">
                     <Label.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnSignUpLinkClicked" />
                     </Label.GestureRecognizers>
                 </Label>
             </HorizontalStackLayout>
 
-            <!-- Option lain -->
+            <!-- Alternative Sign In Divider -->
             <Grid ColumnDefinitions="*, Auto, *" Margin="0, 6">
                 <BoxView Grid.Column="0" HeightRequest="1" Color="#E7E5E4" VerticalOptions="Center" />
                 <Label Grid.Column="1" 
@@ -150,7 +150,7 @@
                 <BoxView Grid.Column="2" HeightRequest="1" Color="#E7E5E4" VerticalOptions="Center" />
             </Grid>
 
-            <!-- Button guna google -->
+            <!-- Third-Party Google Auth Button -->
             <Border StrokeShape="RoundRectangle 12" 
                     Stroke="#E7E5E4" 
                     BackgroundColor="White" 
@@ -169,7 +169,7 @@
                 </HorizontalStackLayout>
             </Border>
 
-            <!-- Some law here -->
+            <!-- Regulatory Compliance Footer -->
             <Label Text="Compliant with Malaysian PDPA 2010." 
                    FontSize="10" 
                    TextColor="#78716C" 
@@ -178,5 +178,4 @@
 
         </VerticalStackLayout>
     </ScrollView>
-
 </ContentPage>

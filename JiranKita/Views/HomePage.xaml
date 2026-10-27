@@ -11,11 +11,11 @@
 
     <Grid RowDefinitions="Auto, *">
 
-        <!-- ================= 1. HEADER ATAS (DINAMIK DARI SESI) ================= -->
+        <!-- ================= 1. DYNAMIC HEADER BAR ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
             <Grid ColumnDefinitions="*, Auto">
 
-                <!-- Info Komuniti [AppSession] -->
+                <!-- Community Information Header [AppSession] -->
                 <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
                     <Label Text="📍" FontSize="16" VerticalOptions="Center" />
                     <VerticalStackLayout Spacing="0">
@@ -29,14 +29,14 @@
                     </VerticalStackLayout>
                 </HorizontalStackLayout>
 
-                <!-- Loceng & Avatar [AppSession] -->
+                <!-- Notifications & User Profile Avatar [AppSession] -->
                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                    <!-- Loceng Notifikasi -->
+                    <!-- Notification Bell Icon -->
                     <Border StrokeShape="RoundRectangle 10" Stroke="#E7E5E4" BackgroundColor="#F5F5F4" HeightRequest="36" WidthRequest="36">
                         <Label Text="🔔" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
                     </Border>
 
-                    <!-- Avatar Initials Pengguna -->
+                    <!-- User Initials Avatar -->
                     <Border StrokeShape="RoundRectangle 18" BackgroundColor="#065F46" Stroke="Transparent" HeightRequest="34" WidthRequest="34">
                         <Label Text="{Binding UserInitialsDisplay}" 
                                TextColor="White" 
@@ -51,11 +51,11 @@
         </Border>
 
 
-        <!-- ================= 2. KANDUNGAN UTAMA (SCROLLABLE) ================= -->
+        <!-- ================= 2. MAIN SCROLLABLE DASHBOARD ================= -->
         <ScrollView Grid.Row="1">
             <VerticalStackLayout Padding="16" Spacing="16">
 
-                <!-- A. KAD AMARAN KECEMASAN (HANYA MUNCUL JIKA ADA AMARAN DI FIREBASE) -->
+                <!-- A. EMERGENCY URGENT ALERT CARD (Only renders if active alert exists in Firebase) -->
                 <Border StrokeShape="RoundRectangle 16"
                         Stroke="#FDE68A"
                         BackgroundColor="#FFFBEB"
@@ -72,18 +72,18 @@
                                 <Label Grid.Column="1" Text="{Binding ActiveAlert.TimeDisplay}" FontSize="10" TextColor="#92400E" FontAttributes="Bold" />
                             </Grid>
 
-                            <Label Text="{Binding ActiveAlert.Description}" FontSize="11" TextColor="#44403C" LineHeight="1.2" />
+                            <Label Text="{Binding ActiveAlert.Advisory}" FontSize="11" TextColor="#44403C" LineHeight="1.2" />
                         </VerticalStackLayout>
                     </Grid>
                 </Border>
 
 
-                <!-- B. QUICK ACTIONS (BUTANG TINDAKAN PANTAS) -->
+                <!-- B. QUICK ACTION BUTTONS -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="QUICK ACTIONS" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" />
 
                     <Grid ColumnDefinitions="*, *, *, *" ColumnSpacing="8">
-                        <!-- 1. Report (Buka Create Post) -->
+                        <!-- 1. Report Issue (Navigates to Create Post) -->
                         <Border Grid.Column="0" StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="8, 12">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnReportActionClicked" />
@@ -94,7 +94,7 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <!-- 2. Notices -->
+                        <!-- 2. Official Notices -->
                         <Border Grid.Column="1" StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="8, 12">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnNoticesActionClicked" />
@@ -105,7 +105,7 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <!-- 3. Events -->
+                        <!-- 3. Community Events -->
                         <Border Grid.Column="2" StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="8, 12">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnEventsActionClicked" />
@@ -116,7 +116,7 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <!-- 4. JiranBot (Buka AI Chat) -->
+                        <!-- 4. JiranBot AI Assistant -->
                         <Border Grid.Column="3" StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="8, 12">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnJiranBotActionClicked" />
@@ -130,21 +130,21 @@
                 </VerticalStackLayout>
 
 
-                <!-- C. NEIGHBOURHOOD PULSE FEED (2 POS TERKINI DARI FIREBASE) -->
+                <!-- C. NEIGHBOURHOOD PULSE FEED (Recent posts dynamic stream) -->
                 <VerticalStackLayout Spacing="10">
                     <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
                         <BoxView Color="#059669" CornerRadius="4" WidthRequest="8" HeightRequest="8" VerticalOptions="Center" />
                         <Label Text="NEIGHBOURHOOD PULSE" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" />
                     </HorizontalStackLayout>
 
-                    <!-- Senarai Pos Terkini Dinamik -->
+                    <!-- Collection View of Recent Community Posts -->
                     <CollectionView x:Name="PulseCollectionView"
                                     SelectionMode="Single"
                                     SelectionChanged="OnPulsePostSelected">
 
                         <CollectionView.EmptyView>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="16">
-                                <Label Text="Tiada kemas kini komuniti buat masa ini." FontSize="11" TextColor="#78716C" HorizontalTextAlignment="Center" />
+                                <Label Text="No community updates available at this moment." FontSize="11" TextColor="#78716C" HorizontalTextAlignment="Center" />
                             </Border>
                         </CollectionView.EmptyView>
 

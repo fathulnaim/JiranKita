@@ -7,12 +7,12 @@ public partial class HomePage : ContentPage
 {
     private readonly FirebaseService fbService = new FirebaseService();
 
-    // Data Dinamik untuk Header
+    // Dynamic Binding Properties for Session Header
     public string CommunityNameDisplay => AppSession.CurrentCommunityName;
     public string UnitDisplay => AppSession.CurrentUserUnit;
     public string UserInitialsDisplay => AppSession.CurrentUserInitials;
 
-    // Data Dinamik Amaran Kecemasan
+    // Dynamic Urgent Alert Properties
     private AlertModel? _activeAlert;
     public AlertModel? ActiveAlert
     {
@@ -31,7 +31,7 @@ public partial class HomePage : ContentPage
     {
         base.OnAppearing();
 
-        // Kemas kini paparan header mengikut sesi semasa
+        // Refresh session header properties upon navigating to Page
         OnPropertyChanged(nameof(CommunityNameDisplay));
         OnPropertyChanged(nameof(UnitDisplay));
         OnPropertyChanged(nameof(UserInitialsDisplay));
@@ -39,37 +39,38 @@ public partial class HomePage : ContentPage
         await LoadHomeData();
     }
 
+    // Fetches live urgent emergency alert and latest posts from Firebase
     private async Task LoadHomeData()
     {
         string code = AppSession.CurrentCommunityCode;
 
         try
         {
-            // 1. Tarik amaran kecemasan terkini dari Firebase
+            // 1. Fetch current urgent alert from Firebase
             ActiveAlert = await fbService.GetUrgentAlertAsync(code);
 
-            // 2. Tarik 2 pos paling terkini dari Firebase untuk 'Pulse'
+            // 2. Fetch top 2 recent posts for the 'Pulse' section
             var recentPosts = await fbService.GetPulsePostsAsync(code, 2);
             PulseCollectionView.ItemsSource = recentPosts;
         }
         catch (Exception error)
         {
-            await DisplayAlert("Ralat", $"Gagal memuatkan data Home: {error.Message}", "OK");
+            await DisplayAlert("Error", $"Failed to load Home data: {error.Message}", "OK");
         }
     }
 
-    // ==========================================
-    // BUTANG QUICK ACTIONS
-    // ==========================================
+    // ==============================================================
+    // QUICK ACTION EVENT HANDLERS
+    // ==============================================================
     private async void OnReportActionClicked(object sender, EventArgs e)
     {
-        // Buka borang Create Post
+        // Route to Create Post page
         await Shell.Current.GoToAsync(nameof(Views.CreatePostPage));
     }
 
     private async void OnNoticesActionClicked(object sender, EventArgs e)
     {
-        // Bawa terus ke tab Feed
+        // Switch tab to Feed Page
         await Shell.Current.GoToAsync("//FeedPage");
     }
 
@@ -80,13 +81,11 @@ public partial class HomePage : ContentPage
 
     private async void OnJiranBotActionClicked(object sender, EventArgs e)
     {
-        // Buka pembantu AI JiranBot
+        // Open JiranBot AI Assistant page
         await Shell.Current.GoToAsync(nameof(Views.JiranBotPage));
     }
 
-    // ==========================================
-    // BILA TEKAN POS PULSE -> BUKA POST DETAILS
-    // ==========================================
+    // Opens Post Details page when a pulse item is selected
     private async void OnPulsePostSelected(object sender, SelectionChangedEventArgs e)
     {
         var selectedPost = e.CurrentSelection.FirstOrDefault() as PostModel;

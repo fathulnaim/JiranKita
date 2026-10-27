@@ -19,6 +19,7 @@ public class CommunityModel
 
     // Kod Jemputan 5-Digit (cth: KAJ82 untuk penduduk scan/taip)
     public string InviteCode { get; set; } = string.Empty;
+    public string QrCodeUrl { get; set; } = string.Empty;
 
     // Status Kelulusan Admin JiranKita
     public bool IsApproved { get; set; } = false;

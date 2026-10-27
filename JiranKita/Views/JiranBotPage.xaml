@@ -9,7 +9,7 @@
 
     <Grid RowDefinitions="Auto, *, Auto">
 
-        <!-- ================= 1. HEADER ATAS ================= -->
+        <!-- ================= 1. HEADER BAR ================= -->
         <Border Grid.Row="0"
                 Stroke="#E7E5E4"
                 StrokeThickness="1"
@@ -17,26 +17,26 @@
                 Padding="14, 10">
             <Grid ColumnDefinitions="Auto, *, Auto">
 
-                <!-- Butang Patah Balik (Patah balik ke Chat Komuniti) -->
+                <!-- Back Navigation Button -->
                 <controls:BackButton Grid.Column="0" />
 
-                <!-- Tajuk Bot Tengah -->
+                <!-- Header Bot Title -->
                 <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" VerticalOptions="Center" Spacing="1">
                     <Label Text="ASK JIRANBOT" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" HorizontalOptions="Center" />
                     <Label Text="Neighbourhood AI Knowledge" FontSize="10" FontAttributes="Bold" TextColor="#065F46" HorizontalOptions="Center" />
                 </VerticalStackLayout>
 
-                <!-- Ikon Info Kanan -->
+                <!-- Right Info Icon -->
                 <Label Grid.Column="2" Text="ℹ️" FontSize="16" VerticalOptions="Center" Margin="8,0" />
             </Grid>
         </Border>
 
 
-        <!-- ================= 2. RUANG KANDUNGAN BOT ================= -->
+        <!-- ================= 2. BOT CONVERSATION AREA ================= -->
         <ScrollView Grid.Row="1" Padding="16">
             <VerticalStackLayout Spacing="16">
 
-                <!-- BANNER SAMBUTAN BOT [DB: user.first_name] -->
+                <!-- BOT WELCOME BANNER [DB: user.first_name] -->
                 <Border StrokeShape="RoundRectangle 16" Stroke="#A7F3D0" BackgroundColor="#ECFDF5" Padding="14">
                     <Grid ColumnDefinitions="Auto, *" ColumnSpacing="12">
                         <Label Grid.Column="0" Text="🤖" FontSize="26" VerticalOptions="Center" />
@@ -47,11 +47,11 @@
                     </Grid>
                 </Border>
 
-                <!-- SOALAN LAZIM (COMMON INQUIRIES) -->
+                <!-- QUICK PROMPTS / FREQUENT INQUIRIES -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="COMMON INQUIRIES" FontSize="11" FontAttributes="Bold" TextColor="#57534E" CharacterSpacing="1" />
 
-                    <!-- Soalan 1: Jadual Sampah Pukal -->
+                    <!-- Quick Prompt 1: Bulky Waste Schedule -->
                     <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="12, 10">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnQuickPromptTapped" CommandParameter="Bulky Waste Schedule" />
@@ -62,7 +62,7 @@
                         </Grid>
                     </Border>
 
-                    <!-- Soalan 2: Kolam Renang -->
+                    <!-- Quick Prompt 2: Swimming Pool Rules -->
                     <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="12, 10">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnQuickPromptTapped" CommandParameter="Swimming Pool Rules" />
@@ -73,7 +73,7 @@
                         </Grid>
                     </Border>
 
-                    <!-- Soalan 3: Parking Pelawat -->
+                    <!-- Quick Prompt 3: Visitor Parking -->
                     <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="12, 10">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnQuickPromptTapped" CommandParameter="Visitor Parking Rules" />
@@ -86,7 +86,7 @@
                 </VerticalStackLayout>
 
 
-                <!-- MESEJ PERTANYAAN PENGGUNA (User Query) -->
+                <!-- USER QUERY BUBBLE -->
                 <Border HorizontalOptions="End"
                         StrokeShape="RoundRectangle 16 16 0 16"
                         BackgroundColor="#047857"
@@ -100,17 +100,17 @@
                 </Border>
 
 
-                <!-- KAD JAWAPAN AI JIRANBOT [DB/AI Engine: JiranBot RAG Knowledge Response] -->
+                <!-- JIRANBOT AI RESPONSE CARD [DB/AI Engine: JiranBot RAG Knowledge Response] -->
                 <Border StrokeShape="RoundRectangle 16" Stroke="#6EE7B7" StrokeThickness="1.5" BackgroundColor="White" Padding="14">
                     <VerticalStackLayout Spacing="10">
 
-                        <!-- Header Jawapan -->
+                        <!-- Response Title -->
                         <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
                             <Label Text="✨" FontSize="13" TextColor="#047857" />
                             <Label Text="BBQ Pit Booking Guidelines:" FontSize="11" FontAttributes="Bold" TextColor="#065F46" />
                         </HorizontalStackLayout>
 
-                        <!-- Poin Senarai Peraturan -->
+                        <!-- Rule List Items -->
                         <VerticalStackLayout Spacing="4" Padding="6, 0">
                             <Label Text="• Slot Available: Sunday 5:00 PM – 10:00 PM" FontSize="10" TextColor="#44403C" />
                             <Label Text="• Booking Fee: RM 50 (Non-refundable cleaning)" FontSize="10" TextColor="#44403C" />
@@ -120,7 +120,7 @@
 
                         <BoxView HeightRequest="1" Color="#F5F5F4" Margin="0, 2" />
 
-                        <!-- Footer Sumber & Butang Tempah -->
+                        <!-- Source Citation & Action Button -->
                         <Grid ColumnDefinitions="*, Auto">
                             <Label Grid.Column="0" Text="Source: JMB By-Law 2024 (Sec 4.2)" FontSize="9" TextColor="#78716C" VerticalOptions="Center" />
                             <Button Grid.Column="1" Text="Book Slot Now" BackgroundColor="#047857" TextColor="White" FontSize="10" FontAttributes="Bold" CornerRadius="8" HeightRequest="32" Padding="10, 0" />
@@ -133,7 +133,7 @@
         </ScrollView>
 
 
-        <!-- ================= 3. KOTAK TAIP TANYA BOT ================= -->
+        <!-- ================= 3. INPUT ENTRY FOOTER ================= -->
         <Border Grid.Row="2"
                 Stroke="#E7E5E4"
                 StrokeThickness="1"
@@ -159,5 +159,4 @@
         </Border>
 
     </Grid>
-
 </ContentPage>

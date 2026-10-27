@@ -11,16 +11,16 @@
 
     <Grid RowDefinitions="Auto, Auto, Auto, *">
 
-        <!-- ================= 1. HEADER (LOKASI SEBENAR) ================= -->
+        <!-- ================= 1. HEADER (ACTUAL LOCATION) ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
             <Grid ColumnDefinitions="*, Auto">
                 <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
                     <Label Text="📍" FontSize="16" TextColor="#047857" VerticalOptions="Center" />
-                    <!-- Nama Komuniti Dinamik -->
+                    <!-- Dynamic Community Title -->
                     <Label Text="{Binding CommunityTitleDisplay}" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <!-- Butang Re-center Peta -->
+                <!-- Map Re-center Button -->
                 <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" HeightRequest="32" WidthRequest="32">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnRecenterMapClicked" />
@@ -30,7 +30,7 @@
             </Grid>
         </Border>
 
-        <!-- ================= 2. PENAPIS KATEGORI (BERFUNGSI) ================= -->
+        <!-- ================= 2. CATEGORY FILTERS ================= -->
         <Border Grid.Row="1" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="#F5F5F4" Padding="12, 8">
             <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="8">
@@ -42,12 +42,12 @@
             </ScrollView>
         </Border>
 
-        <!-- ================= 3. PETA SEBENAR INTERAKTIF (OPENSTREETMAP) ================= -->
+        <!-- ================= 3. INTERACTIVE MAP (OPENSTREETMAP) ================= -->
         <Grid Grid.Row="2" HeightRequest="190">
-            <!-- WebView yang memuatkan peta GPS sebenar -->
+            <!-- WebView loading real GPS map -->
             <WebView x:Name="MapWebView" />
 
-            <!-- Lencana Geofence di bucu bawah peta -->
+            <!-- Geofence Badge at Map Bottom Corner -->
             <Border StrokeShape="RoundRectangle 6" 
                     BackgroundColor="#F2FFFFFF" 
                     Stroke="#D6D3D1" 
@@ -59,18 +59,18 @@
             </Border>
         </Grid>
 
-        <!-- ================= 4. SENARAI AMARAN DARI DATABASE & BUTANG SOS ================= -->
+        <!-- ================= 4. ALERTS LIST FROM DATABASE & SOS BUTTON ================= -->
         <Grid Grid.Row="3">
             <ScrollView Padding="16">
                 <VerticalStackLayout Spacing="14">
 
-                    <!-- Senarai Amaran Dinamik -->
+                    <!-- Dynamic Alerts List -->
                     <CollectionView x:Name="AlertsCollectionView" SelectionMode="None">
                         <CollectionView.EmptyView>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="18">
                                 <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
                                     <Label Text="✅" FontSize="26" HorizontalOptions="Center" />
-                                    <Label Text="Tiada amaran bahaya aktif di kawasan anda." FontSize="11" FontAttributes="Bold" TextColor="#047857" HorizontalOptions="Center" />
+                                    <Label Text="No active hazard alerts in your area." FontSize="11" FontAttributes="Bold" TextColor="#047857" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
                         </CollectionView.EmptyView>
@@ -94,7 +94,7 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
-                    <!-- Butang SOS Kecemasan -->
+                    <!-- SOS Emergency Call Button -->
                     <Button Text="🚨 SOS EMERGENCY CALL: GUARDHOUSE" 
                             Clicked="OnSosCallClicked"
                             BackgroundColor="#BE123C" 
@@ -110,5 +110,4 @@
         </Grid>
 
     </Grid>
-
 </ContentPage>

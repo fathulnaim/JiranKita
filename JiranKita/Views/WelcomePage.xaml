@@ -5,18 +5,18 @@
              BackgroundColor="#FBFBFA"
              Shell.NavBarIsVisible="False">
 
-    <!-- Kita guna Grid 2 Baris: 
-         Baris 0 (*)    = Ruang tengah (Logo & Teks)
-         Baris 1 (Auto) = Ruang bawah (Butang) -->
+    <!-- Grid Layout with 2 Rows:
+         Row 0 (*)    = Center container (Logo & Title Text)
+         Row 1 (Auto) = Bottom container (Action Button) -->
     <Grid RowDefinitions="*, Auto" Padding="24">
 
-        <!-- Logo dan detail kat sini -->
+        <!-- Logo & Branding Section -->
         <VerticalStackLayout Grid.Row="0"
                              VerticalOptions="Center"
                              HorizontalOptions="Center"
                              Spacing="12">
 
-            <!-- bingkai logo kat sini -->
+            <!-- Logo Outer Border Container -->
             <Border StrokeShape="RoundRectangle 28"
                     Stroke="#00693E"
                     StrokeThickness="2.5"
@@ -29,7 +29,7 @@
                 <VerticalStackLayout VerticalOptions="Center" 
                                      HorizontalOptions="Center" 
                                      Spacing="6">
-                    <!-- Logo kat sini -->
+                    <!-- Community Brand Logo -->
                     <Image Source="logo_jirankita.png"
                            HeightRequest="100"
                            WidthRequest="200"
@@ -38,14 +38,14 @@
                 </VerticalStackLayout>
             </Border>
 
-            <!-- Tajuk app -->
+            <!-- App Name Title -->
             <Label Text="JiranKita"
                    FontSize="26"
                    FontAttributes="Bold"
                    TextColor="#1C1C1C"
                    HorizontalTextAlignment="Center" />
 
-            <!-- Explaination -->
+            <!-- Platform Subtitle Description -->
             <Label Text="Smart Community Information &amp; Communication Platform"
                    FontSize="12"
                    TextColor="#57534E"
@@ -55,7 +55,7 @@
         </VerticalStackLayout>
 
 
-        <!-- Butang ke login -->
+        <!-- Navigation Button to Login Page -->
         <Border Grid.Row="1"
                 StrokeShape="RoundRectangle 25"
                 Stroke="#E7E5E4"
@@ -64,13 +64,13 @@
                 Padding="20, 10"
                 Margin="0, 0, 0, 20">
 
-            <!-- untuk direct ke signin page -->
+            <!-- Tap Gesture Listener for Navigation -->
             <Border.GestureRecognizers>
                 <TapGestureRecognizer Tapped="OnContinueClicked" />
             </Border.GestureRecognizers>
 
             <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                <Label Text="Jom Start !"
+                <Label Text="Get Started !"
                        TextColor="#065F46"
                        FontAttributes="Bold"
                        FontSize="12"
@@ -83,5 +83,4 @@
         </Border>
 
     </Grid>
-
 </ContentPage>

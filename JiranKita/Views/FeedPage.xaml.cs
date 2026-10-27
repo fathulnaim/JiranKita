@@ -5,42 +5,44 @@ namespace JiranKita.Views;
 
 public partial class FeedPage : ContentPage
 {
-    private readonly FirebaseService fbService = new FirebaseService();
+    private readonly FirebaseService _firebaseService = new FirebaseService();
     private List<PostModel> _allMasterPosts = new();
     private string _currentFilterCategory = "All";
 
+    // Constructor: Initializes XAML layout elements
     public FeedPage()
     {
         InitializeComponent();
     }
 
+    // Lifecycle hook: Refreshes community feed posts whenever page comes into focus
     protected override async void OnAppearing()
     {
         base.OnAppearing();
         await LoadFeedPostsFromFirebase();
     }
 
+    // Async data fetcher: Pulls feed posts matching active session community code
     private async Task LoadFeedPostsFromFirebase()
     {
         try
         {
-            // Tarik pos milik bubble komuniti semasa sahaja!
-            _allMasterPosts = await fbService.GetAllPostsAsync(AppSession.CurrentCommunityCode);
+            _allMasterPosts = await _firebaseService.GetAllPostsAsync(AppSession.CurrentCommunityCode);
             ApplyFilterAndSearch();
         }
         catch (Exception error)
         {
-            await DisplayAlert("Ralat", $"Gagal memuatkan pos: {error.Message}", "OK");
+            await DisplayAlert("Error", $"Failed to load posts: {error.Message}", "OK");
         }
     }
 
-    // CARIAN TEKS
+    // Event handler: Triggered on search text changes to apply keyword filters
     private void OnSearchTextChanged(object sender, TextChangedEventArgs e)
     {
         ApplyFilterAndSearch();
     }
 
-    // PENAPIS KATEGORI
+    // Event handler: Manages category filter pill selection and updates active button styling
     private void OnFilterPillClicked(object sender, EventArgs e)
     {
         if (sender is Button clickedBtn)
@@ -49,14 +51,14 @@ public partial class FeedPage : ContentPage
             if (cat.Contains("Road")) cat = "Road & Maintenance";
             _currentFilterCategory = cat;
 
-            // Reset semua butang penapis ke warna putih
+            // Reset all filter pills back to default white state
             ResetPill(PillAll);
             ResetPill(PillLost);
             ResetPill(PillRoad);
             ResetPill(PillEvents);
             ResetPill(PillOfficial);
 
-            // Butang aktif bertukar jadi hijau
+            // Highlight active filter pill with emerald green
             clickedBtn.BackgroundColor = Color.FromArgb("#047857");
             clickedBtn.TextColor = Colors.White;
             clickedBtn.FontAttributes = FontAttributes.Bold;
@@ -65,6 +67,7 @@ public partial class FeedPage : ContentPage
         }
     }
 
+    // UI helper: Resets filter pill visual properties back to default unselected style
     private void ResetPill(Button btn)
     {
         btn.BackgroundColor = Colors.White;
@@ -74,6 +77,7 @@ public partial class FeedPage : ContentPage
         btn.FontAttributes = FontAttributes.None;
     }
 
+    // Processing engine: Evaluates search keywords and category filters using LINQ
     private void ApplyFilterAndSearch()
     {
         string keyword = TxtSearch.Text?.Trim().ToLower() ?? "";
@@ -98,11 +102,13 @@ public partial class FeedPage : ContentPage
         FeedCollectionView.ItemsSource = filteredList;
     }
 
+    // Action handler: Opens CreatePostPage view
     private async void OnCreatePostClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.CreatePostPage));
     }
 
+    // Action handler: Navigates to PostDetailPage with selected item payload
     private async void OnPostSelected(object sender, SelectionChangedEventArgs e)
     {
         var selectedPost = e.CurrentSelection.FirstOrDefault() as PostModel;

@@ -6,31 +6,31 @@ namespace JiranKita.Views;
 
 public partial class FindNeighbourhoodPage : ContentPage
 {
-    private readonly FirebaseService fbService = new FirebaseService();
-    private bool isChecking = false; // Elak semakan bertindih serentak
+    private readonly FirebaseService _firebaseService = new FirebaseService();
+    private bool _isChecking = false; // Prevents concurrent validation requests
 
+    // Constructor: Initializes layout controls
     public FindNeighbourhoodPage()
     {
         InitializeComponent();
     }
 
+    // Lifecycle hook: Requests camera permissions and enables scanner on page focus
     protected override async void OnAppearing()
     {
         base.OnAppearing();
-        // Minta kebenaran kamera Google ML Kit
         await Methods.AskForRequiredPermissionAsync();
         QrScanner.CameraEnabled = true;
     }
 
+    // Lifecycle hook: Disables camera when navigating away to release hardware resources
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         QrScanner.CameraEnabled = false;
     }
 
-    // ==========================================
-    // 1. PENGESANAN KAMERA GOOGLE ML KIT
-    // ==========================================
+    // Camera detection callback: Handles Google ML Kit barcode scanner results
     private void OnDetectionFinished(object sender, OnDetectionFinishedEventArg e)
     {
         var firstResult = e.BarcodeResults.FirstOrDefault();
@@ -38,10 +38,10 @@ public partial class FindNeighbourhoodPage : ContentPage
 
         string qrText = firstResult.DisplayValue?.Trim() ?? "";
 
-        // Tolak pautan web biasa (cth: https://)
+        // Reject standard HTTP web URLs
         if (qrText.StartsWith("http", StringComparison.OrdinalIgnoreCase)) return;
 
-        // Jika kod tepat 5 aksara, proses semakan
+        // Process valid 5-character alphanumeric community codes
         if (qrText.Length == 5 && qrText.All(char.IsLetterOrDigit))
         {
             MainThread.BeginInvokeOnMainThread(async () =>
@@ -49,15 +49,13 @@ public partial class FindNeighbourhoodPage : ContentPage
                 QrScanner.CameraEnabled = false;
                 HiddenOtpEntry.Text = qrText.ToUpper();
 
-                // Semak kod QR yang diimbas terus dengan Firebase!
+                // Validate scanned code against Firebase database records
                 await CheckCodeWithFirebase(qrText.ToUpper());
             });
         }
     }
 
-    // ==========================================
-    // 2. KOTAK OTP 5-DIGIT & AUTO-SUBMIT
-    // ==========================================
+    // Input handler: Formats typed OTP characters across 5 visual border boxes and auto-submits upon completion
     private async void OnHiddenOtpTextChanged(object sender, TextChangedEventArgs e)
     {
         string text = e.NewTextValue?.ToUpper() ?? "";
@@ -68,7 +66,7 @@ public partial class FindNeighbourhoodPage : ContentPage
         Lbl4.Text = text.Length > 3 ? text[3].ToString() : "";
         Lbl5.Text = text.Length > 4 ? text[4].ToString() : "";
 
-        // Bila genap 5 digit ditaip: Terus semak dengan Firebase!
+        // Auto-submit validation when 5 characters are entered
         if (text.Length == 5)
         {
             HiddenOtpEntry.Unfocus();
@@ -76,7 +74,7 @@ public partial class FindNeighbourhoodPage : ContentPage
         }
     }
 
-    // Butang manual "Join Now"
+    // Action handler: Manual validation trigger for "Join Now" button
     private async void OnVerifyButtonClicked(object sender, EventArgs e)
     {
         string text = HiddenOtpEntry.Text?.Trim().ToUpper() ?? "";
@@ -86,78 +84,75 @@ public partial class FindNeighbourhoodPage : ContentPage
         }
         else
         {
-            await DisplayAlert("Ralat", "Sila lengkapkan 5-digit kod jemputan.", "OK");
+            await DisplayAlert("Error", "Please enter a complete 5-digit invite code.", "OK");
         }
     }
 
-    // ==========================================
-    // 3. FUNGSI SEMAK DENGAN DATABASE FIREBASE
-    // ==========================================
+    // Firebase verification logic: Checks database for matching community invite codes
     private async Task CheckCodeWithFirebase(string inviteCode)
     {
-        if (isChecking) return;
-        isChecking = true;
+        if (_isChecking) return;
+        _isChecking = true;
 
         try
         {
-            // Tanya Firebase: Ada tak komuniti dengan kod ini?
-            CommunityModel? matchedCommunity = await fbService.FindCommunityByInviteCodeAsync(inviteCode);
+            CommunityModel? matchedCommunity = await _firebaseService.FindCommunityByInviteCodeAsync(inviteCode);
 
             if (matchedCommunity != null)
             {
-                // ✅ KOD WUJUD & JUMPA DALAM FIREBASE!
-
+                // Active match found
                 AppSession.CurrentCommunityCode = matchedCommunity.InviteCode;
                 AppSession.CurrentCommunityName = matchedCommunity.CommunityName;
+
                 await DisplayAlert(
-                    "Komuniti Ditemui! 🎉",
-                    $"Selamat datang ke:\n\n{matchedCommunity.CommunityName}\n({matchedCommunity.PropertyType})\n\nMenyambungkan anda ke dashboard komuniti...",
-                    "Masuk Sekarang"
+                    "Community Found! 🎉",
+                    $"Welcome to:\n\n{matchedCommunity.CommunityName}\n({matchedCommunity.PropertyType})\n\nConnecting you to your community dashboard...",
+                    "Enter Now"
                 );
 
-                // Masuk terus ke HomePage (TabBar rasmi akan aktif)
+                // Navigate directly to main AppShell HomePage root
                 await Shell.Current.GoToAsync("//HomePage");
             }
             else
             {
-                // ❌ KOD SALAH / TIADA DALAM DATABASE
-                await DisplayAlert("Kod Tidak Sah", $"Tiada komuniti ditemui dengan kod '{inviteCode}'. Sila semak semula notis JMB anda.", "Cuba Lagi");
+                // Invalid code fallback
+                await DisplayAlert("Invalid Code", $"No community was found matching code '{inviteCode}'. Please verify your JMB notice board details.", "Try Again");
 
-                // Kosongkan kotak supaya boleh taip semula
+                // Clear input and resume scanner hardware
                 HiddenOtpEntry.Text = string.Empty;
-                QrScanner.CameraEnabled = true; // Hidupkan balik kamera
+                QrScanner.CameraEnabled = true;
             }
         }
         catch (Exception error)
         {
-            await DisplayAlert("Ralat Firebase", $"Gagal menyemak kod: {error.Message}", "OK");
+            await DisplayAlert("Firebase Error", $"Failed to verify invite code: {error.Message}", "OK");
         }
         finally
         {
-            isChecking = false;
+            _isChecking = false;
         }
     }
 
-    // Butang Flash
+    // Action handler: Toggles camera flash hardware
     private void OnTorchToggleClicked(object sender, EventArgs e)
     {
         QrScanner.TorchOn = !QrScanner.TorchOn;
     }
 
-    // Butang Gallery
+    // Action handler: Picks photo from device gallery
     private async void OnGalleryClicked(object sender, EventArgs e)
     {
         FileResult photo = await MediaPicker.Default.PickPhotoAsync();
         if (photo != null)
         {
-            await DisplayAlert("Galeri", "Gambar telah dipilih.", "OK");
+            await DisplayAlert("Gallery", "Photo selected.", "OK");
         }
     }
 
-    // Pendaftaran Komuniti Baharu (JMB)
+    // Action handler: Navigates JMB administrators to new community registration page
     private async void OnRegisterCommunityClicked(object sender, EventArgs e)
     {
-        QrScanner.CameraEnabled = false; // Matikan kamera dulu supaya laju
+        QrScanner.CameraEnabled = false;
         await Shell.Current.GoToAsync(nameof(Views.RegisterCommunityPage));
     }
 }
