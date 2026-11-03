@@ -282,4 +282,87 @@ public class FirebaseService
             return new List<AlertModel>();
         }
     }
+
+    // 1. Tarik senarai penduduk yang belum disahkan (IsVerified == false)
+    public async Task<List<UserModel>> GetPendingResidentsAsync()
+    {
+        var users = await _firebaseClient.Child("Users").OnceAsync<UserModel>();
+        var pending = new List<UserModel>();
+
+        foreach (var item in users)
+        {
+            if (!item.Object.IsVerified )
+            //tukar kat sini && item.Object.Role != "Admin"
+            {
+                var user = item.Object;
+                user.FirebaseKey = item.Key;
+                pending.Add(user);
+            }
+        }
+        return pending;
+    }
+
+    // 2. Luluskan Penduduk (Tukar IsVerified -> true)
+    public async Task ApproveResidentAsync(string userFirebaseKey)
+    {
+        await _firebaseClient
+            .Child("Users")
+            .Child(userFirebaseKey)
+            .Child("IsVerified")
+            .PutAsync(true);
+    }
+
+    // 3. Tolak Penduduk
+    public async Task RejectResidentAsync(string userFirebaseKey)
+    {
+        await _firebaseClient
+            .Child("Users")
+            .Child(userFirebaseKey)
+            .DeleteAsync();
+    }
+
+    // 4. Tarik senarai amaran bahaya yang menunggu kelulusan JMB (IsApproved == false)
+    public async Task<List<AlertModel>> GetPendingAlertsAsync(string communityCode)
+    {
+        var alerts = await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("Alerts")
+            .OnceAsync<AlertModel>();
+
+        var pending = new List<AlertModel>();
+        foreach (var item in alerts)
+        {
+            if (!item.Object.IsApproved && item.Object.IsActive)
+            {
+                var alert = item.Object;
+                alert.FirebaseKey = item.Key;
+                pending.Add(alert);
+            }
+        }
+        return pending;
+    }
+
+    // 5. Luluskan & Siarkan Amaran ke Peta (Tukar IsApproved -> true)
+    public async Task ApproveAlertAsync(string communityCode, string alertFirebaseKey)
+    {
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("Alerts")
+            .Child(alertFirebaseKey)
+            .Child("IsApproved")
+            .PutAsync(true);
+    }
+
+    // 6. Buang Amaran Palsu / Tolak Amaran
+    public async Task RejectAlertAsync(string communityCode, string alertFirebaseKey)
+    {
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("Alerts")
+            .Child(alertFirebaseKey)
+            .DeleteAsync();
+    }
 }

@@ -25,4 +25,8 @@ public partial class ProfilePage : ContentPage
         // Navigate to AboutPage route
         await Shell.Current.GoToAsync(nameof(Views.AboutPage));
     }
+    private async void OnApprovalsQueuClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(Views.ApprovalsQueuePage));
+    }
 }

@@ -18,4 +18,7 @@ public class AlertModel
     // KOORDINAT GPS SEBENAR (Default: Kawasan Seri Kembangan)
     public double Latitude { get; set; } = 3.0249;
     public double Longitude { get; set; } = 101.7012;
+
+    public bool IsApproved { get; set; } = false;
+    public string ReportedBy { get; set; } = "Resident";
 }
