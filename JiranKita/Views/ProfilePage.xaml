@@ -192,7 +192,10 @@
 
                         <!-- Button 2: Approvals Queue [DB: pending_approvals.count] -->
                         <Border Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="#E9D5FF" BackgroundColor="White" Padding="10, 12">
-                            <Label Text="👥 Approvals Queue (2 pending)" FontSize="10" FontAttributes="Bold" TextColor="#3B0764" LineHeight="1.2" />
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnApprovalsQueuClicked" />
+                            </Border.GestureRecognizers>
+                            <Label Text="👥 Approvals Queue" FontSize="10" FontAttributes="Bold" TextColor="#3B0764" LineHeight="1.2" />
                         </Border>
                     </Grid>
                 </VerticalStackLayout>

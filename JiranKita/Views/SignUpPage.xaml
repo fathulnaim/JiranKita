@@ -86,17 +86,28 @@
 
                         <!-- Full Name -->
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Full Name (as per MyKad / Passport) *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Full Name (as per MyKad / Passport)" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                            </HorizontalStackLayout>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
-                                <Entry x:Name="TxtFullName" Placeholder="Example: Ahmad bin Ali" PlaceholderColor="#A8A29E" FontSize="13" TextColor="#1C1917"
-                                       Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
+                                <Entry x:Name="TxtFullName" 
+                                       Placeholder="Example: Ahmad bin Ali" 
+                                       PlaceholderColor="#A8A29E" 
+                                       FontSize="13" 
+                                       TextColor="#1C1917"
+                                       Focused="OnInputFocused" 
+                                       Unfocused="OnInputUnfocused" />
                             </Border>
                         </VerticalStackLayout>
 
-                        <!-- IC Number -->
+                        <!-- Malaysian IC Number -->
                         <VerticalStackLayout Spacing="6">
                             <Grid ColumnDefinitions="*, Auto">
-                                <Label Grid.Column="0" Text="Malaysian IC Number (MyKad) *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <HorizontalStackLayout Grid.Column="0" Spacing="2">
+                                    <Label Text="Malaysian IC Number (MyKad)" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                    <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                                </HorizontalStackLayout>
                                 <Label Grid.Column="1" Text="YYMMDD-PB-####" FontSize="10" TextColor="#065F46" FontAttributes="Bold" />
                             </Grid>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
@@ -108,16 +119,24 @@
 
                         <!-- Email & Phone Grid -->
                         <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
+                            <!-- Email Address -->
                             <VerticalStackLayout Grid.Column="0" Spacing="6">
-                                <Label Text="Email Address *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <HorizontalStackLayout Spacing="2">
+                                    <Label Text="Email Address" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                    <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                                </HorizontalStackLayout>
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
                                     <Entry x:Name="TxtEmail" Placeholder="name@email.com" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" Keyboard="Email"
                                            Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </VerticalStackLayout>
 
+                            <!-- Phone Number -->
                             <VerticalStackLayout Grid.Column="1" Spacing="6">
-                                <Label Text="Phone (+60) *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <HorizontalStackLayout Spacing="2">
+                                    <Label Text="Phone (+60)" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                    <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                                </HorizontalStackLayout>
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
                                     <Entry x:Name="TxtPhone" Placeholder="+60 12-345 6789" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" Keyboard="Telephone"
                                            Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
@@ -125,9 +144,12 @@
                             </VerticalStackLayout>
                         </Grid>
 
-                        <!-- Password -->
+                        <!-- Create Password -->
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Create Password *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Create Password" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                            </HorizontalStackLayout>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
                                 <Entry x:Name="TxtPassword" 
                                        Placeholder="Minimum 6 characters" 
@@ -140,7 +162,12 @@
                             </Border>
                         </VerticalStackLayout>
 
-                        <Button Text="PROCEED TO ADDRESS &amp; UNIT ➔" Clicked="OnStep1NextClicked" BackgroundColor="#047857" TextColor="White" FontAttributes="Bold" FontSize="12" CornerRadius="12" HeightRequest="48" Margin="0, 8, 0, 0" />
+                        <!-- Footnote & Action Button -->
+                        <VerticalStackLayout Spacing="10" Margin="0, 8, 0, 0">
+                            <Label Text="* Required field" FontSize="10" FontAttributes="Italic" TextColor="Red" />
+                            <Button Text="PROCEED TO ADDRESS &amp; UNIT ➔" Clicked="OnStep1NextClicked" BackgroundColor="#047857" TextColor="White" FontAttributes="Bold" FontSize="12" CornerRadius="12" HeightRequest="48" />
+                        </VerticalStackLayout>
+
                     </VerticalStackLayout>
 
                     <!-- ================= STEP 2 ================= -->
@@ -150,7 +177,10 @@
 
                         <!-- Housing Area Picker -->
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Property / Housing Area *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Property / Housing Area" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                            </HorizontalStackLayout>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
                                 <Picker x:Name="PickerPrecinct" FontSize="12" TextColor="#1C1917" Title="Select Condo / Taman">
                                     <Picker.ItemsSource>
@@ -182,7 +212,10 @@
                             </VerticalStackLayout>
 
                             <VerticalStackLayout Grid.Column="2" Spacing="4">
-                                <Label Text="Unit / House No. *" FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
+                                <HorizontalStackLayout Spacing="2">
+                                    <Label Text="Unit / House No." FontSize="11" FontAttributes="Bold" TextColor="#44403C" />
+                                    <Label Text="*" FontSize="11" FontAttributes="Bold" TextColor="Red" />
+                                </HorizontalStackLayout>
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#047857" BackgroundColor="#ECFDF5" Padding="8, 2">
                                     <Entry x:Name="TxtUnitNo" Placeholder="B-12-04" PlaceholderColor="#A8A29E" FontSize="12" FontAttributes="Bold" TextColor="#065F46" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
@@ -191,7 +224,10 @@
 
                         <!-- Ownership Status Cards -->
                         <VerticalStackLayout Spacing="8">
-                            <Label Text="Residency Ownership Status *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Residency Ownership Status" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                            </HorizontalStackLayout>
                             <Grid ColumnDefinitions="*, *" RowDefinitions="Auto, Auto" ColumnSpacing="8" RowSpacing="8">
                                 <Border x:Name="CardOwner" Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#047857" StrokeThickness="2" BackgroundColor="#ECFDF5" Padding="10">
                                     <Border.GestureRecognizers>
@@ -253,7 +289,10 @@
 
                         <!-- Emergency Contact Person -->
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Emergency Contact Person *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Emergency Contact Person" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                            </HorizontalStackLayout>
                             <Grid ColumnDefinitions="*, *, *" ColumnSpacing="6">
                                 <Border Grid.Column="0" StrokeShape="RoundRectangle 10" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="8, 2">
                                     <Entry x:Name="TxtEmergName" Placeholder="Kin Name" PlaceholderColor="#A8A29E" FontSize="11" TextColor="#1C1917" Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
@@ -296,7 +335,10 @@
 
                         <!-- Document Upload Container -->
                         <VerticalStackLayout Spacing="6">
-                            <Label Text="Proof of Residency (TNB Utility Bill / Assessment Tax) *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <HorizontalStackLayout Spacing="2">
+                                <Label Text="Proof of Residency (TNB Utility Bill / Assessment Tax)" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                                <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
+                            </HorizontalStackLayout>
                             <Border StrokeShape="RoundRectangle 14" Stroke="#059669" StrokeThickness="2" StrokeDashArray="4, 2" BackgroundColor="#ECFDF5" Padding="16">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnUploadDocumentClicked" />

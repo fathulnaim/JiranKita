@@ -26,4 +26,5 @@ public class UserModel
     public string EmergencyPhone { get; set; } = string.Empty;
 
     public bool IsVerified { get; set; } = false;
+    public string ProofDocument { get; set; } = string.Empty;
 }
