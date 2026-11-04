@@ -1,24 +1,61 @@
+using JiranKita.Models;
 using JiranKita.Services;
 
 namespace JiranKita.Views;
 
 public partial class ChatInboxPage : ContentPage
 {
-    // Constructor: Initializes XAML layout components
+    private readonly FirebaseService fbService = new FirebaseService();
+    private List<DirectConversationModel> _directConversations = new();
+
     public ChatInboxPage()
     {
         InitializeComponent();
     }
 
-    // Lifecycle hook: Automatically updates header and community group labels with active session data when page appears
-    protected override void OnAppearing()
+    protected override async void OnAppearing()
     {
         base.OnAppearing();
         LblCommunitySub.Text = AppSession.CurrentCommunityName;
         LblGroupName.Text = AppSession.CurrentCommunityName;
+
+        // Fetch active direct conversation threads from Firebase
+        await LoadActiveDirectConversations();
     }
 
-    // Navigates to the public Community Group Chat room via Shell parameter routing
+    // Fetches 1-on-1 chat rooms associated with the current user session
+    private async Task LoadActiveDirectConversations()
+    {
+        try
+        {
+            _directConversations = await fbService.GetDirectChatRoomsAsync(AppSession.CurrentCommunityCode, AppSession.CurrentUserName);
+            CvDirectChats.ItemsSource = _directConversations;
+        }
+        catch
+        {
+            // Gracefully handles cases when no records exist yet
+        }
+    }
+
+    // Opens dynamic 1-on-1 private chat room
+    private async void OnDirectChatSelected(object sender, SelectionChangedEventArgs e)
+    {
+        var chat = e.CurrentSelection.FirstOrDefault() as DirectConversationModel;
+        if (chat == null) return;
+
+        CvDirectChats.SelectedItem = null;
+
+        var navParams = new Dictionary<string, object>
+        {
+            { "RoomId", chat.RoomId },
+            { "TargetName", chat.NeighbourName },
+            { "TargetUnit", chat.NeighbourUnit }
+        };
+
+        await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
+    }
+
+    // Opens official community group chat room
     private async void OnOpenGroupChatClicked(object sender, EventArgs e)
     {
         var navParams = new Dictionary<string, object>
@@ -27,36 +64,11 @@ public partial class ChatInboxPage : ContentPage
             { "TargetName", AppSession.CurrentCommunityName },
             { "TargetUnit", "Community Group" }
         };
+
         await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
     }
 
-    // Opens a 1-on-1 direct message room with resident Puan Aisyah using a deterministic room ID
-    private async void OnOpenAisyahChatClicked(object sender, EventArgs e)
-    {
-        string roomId = AppSession.GetDirectRoomId(AppSession.CurrentUserName, "Puan Aisyah");
-        var navParams = new Dictionary<string, object>
-        {
-            { "RoomId", roomId },
-            { "TargetName", "Puan Aisyah" },
-            { "TargetUnit", "Unit B-12" }
-        };
-        await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
-    }
-
-    // Opens a 1-on-1 direct message room with resident Haris using a deterministic room ID
-    private async void OnOpenHarisChatClicked(object sender, EventArgs e)
-    {
-        string roomId = AppSession.GetDirectRoomId(AppSession.CurrentUserName, "Haris");
-        var navParams = new Dictionary<string, object>
-        {
-            { "RoomId", roomId },
-            { "TargetName", "Haris" },
-            { "TargetUnit", "Unit B-08" }
-        };
-        await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
-    }
-
-    // Navigates to the JiranBot AI Assistant page
+    // Navigates to JiranBot AI Assistant page
     private async void OnRobotClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.JiranBotPage));

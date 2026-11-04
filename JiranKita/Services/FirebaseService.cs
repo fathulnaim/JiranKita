@@ -387,4 +387,77 @@ public class FirebaseService
             .Child("Alerts")
             .PostAsync(alert);
     }
+
+    // ==============================================================
+    // TARIK SENARAI SEMBANG 1-ON-1 YANG AKTIF DARI DATABASE
+    // ==============================================================
+    public async Task<List<DirectConversationModel>> GetDirectChatRoomsAsync(string communityCode, string currentUserName)
+    {
+        var conversationList = new List<DirectConversationModel>();
+        string cleanCurrent = currentUserName.Replace(" ", "").ToLower();
+
+        try
+        {
+            // Ambil semua bilik DirectChats dalam bubble komuniti
+            var chatRooms = await _firebaseClient
+                .Child("Communities")
+                .Child(communityCode.ToUpper())
+                .Child("DirectChats")
+                .OnceAsync<object>();
+
+            foreach (var room in chatRooms)
+            {
+                string roomId = room.Key; // cth: "muhammadfathul_puanaisyah"
+
+                // Hanya ambil bilik jika pengguna terlibat dalam perbualan itu
+                if (roomId.Contains(cleanCurrent))
+                {
+                    // Tarik mesej dalam bilik ini untuk dapatkan mesej terakhir & profil jiran
+                    var messages = await _firebaseClient
+                        .Child("Communities")
+                        .Child(communityCode.ToUpper())
+                        .Child("DirectChats")
+                        .Child(roomId)
+                        .Child("Messages")
+                        .OnceAsync<ChatMessage>();
+
+                    if (messages != null && messages.Any())
+                    {
+                        var sortedMessages = messages.OrderBy(m => m.Object.Timestamp).ToList();
+                        var lastMsg = sortedMessages.Last().Object;
+
+                        // Cari mesej jiran untuk dapatkan nama & unitnya
+                        var neighbourMsg = messages.FirstOrDefault(m => m.Object.SenderName != currentUserName)?.Object;
+
+                        string neighbourName = neighbourMsg?.SenderName ?? "Neighbour";
+                        string neighbourUnit = neighbourMsg?.SenderUnit ?? "Unit Resident";
+
+                        // Jika kita baru hantar mesej dan jiran belum balas, ekstrak nama dari RoomId
+                        if (neighbourName == "Neighbour")
+                        {
+                            string rawName = roomId.Replace(cleanCurrent, "").Replace("_", "");
+                            if (!string.IsNullOrEmpty(rawName))
+                            {
+                                neighbourName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(rawName);
+                            }
+                        }
+
+                        conversationList.Add(new DirectConversationModel
+                        {
+                            RoomId = roomId,
+                            NeighbourName = neighbourName,
+                            NeighbourUnit = neighbourUnit,
+                            LastMessage = lastMsg.MessageText
+                        });
+                    }
+                }
+            }
+        }
+        catch
+        {
+            // Jika belum ada rekod
+        }
+
+        return conversationList;
+    }
 }
