@@ -187,6 +187,9 @@
                     <Grid ColumnDefinitions="*, *" ColumnSpacing="8">
                         <!-- Button 1: Issue Notice -->
                         <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#E9D5FF" BackgroundColor="White" Padding="10, 12">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnIssueNoticeClicked" />
+                            </Border.GestureRecognizers>
                             <Label Text="📢 Issue Official Notice" FontSize="10" FontAttributes="Bold" TextColor="#3B0764" LineHeight="1.2" />
                         </Border>
 

@@ -29,4 +29,8 @@ public partial class ProfilePage : ContentPage
     {
         await Shell.Current.GoToAsync(nameof(Views.ApprovalsQueuePage));
     }
+    private async void OnIssueNoticeClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(Views.IssueNoticePage));
+    }
 }

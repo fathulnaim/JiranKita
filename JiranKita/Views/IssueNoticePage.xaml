@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:JiranKita.Controls"
+             x:Class="JiranKita.Views.IssueNoticePage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- ================= 1. HEADER SECTION ================= -->
+        <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="14, 10">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <controls:BackButton Grid.Column="0" />
+                <Label Grid.Column="1" Text="ISSUE OFFICIAL NOTICE" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" HorizontalOptions="Center" VerticalOptions="Center" />
+                <Border Grid.Column="2" StrokeShape="RoundRectangle 12" BackgroundColor="#F3E8FF" Stroke="#E9D5FF" Padding="8, 3">
+                    <Label Text="JMB ADMIN" FontSize="9" FontAttributes="Bold" TextColor="#581C87" />
+                </Border>
+            </Grid>
+        </Border>
+
+        <!-- ================= 2. NOTICE INPUT FORM (SCROLLABLE) ================= -->
+        <ScrollView Grid.Row="1" Padding="16">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- Page Header & Description -->
+                <VerticalStackLayout Spacing="2">
+                    <Label Text="Issue Management Official Notice" FontSize="18" FontAttributes="Bold" TextColor="#1C1917" />
+                    <Label Text="This notice will be broadcast to all registered residents within your community in real time." FontSize="11" TextColor="#78716C" LineHeight="1.2" />
+                </VerticalStackLayout>
+
+                <!-- Notice Category Selection (Dynamic Chip Buttons) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Notice Category *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="6">
+                            <Button x:Name="BtnCatWater" Text="💧 Water Disruption" Clicked="OnCategoryClicked" BackgroundColor="#047857" TextColor="White" FontAttributes="Bold" FontSize="11" CornerRadius="8" HeightRequest="34" Padding="10, 0" />
+                            <Button x:Name="BtnCatLift" Text="🛗 Lift Maintenance" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="34" Padding="10, 0" />
+                            <Button x:Name="BtnCatSecurity" Text="🚨 Security Advisory" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="34" Padding="10, 0" />
+                            <Button x:Name="BtnCatAgm" Text="📋 AGM / Management" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="34" Padding="10, 0" />
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <!-- Form Inputs Container Card -->
+                <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="16">
+                    <VerticalStackLayout Spacing="14">
+
+                        <!-- Notice Headline / Title -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Notice Headline / Title *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
+                                <Entry x:Name="TxtNoticeTitle" 
+                                       Placeholder="e.g., SYABAS WATER SUPPLY DISRUPTION NOTICE" 
+                                       PlaceholderColor="#A8A29E" 
+                                       FontSize="12" 
+                                       TextColor="#1C1917"
+                                       Focused="OnInputFocused" 
+                                       Unfocused="OnInputUnfocused" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Affected Area / Blocks -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Affected Area / Blocks *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
+                                <Entry x:Name="TxtAffectedArea" 
+                                       Placeholder="e.g., Block B &amp; C / Entire Community" 
+                                       PlaceholderColor="#A8A29E" 
+                                       FontSize="12" 
+                                       TextColor="#1C1917"
+                                       Focused="OnInputFocused" 
+                                       Unfocused="OnInputUnfocused" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Description & Advisory Details -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Detailed Advisory &amp; Schedule *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12">
+                                <Editor x:Name="TxtNoticeDescription" 
+                                        Placeholder="State the date, start/end time, and necessary actions required by residents..." 
+                                        PlaceholderColor="#A8A29E" 
+                                        HeightRequest="90" 
+                                        FontSize="12" 
+                                        TextColor="#1C1917" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <BoxView HeightRequest="1" Color="#F5F5F4" />
+
+                        <!-- BROADCAST DESTINATIONS OPTIONS -->
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Broadcast Destinations:" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" />
+
+                            <!-- Checkbox 1: Home Banner & Map Pin -->
+                            <Border StrokeShape="RoundRectangle 10" BackgroundColor="#FFFBEB" Stroke="#FDE68A" Padding="10">
+                                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
+                                    <CheckBox x:Name="ChkUrgentBanner" IsChecked="True" Color="#D97706" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                                        <Label Text="Display as Urgent Banner on Home &amp; Map" FontSize="11" FontAttributes="Bold" TextColor="#78350F" />
+                                        <Label Text="Will immediately appear on the Home urgent alert card and GIS map pins." FontSize="9" TextColor="#92400E" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+
+                            <!-- Checkbox 2: Community Feed Post -->
+                            <Border StrokeShape="RoundRectangle 10" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" Padding="10">
+                                <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
+                                    <CheckBox x:Name="ChkFeedPost" IsChecked="True" Color="#047857" VerticalOptions="Center" />
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
+                                        <Label Text="Publish to Community Feed (Official Tag)" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" />
+                                        <Label Text="Residents will be able to read and leave comments on the Feed." FontSize="9" TextColor="#78716C" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </VerticalStackLayout>
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- ================= 3. BROADCAST BUTTON FOOTER ================= -->
+        <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 10">
+            <Button Text="📢 BROADCAST OFFICIAL NOTICE" 
+                    Clicked="OnBroadcastNoticeClicked" 
+                    BackgroundColor="#047857" 
+                    TextColor="White" 
+                    FontAttributes="Bold" 
+                    FontSize="12" 
+                    CornerRadius="12" 
+                    HeightRequest="48" />
+        </Border>
+
+    </Grid>
+</ContentPage>

@@ -365,4 +365,26 @@ public class FirebaseService
             .Child(alertFirebaseKey)
             .DeleteAsync();
     }
+
+    // ==============================================================
+    // FUNGSI SIARKAN NOTIS RASMI JMB KE FIREBASE
+    // ==============================================================
+    public async Task SetCommunityUrgentAlertAsync(string communityCode, AlertModel alert)
+    {
+        // 1. Simpan ke dahan UrgentAlert (Untuk Kad Kuning di HomePage)
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("UrgentAlert")
+            .PutAsync(alert);
+
+        // 2. Simpan juga ke senarai Alerts (Untuk Peta GIS di AlertsPage)
+        alert.IsApproved = true;
+        alert.IsActive = true;
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.ToUpper())
+            .Child("Alerts")
+            .PostAsync(alert);
+    }
 }
