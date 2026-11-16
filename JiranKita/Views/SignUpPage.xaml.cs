@@ -8,6 +8,7 @@ public partial class SignUpPage : ContentPage
     private int _currentStep = 1;
     private int _occupantsCount = 1;
     private string _selectedOwnership = "Owner";
+    private string _proofDocumentBase64 = string.Empty;
     private int _vehicleCount = 0;
 
     // Constructor: Initializes components, sets wizard UI state, and populates default sample vehicles
@@ -259,9 +260,14 @@ public partial class SignUpPage : ContentPage
     // Media picker handler: Selects proof of residency document
     private async void OnUploadDocumentClicked(object sender, EventArgs e)
     {
-        FileResult photo = await MediaPicker.Default.PickPhotoAsync();
+        FileResult? photo = await MediaPicker.Default.PickPhotoAsync();
         if (photo != null)
         {
+            using var stream = await photo.OpenReadAsync();
+            using var ms = new MemoryStream();
+            await stream.CopyToAsync(ms);
+
+            _proofDocumentBase64 = Convert.ToBase64String(ms.ToArray());
             LblDocFileName.Text = $"Attached: {photo.FileName}";
         }
     }
@@ -293,7 +299,8 @@ public partial class SignUpPage : ContentPage
             OccupantsCount = _occupantsCount,
             EmergencyName = TxtEmergName.Text?.Trim() ?? "",
             EmergencyRelation = TxtEmergRel.Text?.Trim() ?? "",
-            EmergencyPhone = TxtEmergPhone.Text?.Trim() ?? ""
+            EmergencyPhone = TxtEmergPhone.Text?.Trim() ?? "",
+            ProofDocument = _proofDocumentBase64
         };
 
         try

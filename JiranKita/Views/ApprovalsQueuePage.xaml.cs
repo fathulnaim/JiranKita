@@ -191,4 +191,21 @@ public partial class ApprovalsQueuePage : ContentPage
             }
         }
     }
+
+    private void OnProofImageTapped(object sender, TappedEventArgs e)
+    {
+        UserModel? user = e.Parameter as UserModel
+            ?? (sender as BindableObject)?.BindingContext as UserModel;
+
+        if (user?.ProofImageSource == null) return;
+
+        ImgFullscreenProof.Source = user.ProofImageSource;
+        ProofOverlay.IsVisible = true;
+    }
+
+    private void OnCloseProofOverlayClicked(object sender, EventArgs e)
+    {
+        ProofOverlay.IsVisible = false;
+        ImgFullscreenProof.Source = null;
+    }
 }
