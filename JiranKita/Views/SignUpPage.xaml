@@ -108,10 +108,10 @@
                                     <Label Text="Malaysian IC Number (MyKad)" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                                     <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
                                 </HorizontalStackLayout>
-                                <Label Grid.Column="1" Text="YYMMDD-PB-####" FontSize="10" TextColor="#065F46" FontAttributes="Bold" />
+                                <Label Grid.Column="1" Text="Without -" FontSize="10" TextColor="#065F46" FontAttributes="Bold" />
                             </Grid>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
-                                <Entry x:Name="TxtICNumber" Placeholder="010825-10-5231" PlaceholderColor="#A8A29E" MaxLength="14" FontSize="13" TextColor="#1C1917" Keyboard="Numeric"
+                                <Entry x:Name="TxtICNumber" Placeholder="010825105231" PlaceholderColor="#A8A29E" MaxLength="14" FontSize="13" TextColor="#1C1917" Keyboard="Numeric"
                                        Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                             </Border>
                             <Label Text="Encrypted for resident authentication in compliance with PDPA 2010." FontSize="10" TextColor="#78716C" />
@@ -138,7 +138,7 @@
                                     <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
                                 </HorizontalStackLayout>
                                 <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="10, 2">
-                                    <Entry x:Name="TxtPhone" Placeholder="+60 12-345 6789" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" Keyboard="Telephone"
+                                    <Entry x:Name="TxtPhone" Placeholder="012-345 6789" PlaceholderColor="#A8A29E" FontSize="12" TextColor="#1C1917" Keyboard="Telephone"
                                            Focused="OnInputFocused" Unfocused="OnInputUnfocused" />
                                 </Border>
                             </VerticalStackLayout>
@@ -181,17 +181,14 @@
                                 <Label Text="Property / Housing Area" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                                 <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
                             </HorizontalStackLayout>
-                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 0">
-                                <Picker x:Name="PickerPrecinct" FontSize="12" TextColor="#1C1917" Title="Select Condo / Taman">
-                                    <Picker.ItemsSource>
-                                        <x:Array Type="{x:Type x:String}">
-                                            <x:String>Taman Seri Kembangan (Zone B)</x:String>
-                                            <x:String>Residensi Vista Harmoni</x:String>
-                                            <x:String>Kondominium Impian Indah</x:String>
-                                        </x:Array>
-                                    </Picker.ItemsSource>
-                                    <Picker.SelectedIndex>0</Picker.SelectedIndex>
-                                </Picker>
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
+                                <Entry x:Name="TxtHousingArea" 
+                                   Placeholder="cth: Taman Melati / Residensi Harmoni" 
+                                   PlaceholderColor="#A8A29E" 
+                                   FontSize="12" 
+                                   TextColor="#1C1917"
+                                   Focused="OnInputFocused" 
+                                   Unfocused="OnInputUnfocused" />
                             </Border>
                         </VerticalStackLayout>
 

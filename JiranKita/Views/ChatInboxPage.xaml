@@ -58,7 +58,7 @@
 
                 <!-- B. DYNAMIC DIRECT MESSAGES LIST (FROM DATABASE) -->
                 <VerticalStackLayout Spacing="8">
-                    <Label Text="DIRECT MESSAGES (1-ON-1)" FontSize="10" FontAttributes="Bold" TextColor="#78716C" CharacterSpacing="1" />
+                    <Label Text="DIRECT MESSAGES" FontSize="10" FontAttributes="Bold" TextColor="#78716C" CharacterSpacing="1" />
 
                     <CollectionView x:Name="CvDirectChats" SelectionMode="Single" SelectionChanged="OnDirectChatSelected">
 

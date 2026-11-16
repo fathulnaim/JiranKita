@@ -19,6 +19,14 @@ public partial class FindNeighbourhoodPage : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+
+        // Already joined a community earlier? Skip this page - code is only asked once.
+        if (AppSession.IsLoggedIn && AppSession.HasCommunity)
+        {
+            await Shell.Current.GoToAsync("//HomePage");
+            return;
+        }
+
         await Methods.AskForRequiredPermissionAsync();
         QrScanner.CameraEnabled = true;
     }
@@ -101,8 +109,29 @@ public partial class FindNeighbourhoodPage : ContentPage
             if (matchedCommunity != null)
             {
                 // Active match found
-                AppSession.CurrentCommunityCode = matchedCommunity.InviteCode;
-                AppSession.CurrentCommunityName = matchedCommunity.CommunityName;
+                // 1. Save to the current session (memory)
+                AppSession.SetCommunity(matchedCommunity.InviteCode, matchedCommunity.CommunityName);
+
+                // 2. Save to Firebase so the next login remembers it
+                try
+                {
+                    string userKey = AppSession.CurrentUser?.FirebaseKey ?? string.Empty;
+                    if (!string.IsNullOrEmpty(userKey))
+                    {
+                        await _firebaseService.UpdateUserCommunityAsync(
+                            userKey,
+                            matchedCommunity.InviteCode,
+                            matchedCommunity.CommunityName);
+                    }
+                    else
+                    {
+                        System.Diagnostics.Debug.WriteLine("UpdateUserCommunity skipped: CurrentUser.FirebaseKey is empty.");
+                    }
+                }
+                catch (Exception saveError)
+                {
+                    System.Diagnostics.Debug.WriteLine($"Failed to save community to Firebase: {saveError.Message}");
+                }
 
                 await DisplayAlert(
                     "Community Found! 🎉",

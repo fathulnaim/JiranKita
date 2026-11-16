@@ -42,14 +42,14 @@ public partial class ChatRoomPage : ContentPage
         if (!string.IsNullOrEmpty(TargetUserName) && TargetRoomId != "Group")
         {
             LblTitle.Text = TargetUserName;
-            LblSubtitle.Text = $"{TargetUserUnit} · Direct Chat 🔒";
+            LblSubtitle.Text = $"{TargetUserUnit} · Direct Chat";
             _liveChatSubscription = _firebaseService.SubscribeToDirectMessages(communityCode, TargetRoomId, HandleIncomingMessage);
         }
         // Fallback to community group chat
         else
         {
             LblTitle.Text = AppSession.CurrentCommunityName;
-            LblSubtitle.Text = $"Bubble: {communityCode} · Community Group";
+            LblSubtitle.Text = $" {communityCode} · Community Group";
             _liveChatSubscription = _firebaseService.SubscribeToMessages(communityCode, HandleIncomingMessage);
         }
     }

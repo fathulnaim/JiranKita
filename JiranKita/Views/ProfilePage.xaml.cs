@@ -1,36 +1,86 @@
+using JiranKita.Services;
+
 namespace JiranKita.Views;
 
 public partial class ProfilePage : ContentPage
 {
-    // Constructor: Initializes ProfilePage layout components
-    public ProfilePage()
-    {
-        InitializeComponent();
-    }
+    // ==============================================================
+    // DYNAMIC DATA MAPPING FROM ACTIVE SESSION (ZERO HARDCODED VALUES)
+    // ==============================================================
+    public string FullNameDisplay => string.IsNullOrWhiteSpace(AppSession.CurrentUserName) ? "Guest Resident" : AppSession.CurrentUserName;
+    public string UserInitials => AppSession.CurrentUserInitials;
+    public string UnitCommunityDisplay => $"Unit: {AppSession.CurrentUserUnit}, {AppSession.CurrentCommunityName}";
+    public string RoleBadgeDisplay => AppSession.IsAdmin ? "🛡️ JMB CHAIRMAN / ADMIN" : "✓ VERIFIED RESIDENT";
 
-    // Logout handler: Prompts confirmation alert and resets navigation route to Welcome Page
-    private async void OnLogoutClicked(object sender, EventArgs e)
+    // Masked MyKad format for PDPA privacy compliance
+    public string MaskedIcDisplay
     {
-        bool confirm = await DisplayAlert("Log Out", "Are you sure you want to log out of JiranKita?", "Yes, Log Out", "Cancel");
-        if (confirm)
+        get
         {
-            // Reset navigation stack and redirect to WelcomePage
-            await Shell.Current.GoToAsync("//WelcomePage");
+            string ic = AppSession.CurrentUser?.IcNumber ?? "";
+            return ic.Length >= 6 ? $"MyKad: {ic.Substring(0, 6)}-XX-XXXX" : "MyKad: Verified";
         }
     }
 
-    // Navigation handler: Opens AboutPage view
-    private async void OnAboutClicked(object sender, EventArgs e)
+    // Visibility toggle for JMB Admin panel
+    public bool IsAdmin => AppSession.IsAdmin;
+
+    public string UnitSummaryDisplay => $"Registered Unit: {AppSession.CurrentUserUnit}";
+    public string OccupantsSummaryDisplay => $"Household Members: {AppSession.CurrentUser?.OccupantsCount ?? 1} registered";
+    public string CommunitySummaryDisplay => $"Community: {AppSession.CurrentCommunityName}";
+
+    public ProfilePage()
     {
-        // Navigate to AboutPage route
-        await Shell.Current.GoToAsync(nameof(Views.AboutPage));
+        InitializeComponent();
+        BindingContext = this;
     }
-    private async void OnApprovalsQueuClicked(object sender, EventArgs e)
+
+    protected override void OnAppearing()
     {
-        await Shell.Current.GoToAsync(nameof(Views.ApprovalsQueuePage));
+        base.OnAppearing();
+
+        // Refresh all displayed properties every time the Profile screen is opened
+        OnPropertyChanged(nameof(FullNameDisplay));
+        OnPropertyChanged(nameof(UserInitials));
+        OnPropertyChanged(nameof(UnitCommunityDisplay));
+        OnPropertyChanged(nameof(RoleBadgeDisplay));
+        OnPropertyChanged(nameof(MaskedIcDisplay));
+        OnPropertyChanged(nameof(IsAdmin));
+        OnPropertyChanged(nameof(UnitSummaryDisplay));
+        OnPropertyChanged(nameof(OccupantsSummaryDisplay));
+        OnPropertyChanged(nameof(CommunitySummaryDisplay));
     }
+
+    // Navigate to JMB Notice Form
     private async void OnIssueNoticeClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.IssueNoticePage));
+    }
+
+    // Navigate to JMB Approvals Center
+    private async void OnApprovalsQueueClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(Views.ApprovalsQueuePage));
+    }
+
+    private async void OnAboutClicked(object sender, EventArgs e)
+    {
+        await Shell.Current.GoToAsync(nameof(Views.AboutPage));
+    }
+
+    // ==========================================
+    // ACCOUNT LOGOUT
+    // ==========================================
+    private async void OnLogoutClicked(object sender, EventArgs e)
+    {
+        bool confirm = await DisplayAlert("Log Out", "Are you sure you want to log out of your JiranKita account?", "Log Out", "Cancel");
+        if (confirm)
+        {
+            // 1. Clear all active session data from memory
+            AppSession.EndSession();
+
+            // 2. Return the user to the Welcome screen
+            await Shell.Current.GoToAsync("//WelcomePage");
+        }
     }
 }

@@ -16,9 +16,6 @@ public partial class SignUpPage : ContentPage
         InitializeComponent();
         UpdateStepUI();
 
-        // Populate sample vehicle entries
-        AddVehicleItem("WXX 8182", "Proton X50");
-        AddVehicleItem("VAA 2341", "Perodua Bezza");
     }
 
     // Input focus event listener: Highlights active entry border in green
@@ -149,8 +146,20 @@ public partial class SignUpPage : ContentPage
     }
 
     // Wizard navigation handler to Step 3
-    private void OnStep2NextClicked(object sender, EventArgs e)
+    private async void OnStep2NextClicked(object sender, EventArgs e)
     {
+        if (string.IsNullOrWhiteSpace(TxtHousingArea.Text))
+        {
+            await DisplayAlert("Area Name Required", "Please enter the name of your housing area or condominium.", "OK");
+            return;
+        }
+
+        if (string.IsNullOrWhiteSpace(TxtUnitNo.Text))
+        {
+            await DisplayAlert("Unit No. Required", "Please enter your unit or house number.", "OK");
+            return;
+        }
+
         _currentStep = 3;
         UpdateStepUI();
     }
@@ -158,8 +167,8 @@ public partial class SignUpPage : ContentPage
     // Wizard navigation handler to Step 4 (Populates summary review values)
     private void OnStep3NextClicked(object sender, EventArgs e)
     {
-        LblSummaryName.Text = TxtFullName.Text;
-        LblSummaryUnit.Text = $"{TxtUnitNo.Text} ({PickerPrecinct.SelectedItem})";
+        LblSummaryName.Text = TxtFullName.Text?.Trim() ?? "";
+        LblSummaryUnit.Text = $"{TxtUnitNo.Text?.Trim()} ({TxtHousingArea.Text?.Trim()})";
 
         _currentStep = 4;
         UpdateStepUI();
@@ -260,6 +269,7 @@ public partial class SignUpPage : ContentPage
     // Final registration handler: Validates PDPA consent, constructs UserModel, and dispatches to Firebase
     private async void OnFinalSubmitClicked(object sender, EventArgs e)
     {
+
         if (!ChkPdpa.IsChecked)
         {
             await DisplayAlert("Consent Required", "Please check the PDPA 2010 consent declaration before proceeding.", "OK");
@@ -274,7 +284,7 @@ public partial class SignUpPage : ContentPage
             Phone = TxtPhone.Text?.Trim() ?? "",
             Password = TxtPassword.Text?.Trim() ?? "",
 
-            HousingArea = PickerPrecinct.SelectedItem?.ToString() ?? "Taman Seri Kembangan",
+            HousingArea = TxtHousingArea.Text?.Trim() ?? "",
             Block = TxtBlock.Text?.Trim() ?? "",
             Level = TxtLevel.Text?.Trim() ?? "",
             UnitNo = TxtUnitNo.Text?.Trim() ?? "",
@@ -289,7 +299,8 @@ public partial class SignUpPage : ContentPage
         try
         {
             var fbService = new FirebaseService();
-            await fbService.RegisterUserAsync(newUser);
+            newUser.FirebaseKey = await fbService.RegisterUserAsync(newUser);
+            AppSession.StartSession(newUser);
 
             await DisplayAlert("Registration Successful", "Your residency application has been submitted to the JMB for review & approval.", "Proceed");
 

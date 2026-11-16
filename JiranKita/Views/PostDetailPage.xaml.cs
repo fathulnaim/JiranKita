@@ -57,10 +57,14 @@ public partial class PostDetailPage : ContentPage
 
         TxtReply.Text = string.Empty;
 
+        string unitDisplay = AppSession.CurrentUserUnit.StartsWith("Unit ", StringComparison.OrdinalIgnoreCase)
+            ? AppSession.CurrentUserUnit
+            : $"Unit {AppSession.CurrentUserUnit}";
+
         var newComment = new CommentModel
         {
-            AuthorName = "Muhammad Fathul",
-            AuthorUnit = "Unit B-12-04",
+            AuthorName = AppSession.CurrentUserName,
+            AuthorUnit = unitDisplay,
             CommentText = replyText,
             CreatedAt = DateTime.Now
         };
@@ -79,15 +83,21 @@ public partial class PostDetailPage : ContentPage
     // Displays contact options modal sheet to start direct chat or trigger phone dialer
     private async void OnContactOwnerClicked(object sender, EventArgs e)
     {
+        if (Post.AuthorName.Equals(AppSession.CurrentUserName, StringComparison.OrdinalIgnoreCase))
+        {
+            await DisplayAlert("Info", "This is your own post.", "OK");
+            return;
+        }
+
         string choice = await DisplayActionSheet(
             $"Contact {Post.AuthorName}",
             "Cancel",
             null,
-            "💬 Direct Message (1-on-1 Chat)",
+            "💬 Direct Message",
             "📞 Official Phone Call"
         );
 
-        if (choice == "💬 Direct Message (1-on-1 Chat)")
+        if (choice == "💬 Direct Message")
         {
             string directRoomId = AppSession.GetDirectRoomId(AppSession.CurrentUserName, Post.AuthorName);
 
@@ -98,14 +108,23 @@ public partial class PostDetailPage : ContentPage
                 { "TargetUnit", Post.AuthorUnit }
             };
 
-            // Route to direct chat room view
             await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage), navParams);
         }
         else if (choice == "📞 Official Phone Call")
         {
+            if (string.IsNullOrWhiteSpace(Post.AuthorPhone))
+            {
+                await DisplayAlert("Unavailable", "Phone number is not available for this resident.", "OK");
+                return;
+            }
+
             if (PhoneDialer.Default.IsSupported)
             {
-                PhoneDialer.Default.Open("+60123456789");
+                PhoneDialer.Default.Open(Post.AuthorPhone);
+            }
+            else
+            {
+                await DisplayAlert("Not Supported", "Phone dialer is not supported on this device.", "OK");
             }
         }
     }

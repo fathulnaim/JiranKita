@@ -10,6 +10,15 @@ public partial class HomePage : ContentPage
     // Dynamic Binding Properties for Session Header
     public string CommunityNameDisplay => AppSession.CurrentCommunityName;
     public string UnitDisplay => AppSession.CurrentUserUnit;
+    public string UserSubtitleDisplay
+    {
+        get
+        {
+            string name = string.IsNullOrWhiteSpace(AppSession.CurrentUserName) ? "Resident" : AppSession.CurrentUserName;
+            string unit = AppSession.CurrentUserUnit;
+            return string.IsNullOrWhiteSpace(unit) ? name : $"{name} · {unit}";
+        }
+    }
     public string UserInitialsDisplay => AppSession.CurrentUserInitials;
 
     // Dynamic Urgent Alert Properties
@@ -34,6 +43,7 @@ public partial class HomePage : ContentPage
         // Refresh session header properties upon navigating to Page
         OnPropertyChanged(nameof(CommunityNameDisplay));
         OnPropertyChanged(nameof(UnitDisplay));
+        OnPropertyChanged(nameof(UserSubtitleDisplay));
         OnPropertyChanged(nameof(UserInitialsDisplay));
 
         await LoadHomeData();
@@ -43,6 +53,7 @@ public partial class HomePage : ContentPage
     private async Task LoadHomeData()
     {
         string code = AppSession.CurrentCommunityCode;
+        if (string.IsNullOrWhiteSpace(code)) return; // No community joined yet
 
         try
         {

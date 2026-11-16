@@ -51,55 +51,65 @@
             <!-- Email Entry -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Residential / User Email" 
-                       FontSize="12" 
-                       TextColor="#44403C" 
-                       FontAttributes="Bold" />
+           FontSize="12" 
+           TextColor="#44403C" 
+           FontAttributes="Bold" />
                 <Border StrokeShape="RoundRectangle 12" 
-                        Stroke="#D6D3D1" 
-                        BackgroundColor="White" 
-                        Padding="12, 2">
-                    <Entry Placeholder="Enter residential / user email"
-                           PlaceholderColor="#A8A29E"
-                           FontSize="13"
-                           TextColor="#1C1917" />
+            Stroke="#D6D3D1" 
+            BackgroundColor="White" 
+            Padding="12, 2">
+                    <Entry x:Name="TxtEmail"
+               Placeholder="Enter residential / user email"
+               PlaceholderColor="#A8A29E"
+               Keyboard="Email"
+               FontSize="13"
+               TextColor="#1C1917" />
                 </Border>
             </VerticalStackLayout>
 
             <!-- Password Entry -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Password" 
-                       FontSize="12" 
-                       TextColor="#44403C" 
-                       FontAttributes="Bold" />
+           FontSize="12" 
+           TextColor="#44403C" 
+           FontAttributes="Bold" />
                 <Border StrokeShape="RoundRectangle 12" 
-                        Stroke="#D6D3D1" 
-                        BackgroundColor="White" 
-                        Padding="12, 2">
+            Stroke="#D6D3D1" 
+            BackgroundColor="White" 
+            Padding="12, 2">
                     <Grid ColumnDefinitions="*, Auto">
-                        <Entry Grid.Column="0" 
-                               Placeholder="Enter password"
-                               PlaceholderColor="#A8A29E"
-                               IsPassword="True" 
-                               FontSize="13" 
-                               TextColor="#1C1917" />
-                        <Label Grid.Column="1" 
-                               Text="👁" 
-                               FontSize="14" 
-                               VerticalOptions="Center" 
-                               TextColor="#A8A29E" 
-                               Margin="0,0,5,0" />
+                        <Entry x:Name="TxtPassword"
+                   Grid.Column="0" 
+                   Placeholder="Enter password"
+                   PlaceholderColor="#A8A29E"
+                   IsPassword="True" 
+                   FontSize="13" 
+                   TextColor="#1C1917" />
+                        <Label x:Name="LblTogglePassword"
+                   Grid.Column="1" 
+                   Text="👁" 
+                   FontSize="14" 
+                   VerticalOptions="Center" 
+                   TextColor="#A8A29E" 
+                   Margin="0,0,5,0">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="OnTogglePasswordTapped" />
+                            </Label.GestureRecognizers>
+                        </Label>
                     </Grid>
                 </Border>
             </VerticalStackLayout>
 
             <!-- Remember Me Checkbox & Forgot Password Link -->
             <Grid ColumnDefinitions="*, Auto">
-                <HorizontalStackLayout Grid.Column="0" Spacing="6" VerticalOptions="Center">
-                    <CheckBox IsChecked="True" Color="#047857" />
-                    <Label Text="Keep me logged in" 
-                           FontSize="12" 
-                           TextColor="#57534E" 
-                           VerticalOptions="Center" />
+                <!-- Remember Me Option -->
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center" Margin="0, -2, 0, 2">
+                    <CheckBox x:Name="ChkRememberMe" IsChecked="False" Color="#047857" VerticalOptions="Center" />
+                    <Label Text="Remember my login details" FontSize="12" TextColor="#44403C" VerticalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnRememberMeLabelTapped" />
+                        </Label.GestureRecognizers>
+                    </Label>
                 </HorizontalStackLayout>
 
                 <Label Grid.Column="1" 

@@ -153,11 +153,14 @@ public class FirebaseService
     // ==========================================
     // 5. AUTH PENGGUNA
     // ==========================================
-    public async Task RegisterUserAsync(UserModel user)
+    // Returns the new Firebase key so the caller can set user.FirebaseKey
+    public async Task<string> RegisterUserAsync(UserModel user)
     {
-        await _firebaseClient
+        var result = await _firebaseClient
             .Child("Users")
             .PostAsync(user);
+
+        return result.Key;
     }
 
     public async Task<UserModel?> LoginUserAsync(string email, string password)
@@ -168,7 +171,7 @@ public class FirebaseService
 
         foreach (var item in userList)
         {
-            if (item.Object.Email.Equals(email, StringComparison.OrdinalIgnoreCase) &&
+            if (string.Equals(item.Object.Email?.Trim(), email?.Trim(), StringComparison.OrdinalIgnoreCase) &&
                 item.Object.Password == password)
             {
                 var user = item.Object;
@@ -291,7 +294,7 @@ public class FirebaseService
 
         foreach (var item in users)
         {
-            if (!item.Object.IsVerified )
+            if (!item.Object.IsVerified)
             //tukar kat sini && item.Object.Role != "Admin"
             {
                 var user = item.Object;
@@ -459,5 +462,21 @@ public class FirebaseService
         }
 
         return conversationList;
+    }
+    public async Task UpdateUserCommunityAsync(string userFirebaseKey, string communityCode, string communityName)
+    {
+        if (string.IsNullOrEmpty(userFirebaseKey)) return;
+
+        await _firebaseClient
+            .Child("Users")
+            .Child(userFirebaseKey)
+            .Child("CommunityCode")
+            .PutAsync(communityCode.ToUpper());
+
+        await _firebaseClient
+            .Child("Users")
+            .Child(userFirebaseKey)
+            .Child("CommunityName")
+            .PutAsync(communityName);
     }
 }

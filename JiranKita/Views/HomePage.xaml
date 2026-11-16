@@ -23,7 +23,7 @@
                                FontSize="13" 
                                FontAttributes="Bold" 
                                TextColor="#1C1917" />
-                        <Label Text="{Binding UnitDisplay}" 
+                        <Label Text="{Binding UserSubtitleDisplay}" 
                                FontSize="10" 
                                TextColor="#78716C" />
                     </VerticalStackLayout>
@@ -31,10 +31,6 @@
 
                 <!-- Notifications & User Profile Avatar [AppSession] -->
                 <HorizontalStackLayout Grid.Column="1" Spacing="10" VerticalOptions="Center">
-                    <!-- Notification Bell Icon -->
-                    <Border StrokeShape="RoundRectangle 10" Stroke="#E7E5E4" BackgroundColor="#F5F5F4" HeightRequest="36" WidthRequest="36">
-                        <Label Text="🔔" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
-                    </Border>
 
                     <!-- User Initials Avatar -->
                     <Border StrokeShape="RoundRectangle 18" BackgroundColor="#065F46" Stroke="Transparent" HeightRequest="34" WidthRequest="34">
@@ -72,7 +68,7 @@
                                 <Label Grid.Column="1" Text="{Binding ActiveAlert.TimeDisplay}" FontSize="10" TextColor="#92400E" FontAttributes="Bold" />
                             </Grid>
 
-                            <Label Text="{Binding ActiveAlert.Advisory}" FontSize="11" TextColor="#44403C" LineHeight="1.2" />
+                            <Label Text="{Binding ActiveAlert.Description}" FontSize="11" TextColor="#44403C" LineHeight="1.2" />
                         </VerticalStackLayout>
                     </Grid>
                 </Border>

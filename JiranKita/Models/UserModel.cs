@@ -27,4 +27,9 @@ public class UserModel
 
     public bool IsVerified { get; set; } = false;
     public string ProofDocument { get; set; } = string.Empty;
+
+    public string Role { get; set; } = "Resident";
+    public string CommunityCode { get; set; } = string.Empty;
+    public string CommunityName { get; set; } = string.Empty;
+    public string RejectionReason { get; set; } = string.Empty;
 }

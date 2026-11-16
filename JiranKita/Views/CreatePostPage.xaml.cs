@@ -6,13 +6,31 @@ namespace JiranKita.Views;
 public partial class CreatePostPage : ContentPage
 {
     private readonly FirebaseService _firebaseService = new FirebaseService();
-    private string _selectedCategory = "Lost & Found"; // Default category
+    private string _selectedCategory = "Lost & Found"; // Default active category
+    private string _selectedLocation = string.Empty;   // Stores clean location string without UI emoji
     private string? _attachedPhotoPath = null;
+    private bool _isPublishing = false;                // Prevents double-tap duplicate submissions
 
     // Constructor: Initializes layout controls
     public CreatePostPage()
     {
         InitializeComponent();
+    }
+
+    // Lifecycle hook: Populates dynamic default community location when the page opens
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        // Set default location from active AppSession only if not already customized by the user
+        if (string.IsNullOrWhiteSpace(_selectedLocation))
+        {
+            _selectedLocation = !string.IsNullOrWhiteSpace(AppSession.CurrentCommunityName)
+                ? AppSession.CurrentCommunityName
+                : "Community Area";
+
+            LblLocation.Text = $"📍 {_selectedLocation}";
+        }
     }
 
     // Navigation handler: Pops current page back to previous stack view
@@ -50,6 +68,52 @@ public partial class CreatePostPage : ContentPage
         btn.BorderColor = Color.FromArgb("#D6D3D1");
         btn.BorderWidth = 1;
         btn.FontAttributes = FontAttributes.None;
+    }
+
+    // Location selector handler: Lets resident choose a preset community landmark or enter a custom spot
+    private async void OnChangeLocationTapped(object sender, TappedEventArgs e)
+    {
+        string unitLocation = !string.IsNullOrWhiteSpace(AppSession.CurrentUserUnit)
+            ? $"Unit {AppSession.CurrentUserUnit}, {AppSession.CurrentCommunityName}"
+            : AppSession.CurrentCommunityName;
+
+        string action = await DisplayActionSheet(
+            "Select Post Location",
+            "Cancel",
+            null,
+            $"🏠 {unitLocation}",
+            $"🏘️ {AppSession.CurrentCommunityName} (General)",
+            "🚧 Main Guardhouse / Entrance",
+            "🏢 Clubhouse / Community Hall",
+            "✏️ Enter Custom Location..."
+        );
+
+        if (string.IsNullOrWhiteSpace(action) || action == "Cancel")
+            return;
+
+        if (action == "✏️ Enter Custom Location...")
+        {
+            string custom = await DisplayPromptAsync(
+                "Custom Location",
+                "Enter the specific spot or landmark within your neighbourhood:",
+                "Save",
+                "Cancel",
+                placeholder: "e.g. Level 2 Visitor Parking, Block B",
+                initialValue: _selectedLocation
+            );
+
+            if (!string.IsNullOrWhiteSpace(custom))
+            {
+                _selectedLocation = custom.Trim();
+                LblLocation.Text = $"📍 {_selectedLocation}";
+            }
+        }
+        else
+        {
+            // Strip leading emoji prefix so clean location text is stored in Firebase
+            _selectedLocation = action.Substring(action.IndexOf(' ') + 1).Trim();
+            LblLocation.Text = $"📍 {_selectedLocation}";
+        }
     }
 
     // Input listener: Dynamically tracks title input character count (Max: 70)
@@ -95,36 +159,56 @@ public partial class CreatePostPage : ContentPage
     // Core action handler: Validates post inputs, instantiates PostModel, and publishes to Firebase
     private async void OnPublishClicked(object sender, EventArgs e)
     {
-        string title = TxtTitle.Text?.Trim() ?? "";
-        string desc = TxtDescription.Text?.Trim() ?? "";
+        if (_isPublishing) return;
 
-        // Form validation
+        string title = TxtTitle.Text?.Trim() ?? string.Empty;
+        string desc = TxtDescription.Text?.Trim() ?? string.Empty;
+
+        // 1. Validate required post inputs
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(desc))
         {
-            await DisplayAlert("Incomplete Information", "Please enter both title and detailed description for your post.", "OK");
+            await DisplayAlert("Incomplete Information", "Please enter both a title and detailed description for your post.", "OK");
             return;
         }
 
+        // 2. Ensure active community session exists before writing to Firebase
+        if (string.IsNullOrWhiteSpace(AppSession.CurrentCommunityCode))
+        {
+            await DisplayAlert("No Active Community", "Please join or select a neighbourhood community before publishing a post.", "OK");
+            return;
+        }
+
+        _isPublishing = true;
+        if (sender is Button publishBtn) publishBtn.IsEnabled = false;
+
+        // Normalize unit display format cleanly (prevents duplicate "Unit Unit ...")
+        string formattedUnit = string.IsNullOrWhiteSpace(AppSession.CurrentUserUnit)
+            ? "Resident"
+            : (AppSession.CurrentUserUnit.StartsWith("Unit ", StringComparison.OrdinalIgnoreCase)
+                ? AppSession.CurrentUserUnit
+                : $"Unit {AppSession.CurrentUserUnit}");
+
+        // 3. Build PostModel dynamically from active AppSession (zero hardcoded data)
         var newPost = new PostModel
         {
             Category = _selectedCategory,
             Title = title,
             Description = desc,
-            Location = "Block C Lobby",
-            AuthorName = AppSession.CurrentUserName ?? "Muhammad Fathul",
-            AuthorUnit = AppSession.CurrentUserUnit ?? "Unit B-12-04",
-            AuthorInitials = "FN",
-            IsVerifiedAuthor = true,
+            Location = _selectedLocation,
+            AuthorName = AppSession.CurrentUserName,
+            AuthorUnit = formattedUnit,
+            AuthorInitials = AppSession.CurrentUserInitials,
+            AuthorPhone = AppSession.CurrentUserPhone,
+            IsVerifiedAuthor = AppSession.CurrentUser?.IsVerified ?? false,
             CreatedAt = DateTime.Now,
             CommentsCount = 0,
-            ImageUrl = _attachedPhotoPath ?? "",
-            AllowDirectContact = ChkAllowContact.IsChecked,
-            IsUrgentBroadcast = ChkUrgentSiren.IsChecked
+            ImageUrl = _attachedPhotoPath ?? string.Empty,
+            AllowDirectContact = ChkAllowContact.IsChecked
         };
 
         try
         {
-            // Publish new post entry directly into current community code scope
+            // 4. Publish new post entry directly into current community code scope
             await _firebaseService.CreatePostAsync(AppSession.CurrentCommunityCode, newPost);
             await DisplayAlert("Success!", "Your post has been published to the community feed.", "OK");
             await Shell.Current.GoToAsync("..");
@@ -132,6 +216,11 @@ public partial class CreatePostPage : ContentPage
         catch (Exception error)
         {
             await DisplayAlert("Firebase Error", $"Failed to publish post: {error.Message}", "OK");
+        }
+        finally
+        {
+            _isPublishing = false;
+            if (sender is Button btn) btn.IsEnabled = true;
         }
     }
 }
