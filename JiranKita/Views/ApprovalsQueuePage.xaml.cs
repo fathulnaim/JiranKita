@@ -126,15 +126,26 @@ public partial class ApprovalsQueuePage : ContentPage
         {
             bool confirm = await DisplayAlert(
                 "Reject Resident",
-                $"Are you sure you want to reject {user.FullName}'s registration?",
+                $"Are you sure you want to reject {user.FullName}'s registration? This will also delete their posts, comments, and chats.",
                 "Reject",
                 "Cancel"
             );
 
             if (confirm)
             {
-                await fbService.RejectResidentAsync(user.FirebaseKey);
-                await LoadAllPendingData();
+                try
+                {
+                    string communityCode = !string.IsNullOrWhiteSpace(user.CommunityCode)
+                        ? user.CommunityCode
+                        : AppSession.CurrentCommunityCode;
+
+                    await fbService.RejectResidentAsync(user.FirebaseKey, communityCode, user.FullName);
+                    await LoadAllPendingData();
+                }
+                catch (Exception error)
+                {
+                    await DisplayAlert("Error", $"Failed to reject user: {error.Message}", "OK");
+                }
             }
         }
     }

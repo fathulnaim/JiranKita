@@ -316,10 +316,108 @@ public class FirebaseService
     }
 
     // 3. Tolak Penduduk
-    public async Task RejectResidentAsync(string userFirebaseKey)
+    // 3. Tolak Penduduk & Padam Semua Pos, Komen, dan Sembang Pengguna
+    public async Task RejectResidentAsync(string userFirebaseKey, string communityCode = "", string userFullName = "")
     {
-        if (string.IsNullOrWhiteSpace(userFirebaseKey)) return; // <-- add this safety check!
+        if (string.IsNullOrWhiteSpace(userFirebaseKey)) return;
 
+        string cleanCode = communityCode?.Trim().ToUpper() ?? "";
+        string targetName = userFullName?.Trim() ?? "";
+
+        if (!string.IsNullOrEmpty(cleanCode) && !string.IsNullOrEmpty(targetName))
+        {
+            // 1. Padam semua Posts & Comments milik pengguna
+            var posts = await _firebaseClient
+                .Child("Communities")
+                .Child(cleanCode)
+                .Child("Posts")
+                .OnceAsync<PostModel>();
+
+            if (posts != null)
+            {
+                foreach (var post in posts)
+                {
+                    if (post.Object == null) continue;
+
+                    if (string.Equals(post.Object.AuthorName?.Trim(), targetName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        await _firebaseClient
+                            .Child("Communities")
+                            .Child(cleanCode)
+                            .Child("Posts")
+                            .Child(post.Key)
+                            .DeleteAsync();
+                    }
+                    else if (post.Object.Comments != null)
+                    {
+                        foreach (var comment in post.Object.Comments)
+                        {
+                            if (string.Equals(comment.Value?.AuthorName?.Trim(), targetName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                await _firebaseClient
+                                    .Child("Communities")
+                                    .Child(cleanCode)
+                                    .Child("Posts")
+                                    .Child(post.Key)
+                                    .Child("Comments")
+                                    .Child(comment.Key)
+                                    .DeleteAsync();
+                            }
+                        }
+                    }
+                }
+            }
+
+            // 2. Padam semua mesej Group Chat milik pengguna
+            var chatMessages = await _firebaseClient
+                .Child("Communities")
+                .Child(cleanCode)
+                .Child("Chat")
+                .OnceAsync<ChatMessage>();
+
+            if (chatMessages != null)
+            {
+                foreach (var msg in chatMessages)
+                {
+                    if (string.Equals(msg.Object?.SenderName?.Trim(), targetName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        await _firebaseClient
+                            .Child("Communities")
+                            .Child(cleanCode)
+                            .Child("Chat")
+                            .Child(msg.Key)
+                            .DeleteAsync();
+                    }
+                }
+            }
+
+            // 3. Padam semua bilik Direct Chat (1-on-1) pengguna
+            string cleanUserKey = targetName.Replace(" ", "").ToLower();
+            var directRooms = await _firebaseClient
+                .Child("Communities")
+                .Child(cleanCode)
+                .Child("DirectChats")
+                .OnceAsync<object>();
+
+            if (directRooms != null)
+            {
+                foreach (var room in directRooms)
+                {
+                    var participants = room.Key.Split('_', StringSplitOptions.RemoveEmptyEntries);
+                    if (participants.Contains(cleanUserKey, StringComparer.OrdinalIgnoreCase))
+                    {
+                        await _firebaseClient
+                            .Child("Communities")
+                            .Child(cleanCode)
+                            .Child("DirectChats")
+                            .Child(room.Key)
+                            .DeleteAsync();
+                    }
+                }
+            }
+        }
+
+        // 4. Padam akaun pengguna dari Users
         await _firebaseClient
             .Child("Users")
             .Child(userFirebaseKey)
