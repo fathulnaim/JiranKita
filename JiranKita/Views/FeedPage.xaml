@@ -13,7 +13,7 @@
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="14, 10">
             <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="#FAFAF9" Padding="10, 0">
                 <Grid ColumnDefinitions="Auto, *">
-                    <Label Grid.Column="0" Text="🔍" FontSize="13" TextColor="#A8A29E" VerticalOptions="Center" VerticalTextAlignment="Center" Margin="0, 0, 6, 0" />
+                    <Label Grid.Column="1" Text="🔍" FontSize="13" TextColor="#A8A29E" VerticalOptions="Center" VerticalTextAlignment="Center" Margin="0, 0, 6, 0" />
                     <Entry x:Name="TxtSearch" 
                            Placeholder="Search feed, tags, items..." 
                            PlaceholderColor="#A8A29E" 
