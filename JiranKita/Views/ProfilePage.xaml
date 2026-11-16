@@ -38,8 +38,14 @@
 
                             <HorizontalStackLayout Spacing="6" Margin="0, 3, 0, 0">
                                 <!-- Role / Status Badge -->
-                                <Border StrokeShape="RoundRectangle 4" BackgroundColor="#ECFDF5" Stroke="#A7F3D0" Padding="6, 2">
-                                    <Label Text="{Binding RoleBadgeDisplay}" FontSize="9" FontAttributes="Bold" TextColor="#065F46" />
+                                <Border StrokeShape="RoundRectangle 4"
+                                    BackgroundColor="{Binding RoleBadgeBgColor}"
+                                    Stroke="{Binding RoleBadgeBorderColor}"
+                                    Padding="6, 2">
+                                    <Label Text="{Binding RoleBadgeDisplay}"
+                                       FontSize="9"
+                                       FontAttributes="Bold"
+                                       TextColor="{Binding RoleBadgeTextColor}" />
                                 </Border>
 
                                 <!-- Actual Masked IC Number -->

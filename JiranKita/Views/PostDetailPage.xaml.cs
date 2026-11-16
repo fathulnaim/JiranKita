@@ -8,6 +8,10 @@ namespace JiranKita.Views;
 public partial class PostDetailPage : ContentPage
 {
     private readonly FirebaseService fbService = new FirebaseService();
+    private double _currentScale = 1;
+    private double _startScale = 1;
+    private double _xOffset = 0;
+    private double _yOffset = 0;
 
     private PostModel _post = new PostModel();
     public PostModel Post
@@ -126,6 +130,93 @@ public partial class PostDetailPage : ContentPage
             {
                 await DisplayAlert("Not Supported", "Phone dialer is not supported on this device.", "OK");
             }
+        }
+    }
+
+    private void OnPostImageTapped(object sender, TappedEventArgs e)
+    {
+        string? imageUrl = e.Parameter as string ?? Post?.ImageUrl;
+        if (string.IsNullOrWhiteSpace(imageUrl)) return;
+
+        ResetImageZoom();
+        ImgFullscreen.Source = imageUrl;
+        ImageZoomOverlay.IsVisible = true;
+    }
+
+    private void OnCloseImageZoomClicked(object sender, EventArgs e)
+    {
+        ImageZoomOverlay.IsVisible = false;
+        ImgFullscreen.Source = null;
+        ResetImageZoom();
+    }
+
+    private void ResetImageZoom()
+    {
+        _currentScale = 1;
+        _startScale = 1;
+        _xOffset = 0;
+        _yOffset = 0;
+        ImgFullscreen.Scale = 1;
+        ImgFullscreen.TranslationX = 0;
+        ImgFullscreen.TranslationY = 0;
+    }
+
+    private void OnImagePinchUpdated(object sender, PinchGestureUpdatedEventArgs e)
+    {
+        if (e.Status == GestureStatus.Started)
+        {
+            _startScale = ImgFullscreen.Scale;
+        }
+        else if (e.Status == GestureStatus.Running)
+        {
+            _currentScale += (e.Scale - 1) * _startScale;
+            _currentScale = Math.Clamp(_currentScale, 1, 4);
+            ImgFullscreen.Scale = _currentScale;
+
+            if (_currentScale <= 1.01)
+            {
+                ImgFullscreen.TranslationX = 0;
+                ImgFullscreen.TranslationY = 0;
+                _xOffset = 0;
+                _yOffset = 0;
+            }
+        }
+        else if (e.Status == GestureStatus.Completed)
+        {
+            _xOffset = ImgFullscreen.TranslationX;
+            _yOffset = ImgFullscreen.TranslationY;
+        }
+    }
+
+    private void OnImagePanUpdated(object sender, PanUpdatedEventArgs e)
+    {
+        if (_currentScale <= 1) return;
+
+        if (e.StatusType == GestureStatus.Running)
+        {
+            double maxOffsetX = (ImgFullscreen.Width * (_currentScale - 1)) / 2;
+            double maxOffsetY = (ImgFullscreen.Height * (_currentScale - 1)) / 2;
+
+            ImgFullscreen.TranslationX = Math.Clamp(_xOffset + e.TotalX, -maxOffsetX, maxOffsetX);
+            ImgFullscreen.TranslationY = Math.Clamp(_yOffset + e.TotalY, -maxOffsetY, maxOffsetY);
+        }
+        else if (e.StatusType == GestureStatus.Completed)
+        {
+            _xOffset = ImgFullscreen.TranslationX;
+            _yOffset = ImgFullscreen.TranslationY;
+        }
+    }
+
+    private void OnImageDoubleTapped(object sender, TappedEventArgs e)
+    {
+        if (_currentScale > 1)
+        {
+            ResetImageZoom();
+        }
+        else
+        {
+            _currentScale = 2.5;
+            ImgFullscreen.Scale = _currentScale;
         }
     }
 }

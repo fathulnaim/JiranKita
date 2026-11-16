@@ -13,8 +13,9 @@
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="14, 10">
             <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="#FAFAF9" Padding="10, 0">
                 <Grid ColumnDefinitions="Auto, *">
-                    <Label Grid.Column="1" Text="🔍" FontSize="13" TextColor="#A8A29E" VerticalOptions="Center" VerticalTextAlignment="Center" Margin="0, 0, 6, 0" />
-                    <Entry x:Name="TxtSearch" 
+                    <Label Grid.Column="0" Text="🔍" FontSize="13" TextColor="#A8A29E" VerticalOptions="Center" VerticalTextAlignment="Center" Margin="0, 0, 6, 0" />
+                    <Entry Grid.Column="1"
+                           x:Name="TxtSearch" 
                            Placeholder="Search feed, tags, items..." 
                            PlaceholderColor="#A8A29E" 
                            FontSize="12" 
@@ -39,7 +40,7 @@
 
         <!-- ================= 3. FIREBASE FEED POSTS ================= -->
         <Grid Grid.Row="2">
-            <VerticalStackLayout Padding="14, 8, 14, 0" Spacing="6">
+            <Grid RowDefinitions="Auto, *" Padding="14, 8, 14, 0" RowSpacing="6">
                 <!-- Dynamic Count Summary -->
                 <Label x:Name="LblFeedSummary" Text="Loading community feed..." FontSize="11" TextColor="#78716C" Margin="2, 0" />
 
@@ -108,7 +109,7 @@
                         </DataTemplate>
                     </CollectionView.ItemTemplate>
                 </CollectionView>
-            </VerticalStackLayout>
+            </Grid>
 
             <!-- Floating Action Button (+ CREATE) -->
             <Border StrokeShape="RoundRectangle 24"

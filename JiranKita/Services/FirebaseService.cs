@@ -294,8 +294,8 @@ public class FirebaseService
 
         foreach (var item in users)
         {
-            if (!item.Object.IsVerified)
-            //tukar kat sini && item.Object.Role != "Admin"
+            if (!item.Object.IsVerified && item.Object.Role != "Admin")
+
             {
                 var user = item.Object;
                 user.FirebaseKey = item.Key;
@@ -318,6 +318,8 @@ public class FirebaseService
     // 3. Tolak Penduduk
     public async Task RejectResidentAsync(string userFirebaseKey)
     {
+        if (string.IsNullOrWhiteSpace(userFirebaseKey)) return; // <-- add this safety check!
+
         await _firebaseClient
             .Child("Users")
             .Child(userFirebaseKey)
@@ -463,20 +465,21 @@ public class FirebaseService
 
         return conversationList;
     }
+
     public async Task UpdateUserCommunityAsync(string userFirebaseKey, string communityCode, string communityName)
     {
-        if (string.IsNullOrEmpty(userFirebaseKey)) return;
+        if (string.IsNullOrWhiteSpace(userFirebaseKey))
+            throw new ArgumentException("Missing user FirebaseKey.");
+
+        string json = System.Text.Json.JsonSerializer.Serialize(new
+        {
+            CommunityCode = communityCode.Trim().ToUpper(),
+            CommunityName = communityName.Trim()
+        });
 
         await _firebaseClient
             .Child("Users")
             .Child(userFirebaseKey)
-            .Child("CommunityCode")
-            .PutAsync(communityCode.ToUpper());
-
-        await _firebaseClient
-            .Child("Users")
-            .Child(userFirebaseKey)
-            .Child("CommunityName")
-            .PutAsync(communityName);
+            .PatchAsync(json);
     }
 }

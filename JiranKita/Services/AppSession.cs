@@ -17,6 +17,16 @@ public static class AppSession
     public static string CurrentUserRole => CurrentUser?.Role ?? "Resident";
     public static bool IsAdmin => CurrentUser?.Role == "Admin";
 
+    public static bool IsVerified
+    {
+        get => CurrentUser?.IsVerified ?? false;
+        set
+        {
+            if (CurrentUser != null)
+                CurrentUser.IsVerified = value;
+        }
+    }
+
     // Dynamically generates initials from the user's real full name
     public static string CurrentUserInitials
     {
@@ -72,7 +82,6 @@ public static class AppSession
     // True once the signed-in user has joined a community
     public static bool HasCommunity => !string.IsNullOrWhiteSpace(CurrentCommunityCode);
 
-    // Updates the session AND the in-memory user in one go (Firebase save is done by the caller)
     public static void SetCommunity(string code, string name)
     {
         CurrentCommunityCode = code.Trim().ToUpper();

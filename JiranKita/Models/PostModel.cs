@@ -33,6 +33,11 @@ public class PostModel
     public int DisplayCommentsCount => Comments != null && Comments.Count > 0 ? Comments.Count : CommentsCount;
     public string FormattedDate => CreatedAt.ToString("dd MMM yyyy, h:mm tt");
     public string TimeAgoDisplay => $"📅 {CreatedAt:dd MMM yyyy} · Published";
+    public string AuthorUnitDisplay => IsVerifiedAuthor
+        ? $"{AuthorUnit} · Verified"
+        : $"{AuthorUnit} · Unverified";
+
+    public string AuthorStatusColor => IsVerifiedAuthor ? "#047857" : "#D97706";
 
     // Image Validation (Used by XAML to toggle between actual image vs placeholder)
     public bool HasImage => !string.IsNullOrWhiteSpace(ImageUrl);

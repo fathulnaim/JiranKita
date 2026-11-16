@@ -26,6 +26,9 @@
 
                 <!-- POST ATTACHED IMAGE (Only displays if an image URL exists) -->
                 <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="#F5F5F4" HeightRequest="180" IsVisible="{Binding Post.HasImage}">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnPostImageTapped" CommandParameter="{Binding Post.ImageUrl}" />
+                    </Border.GestureRecognizers>
                     <Image Source="{Binding Post.ImageUrl}" Aspect="AspectFill" />
                 </Border>
 
@@ -49,7 +52,7 @@
                     </Border>
                     <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="1">
                         <Label Text="{Binding Post.AuthorName}" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" />
-                        <Label Text="{Binding Post.AuthorUnit, StringFormat='{0} · Verified'}" FontSize="9" TextColor="#047857" />
+                        <Label Text="{Binding Post.AuthorUnitDisplay}" FontSize="9" TextColor="{Binding Post.AuthorStatusColor}" />
                     </VerticalStackLayout>
                     <Label Grid.Column="2" Text="{Binding Post.FormattedDate}" FontSize="9" TextColor="#78716C" VerticalOptions="Center" />
                 </Grid>
@@ -66,16 +69,15 @@
                 <VerticalStackLayout Spacing="8" Margin="0, 8, 0, 0">
                     <Label Text="Resident Replies" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" />
 
-                    <CollectionView ItemsSource="{Binding Comments}" SelectionMode="None">
-                        <CollectionView.EmptyView>
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Comments}" Spacing="8">
+                        <BindableLayout.EmptyView>
                             <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="14">
                                 <Label Text="No comments yet. Be the first neighbour to respond!" FontSize="11" TextColor="#78716C" HorizontalTextAlignment="Center" />
                             </Border>
-                        </CollectionView.EmptyView>
-
-                        <CollectionView.ItemTemplate>
+                        </BindableLayout.EmptyView>
+                        <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:CommentModel">
-                                <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="12" Margin="0, 0, 0, 8">
+                                <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="12">
                                     <VerticalStackLayout Spacing="3">
                                         <Grid ColumnDefinitions="*, Auto">
                                             <Label Grid.Column="0" Text="{Binding AuthorName}" FontSize="11" FontAttributes="Bold" TextColor="#1C1917" />
@@ -85,8 +87,8 @@
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                    </CollectionView>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
 
             </VerticalStackLayout>
@@ -113,6 +115,45 @@
                 </Border>
             </Grid>
         </Border>
+        <!-- Fullscreen Image Zoom Overlay -->
+        <Grid x:Name="ImageZoomOverlay"
+              Grid.RowSpan="3"
+              BackgroundColor="#EB000000"
+              IsVisible="False"
+              ZIndex="99">
 
+            <Image x:Name="ImgFullscreen"
+                   Aspect="AspectFit"
+                   HorizontalOptions="Fill"
+                   VerticalOptions="Fill"
+                   AnchorX="0.5"
+                   AnchorY="0.5">
+                <Image.GestureRecognizers>
+                    <PinchGestureRecognizer PinchUpdated="OnImagePinchUpdated" />
+                    <PanGestureRecognizer PanUpdated="OnImagePanUpdated" />
+                    <TapGestureRecognizer NumberOfTapsRequired="2" Tapped="OnImageDoubleTapped" />
+                </Image.GestureRecognizers>
+            </Image>
+
+            <Label Text="Pinch or double-tap to zoom"
+                   TextColor="#D6D3D1"
+                   FontSize="11"
+                   HorizontalOptions="Center"
+                   VerticalOptions="End"
+                   Margin="0, 0, 0, 24" />
+
+            <Button Text="✕"
+                    Clicked="OnCloseImageZoomClicked"
+                    BackgroundColor="#80000000"
+                    TextColor="White"
+                    FontSize="16"
+                    FontAttributes="Bold"
+                    WidthRequest="42"
+                    HeightRequest="42"
+                    CornerRadius="21"
+                    HorizontalOptions="End"
+                    VerticalOptions="Start"
+                    Margin="0, 18, 18, 0" />
+        </Grid>
     </Grid>
 </ContentPage>

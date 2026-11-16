@@ -10,7 +10,24 @@ public partial class ProfilePage : ContentPage
     public string FullNameDisplay => string.IsNullOrWhiteSpace(AppSession.CurrentUserName) ? "Guest Resident" : AppSession.CurrentUserName;
     public string UserInitials => AppSession.CurrentUserInitials;
     public string UnitCommunityDisplay => $"Unit: {AppSession.CurrentUserUnit}, {AppSession.CurrentCommunityName}";
-    public string RoleBadgeDisplay => AppSession.IsAdmin ? "🛡️ JMB CHAIRMAN / ADMIN" : "✓ VERIFIED RESIDENT";
+    public string RoleBadgeDisplay
+    {
+        get
+        {
+            if (AppSession.IsAdmin)
+                return "🛡️ JMB CHAIRMAN / ADMIN";
+
+            if (AppSession.IsVerified) // <-- use your actual AppSession verification check
+                return "✓ VERIFIED RESIDENT";
+
+            return "⏳ PENDING VERIFICATION"; // or "UNVERIFIED RESIDENT"
+        }
+    }
+
+    // Optional: change badge colors so unverified isn't green
+    public string RoleBadgeBgColor => (AppSession.IsAdmin || AppSession.IsVerified) ? "#ECFDF5" : "#FEF3C7";
+    public string RoleBadgeBorderColor => (AppSession.IsAdmin || AppSession.IsVerified) ? "#A7F3D0" : "#FDE68A";
+    public string RoleBadgeTextColor => (AppSession.IsAdmin || AppSession.IsVerified) ? "#065F46" : "#92400E";
 
     // Masked MyKad format for PDPA privacy compliance
     public string MaskedIcDisplay
