@@ -24,7 +24,6 @@ public partial class ProfilePage : ContentPage
         }
     }
 
-    // Optional: change badge colors so unverified isn't green
     public string RoleBadgeBgColor => (AppSession.IsAdmin || AppSession.IsVerified) ? "#ECFDF5" : "#FEF3C7";
     public string RoleBadgeBorderColor => (AppSession.IsAdmin || AppSession.IsVerified) ? "#A7F3D0" : "#FDE68A";
     public string RoleBadgeTextColor => (AppSession.IsAdmin || AppSession.IsVerified) ? "#065F46" : "#92400E";

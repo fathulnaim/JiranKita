@@ -60,7 +60,17 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiAsset Remove="Resources\Raw\rules_bgi99.pdf" />
+	  <MauiAsset Remove="Resources\Raw\rules_kaj82.pdf" />
+	</ItemGroup>
+
+	<ItemGroup>
 	  <MauiImage Remove="Resources\Images\logo_jirankita.png" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <EmbeddedResource Include="Resources\Raw\rules_bgi99.pdf" />
+	  <EmbeddedResource Include="Resources\Raw\rules_kaj82.pdf" />
 	</ItemGroup>
 
 	<ItemGroup>

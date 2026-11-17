@@ -149,36 +149,6 @@
                 </Label>
             </HorizontalStackLayout>
 
-            <!-- Alternative Sign In Divider -->
-            <Grid ColumnDefinitions="*, Auto, *" Margin="0, 6">
-                <BoxView Grid.Column="0" HeightRequest="1" Color="#E7E5E4" VerticalOptions="Center" />
-                <Label Grid.Column="1" 
-                       Text="Or continue with" 
-                       FontSize="11" 
-                       TextColor="#A8A29E" 
-                       Margin="10, 0" />
-                <BoxView Grid.Column="2" HeightRequest="1" Color="#E7E5E4" VerticalOptions="Center" />
-            </Grid>
-
-            <!-- Third-Party Google Auth Button -->
-            <Border StrokeShape="RoundRectangle 12" 
-                    Stroke="#E7E5E4" 
-                    BackgroundColor="White" 
-                    HeightRequest="44">
-                <HorizontalStackLayout HorizontalOptions="Center" 
-                                       VerticalOptions="Center" 
-                                       Spacing="8">
-                    <Label Text="G" 
-                           TextColor="#0284C7" 
-                           FontAttributes="Bold" 
-                           FontSize="14" />
-                    <Label Text="Google" 
-                           TextColor="#44403C" 
-                           FontAttributes="Bold" 
-                           FontSize="12" />
-                </HorizontalStackLayout>
-            </Border>
-
             <!-- Regulatory Compliance Footer -->
             <Label Text="Compliant with Malaysian PDPA 2010." 
                    FontSize="10" 

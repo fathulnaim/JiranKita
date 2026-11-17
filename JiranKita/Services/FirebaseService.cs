@@ -580,4 +580,24 @@ public class FirebaseService
             .Child(userFirebaseKey)
             .PatchAsync(json);
     }
+
+    // Fetches chat messages for a given community and chat room ID
+    public async Task<List<ChatMessage>> GetChatMessagesAsync(string communityCode, string roomId)
+    {
+        if (string.IsNullOrWhiteSpace(communityCode) || string.IsNullOrWhiteSpace(roomId))
+            return new List<ChatMessage>();
+
+        var items = await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.Trim().ToUpper())
+            .Child("Chats")
+            .Child(roomId)
+            .OnceAsync<ChatMessage>();
+
+        return items
+            .Where(x => x.Object != null)
+            .Select(x => x.Object)
+            .OrderBy(m => m.Timestamp)
+            .ToList();
+    }
 }

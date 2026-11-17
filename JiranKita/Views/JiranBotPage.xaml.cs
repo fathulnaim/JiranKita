@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text;
 using JiranKita.Models;
 using JiranKita.Services;
 
@@ -6,6 +7,10 @@ namespace JiranKita.Views;
 
 public partial class JiranBotPage : ContentPage
 {
+    private readonly FirebaseService _firebaseService = new FirebaseService();
+    private readonly GeminiService _geminiService = new GeminiService();
+    private bool _isProcessing = false; // Prevents duplicate concurrent requests
+
     public ObservableCollection<BotMessageModel> Messages { get; set; } = new();
 
     public JiranBotPage()
@@ -18,24 +23,31 @@ public partial class JiranBotPage : ContentPage
     {
         base.OnAppearing();
 
-        // 1. Dynamic greeting based on the logged-in user name
-        string userName = AppSession.CurrentUserName;
-        LblBotGreeting.Text = $"Hello {userName}! How can I assist you?";
+        string userName = string.IsNullOrWhiteSpace(AppSession.CurrentUserName)
+            ? "Resident"
+            : AppSession.CurrentUserName;
 
-        // 2. Initial welcome message on first load
+        string communityName = string.IsNullOrWhiteSpace(AppSession.CurrentCommunityName)
+            ? "your neighbourhood"
+            : AppSession.CurrentCommunityName;
+
+        // Dalam JiranBotPage.xaml.cs (OnAppearing)
+        LblBotGreeting.Text = $"Hello {userName} ({AppSession.CurrentCommunityCode})! How can I assist you?";
+
+        // Initial welcome card on first load
         if (Messages.Count == 0)
         {
             Messages.Add(new BotMessageModel
             {
                 IsUser = false,
                 Title = "JiranBot AI Knowledge Assistant",
-                MessageText = $"Welcome {userName}! I am ready to help answer any questions regarding residential rules, facilities, and management for {AppSession.CurrentCommunityName}.",
-                SourceCitation = "Official Community AI System",
-                ActionButtonText = "Explore Rules",
+                MessageText = $"Welcome {userName}! Ask me anything about house rules, facilities, FAQs, or ask me to summarize the {communityName} group chat.",
+                SourceCitation = $"Official Handbook & Chat AI · {communityName}",
+                ActionButtonText = "Summarize Chat",
                 RulePoints = new List<string>
                 {
-                    "Tap popular topics above for common questions",
-                    "Or type your custom question in the input field below"
+                    "Tap popular topics above for instant handbook guidelines",
+                    "Ask \"Summarize group chat\" to catch up on neighbour discussions"
                 }
             });
         }
@@ -44,187 +56,179 @@ public partial class JiranBotPage : ContentPage
     // Quick suggestion prompt chip buttons
     private async void OnQuickPromptClicked(object sender, EventArgs e)
     {
-        if (sender is Button btn)
+        if (sender is Button btn && !string.IsNullOrWhiteSpace(btn.Text))
         {
-            string prompt = btn.Text.Replace("🏊 ", "").Replace("🍖 ", "").Replace("🚗 ", "").Replace("🗑️ ", "").Replace("🔨 ", "");
-            await ProcessUserQueryAsync($"Tell me about {prompt} guidelines");
+            string raw = btn.Text.Trim();
+            string topic = raw.Contains(' ')
+                ? raw.Substring(raw.IndexOf(' ') + 1).Trim()
+                : raw;
+
+            if (topic.Contains("Summarize", StringComparison.OrdinalIgnoreCase) ||
+                topic.Contains("Chat", StringComparison.OrdinalIgnoreCase))
+            {
+                await ProcessUserQueryAsync("Summarize the latest community group chat");
+            }
+            else
+            {
+                await ProcessUserQueryAsync($"What are the official rules, fees, and operating hours for {topic}?");
+            }
         }
     }
 
     // Send query button (➤)
     private async void OnSendQueryClicked(object sender, EventArgs e)
     {
-        string query = TxtBotQuery.Text?.Trim() ?? "";
+        string query = TxtBotQuery.Text?.Trim() ?? string.Empty;
         if (string.IsNullOrWhiteSpace(query)) return;
 
         TxtBotQuery.Text = string.Empty;
         await ProcessUserQueryAsync(query);
     }
 
-    // ==============================================================
-    // SMART JMB KNOWLEDGE ENGINE (ANALYZE & GENERATE RESPONSE)
-    // ==============================================================
+    // Routes resident requests either to Community Chat Summarization or Rules/FAQ PDF Q&A
     private async Task ProcessUserQueryAsync(string query)
     {
-        // 1. Add user message to conversation thread
-        var userMsg = new BotMessageModel
-        {
-            IsUser = true,
-            MessageText = query,
-            Timestamp = DateTime.Now
-        };
-        Messages.Add(userMsg);
-        CvBotMessages.ScrollTo(userMsg, position: ScrollToPosition.End, animate: true);
+        if (_isProcessing) return;
+        _isProcessing = true;
 
-        // Simulate AI thinking processing delay
-        await Task.Delay(400);
+        try
+        {
+            // 1. Append user message bubble
+            var userMsg = new BotMessageModel
+            {
+                IsUser = true,
+                MessageText = query,
+                Timestamp = DateTime.Now
+            };
+            Messages.Add(userMsg);
+            CvBotMessages.ScrollTo(userMsg, position: ScrollToPosition.End, animate: true);
 
-        // 2. Analyze query keywords
-        string q = query.ToLower();
-        BotMessageModel botReply;
+            // Capture conversation history before adding the temporary thinking card
+            var conversationHistory = Messages.ToList();
 
-        // TOPIC A: SWIMMING POOL
-        if (q.Contains("pool") || q.Contains("kolam") || q.Contains("renang") || q.Contains("swimming"))
-        {
-            botReply = new BotMessageModel
-            {
-                IsUser = false,
-                Title = "Swimming Pool Guidelines",
-                MessageText = "Here are the official rules for swimming pool usage:",
-                SourceCitation = "JMB By-Law 2024 (Section 3.1)",
-                ActionButtonText = "Check Rules",
-                RulePoints = new List<string>
-                {
-                    "Operating Hours: 8:00 AM – 10:00 PM daily (Closed Mondays for cleaning)",
-                    "Attire: Proper swimwear is mandatory at all times",
-                    "Children under 12 must be accompanied by an adult guardian",
-                    "Food, alcoholic beverages, and pets are strictly prohibited"
-                }
-            };
-        }
-        // TOPIC B: BBQ PIT
-        else if (q.Contains("bbq") || q.Contains("barbeque") || q.Contains("panggang"))
-        {
-            botReply = new BotMessageModel
-            {
-                IsUser = false,
-                Title = "BBQ Pit Booking Guidelines",
-                MessageText = "Booking information and usage fees for the BBQ area:",
-                SourceCitation = "JMB By-Law 2024 (Section 4.2)",
-                ActionButtonText = "Book BBQ Slot",
-                RulePoints = new List<string>
-                {
-                    "Slot Time: 5:00 PM – 10:00 PM",
-                    "Booking Fee: RM 50 (Cleaning fee)",
-                    "Security Deposit: RM 100 (Refundable after cleanliness inspection)",
-                    "Advance booking is required at least 3 days prior to the date"
-                }
-            };
-        }
-        // TOPIC C: VISITOR PARKING
-        else if (q.Contains("parking") || q.Contains("visitor") || q.Contains("pelawat") || q.Contains("kereta"))
-        {
-            botReply = new BotMessageModel
-            {
-                IsUser = false,
-                Title = "Visitor Parking Regulations",
-                MessageText = "Rules regarding visitor vehicle parking:",
-                SourceCitation = "JMB Traffic Regulation (Clause 2)",
-                ActionButtonText = "Register Visitor",
-                RulePoints = new List<string>
-                {
-                    "Visitors must register at the guardhouse upon entry",
-                    "Maximum 6 hours complimentary parking",
-                    "Overnight Charge (12:00 AM – 7:00 AM): RM 10/night",
-                    "Vehicles obstructing traffic will be wheel-clamped (RM 50 release fee)"
-                }
-            };
-        }
-        // TOPIC D: BULKY WASTE / FURNITURE
-        else if (q.Contains("waste") || q.Contains("sampah") || q.Contains("bulky") || q.Contains("perabot"))
-        {
-            botReply = new BotMessageModel
-            {
-                IsUser = false,
-                Title = "Bulky Waste Collection Schedule",
-                MessageText = "Disposal schedule for furniture, mattresses, and renovation waste:",
-                SourceCitation = "KDEB Waste Management Notice",
-                ActionButtonText = "View Schedule",
-                RulePoints = new List<string>
-                {
-                    "Collection Days: Every Tuesday & Friday morning",
-                    "Please place items at the Main Waste Refuse Room (Not in front of lifts)",
-                    "Electrical & electronic waste (E-waste) can be dropped at the Block A Lobby bin"
-                }
-            };
-        }
-        // TOPIC E: HOUSE RENOVATION
-        else if (q.Contains("renovate") || q.Contains("renovasi") || q.Contains("tukul") || q.Contains("bising") || q.Contains("ubah suai"))
-        {
-            botReply = new BotMessageModel
-            {
-                IsUser = false,
-                Title = "House Renovation Guidelines",
-                MessageText = "Rules regarding unit renovation work:",
-                SourceCitation = "Building Maintenance Act (Strata 2013)",
-                ActionButtonText = "Apply Permit",
-                RulePoints = new List<string>
-                {
-                    "Working Hours: Monday – Friday (9:00 AM – 5:00 PM only)",
-                    "Noisy work is strictly prohibited on Saturdays, Sundays & Public Holidays",
-                    "Renovation Deposit: RM 500 (Payable to the JMB office prior to work start)"
-                }
-            };
-        }
-        // TOPIC F: CONTACT JMB / OFFICE
-        else if (q.Contains("jmb") || q.Contains("office") || q.Contains("pejabat") || q.Contains("telefon") || q.Contains("contact"))
-        {
-            botReply = new BotMessageModel
-            {
-                IsUser = false,
-                Title = "JMB Management Office Contact",
-                MessageText = $"Management office details for {AppSession.CurrentCommunityName}:",
-                SourceCitation = "Official Management Directory",
-                ActionButtonText = "Call Office",
-                RulePoints = new List<string>
-                {
-                    "Operating Hours: Monday – Friday (9:00 AM – 5:30 PM), Saturday (9:00 AM – 1:00 PM)",
-                    "Location: Management Office Ground Floor",
-                    "Phone: +60 19-332 1100 (Office Line & Complaints)"
-                }
-            };
-        }
-        // GENERAL FALLBACK RESPONSE
-        else
-        {
-            botReply = new BotMessageModel
-            {
-                IsUser = false,
-                Title = "Community Query Assistant",
-                MessageText = $"Thank you for your query. Regarding '{query}', the best approach is to contact the JMB management office directly or check the official community notice board.",
-                SourceCitation = "JiranKita Knowledge Base",
-                ActionButtonText = "Contact JMB",
-                RulePoints = new List<string>
-                {
-                    "You can also create a post on the 'Feed' tab so fellow neighbours can assist you",
-                    "For emergencies, please use the SOS button on the 'Alerts' tab"
-                }
-            };
-        }
+            // Detect group chat summary intent
+            string qLower = query.ToLower();
+            bool isChatSummaryRequest =
+                (qLower.Contains("summarize") || qLower.Contains("summary") || qLower.Contains("catch up") || qLower.Contains("recap")) &&
+                (qLower.Contains("chat") || qLower.Contains("group") || qLower.Contains("discussion") || qLower.Contains("messages"));
 
-        // 3. Append bot reply to message collection thread
-        Messages.Add(botReply);
-        CvBotMessages.ScrollTo(botReply, position: ScrollToPosition.End, animate: true);
+            // 2. Show live thinking indicator card
+            var thinkingCard = new BotMessageModel
+            {
+                IsUser = false,
+                Title = "JiranBot AI",
+                MessageText = isChatSummaryRequest
+                    ? "✨ Reading recent community group chat messages..."
+                    : "✨ Searching community rules & FAQ handbook...",
+                SourceCitation = AppSession.CurrentCommunityName,
+                ActionButtonText = "Please Wait",
+                RulePoints = new List<string>()
+            };
+            Messages.Add(thinkingCard);
+            CvBotMessages.ScrollTo(thinkingCard, position: ScrollToPosition.End, animate: true);
+
+            BotMessageModel botReply;
+            try
+            {
+                if (isChatSummaryRequest)
+                {
+                    string transcript = await BuildRecentGroupChatTranscriptAsync();
+                    botReply = await _geminiService.SummarizeCommunityChatAsync(
+                        transcript,
+                        AppSession.CurrentCommunityName,
+                        AppSession.CurrentUserName
+                    );
+                }
+                else
+                {
+                    botReply = await _geminiService.AskJiranBotAsync(
+                        query,
+                        AppSession.CurrentCommunityCode,
+                        AppSession.CurrentCommunityName,
+                        AppSession.CurrentUserName,
+                        conversationHistory
+                    );
+                }
+            }
+            catch (Exception error)
+            {
+                botReply = new BotMessageModel
+                {
+                    IsUser = false,
+                    Title = "Connection Issue",
+                    MessageText = $"Unable to reach JiranBot AI right now: {error.Message}",
+                    SourceCitation = "JiranKita System",
+                    ActionButtonText = "Retry Later",
+                    RulePoints = new List<string>
+                    {
+                        "Please verify your internet connection and Gemini API key"
+                    }
+                };
+            }
+            finally
+            {
+                Messages.Remove(thinkingCard);
+            }
+
+            // 3. Append AI response card
+            Messages.Add(botReply);
+            CvBotMessages.ScrollTo(botReply, position: ScrollToPosition.End, animate: true);
+        }
+        finally
+        {
+            _isProcessing = false;
+        }
     }
 
-    // Action button handler inside bot responses
+    // Fetches the last 30 group chat messages from Firebase and formats them into a transcript
+    private async Task<string> BuildRecentGroupChatTranscriptAsync()
+    {
+        if (string.IsNullOrWhiteSpace(AppSession.CurrentCommunityCode))
+            return string.Empty;
+
+        var recentMessages = await _firebaseService.GetChatMessagesAsync(
+            AppSession.CurrentCommunityCode,
+            "community_general"
+        );
+
+        if (recentMessages == null || recentMessages.Count == 0)
+            return string.Empty;
+
+        var sb = new StringBuilder();
+        foreach (var msg in recentMessages.TakeLast(30))
+        {
+            sb.AppendLine($"[{msg.Timestamp:dd MMM h:mm tt}] {msg.SenderName} ({msg.SenderUnit}): {msg.MessageText}");
+        }
+
+        return sb.ToString();
+    }
+
+    // Action button handler inside bot response cards
     private async void OnBotActionClicked(object sender, EventArgs e)
     {
         if (sender is Button btn)
         {
+            if (btn.Text == "Summarize Chat")
+            {
+                await ProcessUserQueryAsync("Summarize the latest community group chat");
+                return;
+            }
+
+            if (btn.Text == "Explore Rules")
+            {
+                await ProcessUserQueryAsync("Give me a summary of the main house rules, facility hours, and FAQs in our handbook.");
+                return;
+            }
+
+            if (btn.Text == "Open Chat")
+            {
+                await Shell.Current.GoToAsync(nameof(Views.ChatRoomPage));
+                return;
+            }
+
             await DisplayAlert(
                 btn.Text,
-                $"The '{btn.Text}' action has been recorded. Please contact the JMB management office to confirm your slot.",
+                $"Your '{btn.Text}' request for {AppSession.CurrentCommunityName} has been noted. Please refer to the JMB office if confirmation is required.",
                 "Understood"
             );
         }
