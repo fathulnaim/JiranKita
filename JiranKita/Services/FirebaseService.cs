@@ -600,4 +600,31 @@ public class FirebaseService
             .OrderBy(m => m.Timestamp)
             .ToList();
     }
+    // ==========================================
+    // RESIDENT ALERT FLOW: SUBMIT -> JMB APPROVE -> SHOW ON ALERTS MAP
+    // ==========================================
+
+    // Submits a new resident hazard/security alert (pending JMB approval).
+    // NOTE: path MUST be "Communities/{code}/Alerts" (same casing as every read/approve method).
+    public async Task SubmitResidentAlertAsync(string communityCode, AlertModel alert)
+    {
+        if (string.IsNullOrWhiteSpace(communityCode))
+            throw new ArgumentException("Community code cannot be empty.", nameof(communityCode));
+
+        alert.IsApproved = false; // always pending when submitted by a resident
+        alert.IsActive = true;
+
+        await _firebaseClient
+            .Child("Communities")
+            .Child(communityCode.Trim().ToUpper())
+            .Child("Alerts")
+            .PostAsync(alert);
+    }
+
+    // Returns only alerts that are active AND approved by JMB (used by AlertsPage)
+    public async Task<List<AlertModel>> GetApprovedAlertsAsync(string communityCode)
+    {
+        var all = await GetCommunityAlertsAsync(communityCode);
+        return all.Where(a => a.IsApproved).ToList();
+    }
 }

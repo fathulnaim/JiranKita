@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="JiranKita.Views.CreateAlertPage"
+             BackgroundColor="#FAFAF9"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid RowDefinitions="Auto, *, Auto">
+
+        <!-- 1. HEADER (CANCEL BUTTON) -->
+        <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="12, 10">
+            <Grid ColumnDefinitions="Auto, *, Auto">
+                <Button Grid.Column="0" 
+                        Text="Cancel" 
+                        Clicked="OnCancelClicked" 
+                        BackgroundColor="Transparent" 
+                        TextColor="#78716C" 
+                        FontAttributes="Bold" 
+                        FontSize="12" 
+                        HeightRequest="36" />
+                <Label Grid.Column="1" Text="REPORT HAZARD / INCIDENT" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" HorizontalOptions="Center" VerticalOptions="Center" />
+                <BoxView Grid.Column="2" WidthRequest="48" Color="White" />
+            </Grid>
+        </Border>
+
+        <!-- 2. INPUT FORM (SCROLLABLE) -->
+        <ScrollView Grid.Row="1" Padding="16">
+            <VerticalStackLayout Spacing="16">
+
+                <!-- JMB Review Status Notice -->
+                <Border StrokeShape="RoundRectangle 12" BackgroundColor="#FFFBEB" Stroke="#FDE68A" Padding="12">
+                    <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
+                        <Label Grid.Column="0" Text="🛡️" FontSize="18" VerticalOptions="Center" />
+                        <Label Grid.Column="1" 
+                               Text="This report will be sent to the JMB management office for safety review before being published to the community GIS map." 
+                               FontSize="10" 
+                               TextColor="#78350F" 
+                               LineHeight="1.2" 
+                               VerticalOptions="Center" />
+                    </Grid>
+                </Border>
+
+                <!-- Hazard Category Selection (Interactive Buttons) -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Hazard Category *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout Spacing="8">
+                            <Button x:Name="BtnCatHazards" Text="⚠️ Hazards" Clicked="OnCategoryClicked" BackgroundColor="#BE123C" TextColor="White" FontAttributes="Bold" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
+                            <Button x:Name="BtnCatRoad" Text="🚧 Road" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
+                            <Button x:Name="BtnCatSecurity" Text="🚨 Security" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
+                            <Button x:Name="BtnCatWater" Text="💧 Water / Pipe" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
+                            <Button x:Name="BtnCatElectricity" Text="⚡ Electricity" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
+                            <Button x:Name="BtnCatFacility" Text="🛗 Facilities" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <!-- Form Card -->
+                <Border StrokeShape="RoundRectangle 16" Stroke="#E7E5E4" BackgroundColor="White" Padding="16">
+                    <VerticalStackLayout Spacing="14">
+
+                        <!-- Incident Headline -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Incident Headline / Title *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
+                                <Entry x:Name="TxtTitle" 
+                                       Placeholder="e.g., Burst Main Pipe / Fallen Tree" 
+                                       PlaceholderColor="#A8A29E" 
+                                       FontSize="12" 
+                                       TextColor="#1C1917"
+                                       Focused="OnInputFocused" 
+                                       Unfocused="OnInputUnfocused" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Incident Location -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Specific Location *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
+                                <Entry x:Name="TxtLocation" 
+                                       Placeholder="e.g., Near Surau / Gate 2 Exit Lane" 
+                                       PlaceholderColor="#A8A29E" 
+                                       FontSize="12" 
+                                       TextColor="#1C1917"
+                                       Focused="OnInputFocused" 
+                                       Unfocused="OnInputUnfocused" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- Safety Advisory & Details -->
+                        <VerticalStackLayout Spacing="6">
+                            <Label Text="Advisory &amp; Details *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
+                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12">
+                                <Editor x:Name="TxtAdvisory" 
+                                        Placeholder="Describe the hazard and safety advice for neighbours (e.g., slippery road, avoid using this lane)..." 
+                                        PlaceholderColor="#A8A29E" 
+                                        HeightRequest="90" 
+                                        FontSize="12" 
+                                        TextColor="#1C1917" />
+                            </Border>
+                        </VerticalStackLayout>
+
+                        <!-- GPS Detection Status -->
+                        <Border StrokeShape="RoundRectangle 10" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" Padding="10">
+                            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="8">
+                                <Label Text="📍" FontSize="14" VerticalOptions="Center" />
+                                <Label x:Name="LblGpsStatus" Text="Detecting device GPS coordinates..." FontSize="10" TextColor="#047857" VerticalOptions="Center" />
+                            </Grid>
+                        </Border>
+
+                    </VerticalStackLayout>
+                </Border>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <!-- 3. SUBMIT REPORT BUTTON AT BOTTOM -->
+        <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 10">
+            <Button Text="SUBMIT REPORT FOR JMB APPROVAL" 
+                    Clicked="OnSubmitAlertClicked" 
+                    BackgroundColor="#BE123C" 
+                    TextColor="White" 
+                    FontAttributes="Bold" 
+                    FontSize="12" 
+                    CornerRadius="12" 
+                    HeightRequest="48" />
+        </Border>
+
+    </Grid>
+</ContentPage>

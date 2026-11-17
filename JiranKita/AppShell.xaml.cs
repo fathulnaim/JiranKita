@@ -20,5 +20,6 @@ public partial class AppShell : Shell
         Routing.RegisterRoute(nameof(Views.ChatRoomPage), typeof(Views.ChatRoomPage));
         Routing.RegisterRoute(nameof(Views.ApprovalsQueuePage), typeof(Views.ApprovalsQueuePage));
         Routing.RegisterRoute(nameof(Views.IssueNoticePage), typeof(Views.IssueNoticePage));
+        Routing.RegisterRoute(nameof(Views.CreateAlertPage), typeof(Views.CreateAlertPage));
     }
 }

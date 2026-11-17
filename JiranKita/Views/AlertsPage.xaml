@@ -11,16 +11,16 @@
 
     <Grid RowDefinitions="Auto, Auto, Auto, *">
 
-        <!-- ================= 1. HEADER (ACTUAL LOCATION) ================= -->
+        <!-- ================= 1. HEADER (ACTIVE LOCATION) ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
             <Grid ColumnDefinitions="*, Auto">
                 <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
                     <Label Text="📍" FontSize="16" TextColor="#047857" VerticalOptions="Center" />
-                    <!-- Dynamic Community Title -->
+                    <!-- Dynamic Community Name -->
                     <Label Text="{Binding CommunityTitleDisplay}" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <!-- Map Re-center Button -->
+                <!-- Re-center Map Button -->
                 <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" HeightRequest="32" WidthRequest="32">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnRecenterMapClicked" />
@@ -42,12 +42,12 @@
             </ScrollView>
         </Border>
 
-        <!-- ================= 3. INTERACTIVE MAP (OPENSTREETMAP) ================= -->
+        <!-- ================= 3. INTERACTIVE GIS MAP (OPENSTREETMAP) ================= -->
         <Grid Grid.Row="2" HeightRequest="190">
-            <!-- WebView loading real GPS map -->
+            <!-- WebView displaying live GPS map -->
             <WebView x:Name="MapWebView" />
 
-            <!-- Geofence Badge at Map Bottom Corner -->
+            <!-- Geofence badge at bottom-right of map -->
             <Border StrokeShape="RoundRectangle 6" 
                     BackgroundColor="#F2FFFFFF" 
                     Stroke="#D6D3D1" 
@@ -55,13 +55,14 @@
                     HorizontalOptions="End" 
                     VerticalOptions="End" 
                     Margin="8">
-                <Label Text="Radius: 500m geofence active" FontSize="9" FontAttributes="Bold" TextColor="#047857" />
+                <Label Text="Radius: 500m active" FontSize="9" FontAttributes="Bold" TextColor="#047857" />
             </Border>
         </Grid>
 
-        <!-- ================= 4. ALERTS LIST FROM DATABASE & SOS BUTTON ================= -->
+        <!-- ================= 4. LIVE ALERTS LIST & SOS BUTTON ================= -->
         <Grid Grid.Row="3">
-            <ScrollView Padding="16">
+
+            <ScrollView Padding="16, 14, 16, 70">
                 <VerticalStackLayout Spacing="14">
 
                     <!-- Dynamic Alerts List -->
@@ -94,7 +95,7 @@
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
-                    <!-- SOS Emergency Call Button -->
+                    <!-- Emergency SOS Call Button -->
                     <Button Text="🚨 SOS EMERGENCY CALL: GUARDHOUSE" 
                             Clicked="OnSosCallClicked"
                             BackgroundColor="#BE123C" 
@@ -107,6 +108,25 @@
 
                 </VerticalStackLayout>
             </ScrollView>
+
+            <!-- FLOATING REPORT HAZARD BUTTON (OPENS CreateAlertPage) -->
+            <Border StrokeShape="RoundRectangle 24"
+                    BackgroundColor="#D97706"
+                    Stroke="Transparent"
+                    Padding="14, 10"
+                    HorizontalOptions="End"
+                    VerticalOptions="End"
+                    Margin="0, 0, 16, 20"
+                    Shadow="{Shadow Brush=Black, Offset='0,3', Radius=8, Opacity=0.25}">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnReportHazardClicked" />
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                    <Label Text="⚠️" FontSize="14" VerticalOptions="Center" />
+                    <Label Text="Report Hazard" TextColor="White" FontSize="11" FontAttributes="Bold" VerticalOptions="Center" />
+                </HorizontalStackLayout>
+            </Border>
+
         </Grid>
 
     </Grid>

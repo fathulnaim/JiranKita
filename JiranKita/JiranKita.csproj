@@ -102,6 +102,9 @@
 	  <MauiXaml Update="Views\ChatRoomPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\CreateAlertPage.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\CreatePostPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
