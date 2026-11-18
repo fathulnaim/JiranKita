@@ -150,15 +150,30 @@
                                 <Label Text="Create Password" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                                 <Label Text="*" FontSize="12" FontAttributes="Bold" TextColor="Red" />
                             </HorizontalStackLayout>
-                            <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
-                                <Entry x:Name="TxtPassword" 
-                                       Placeholder="Minimum 6 characters" 
-                                       PlaceholderColor="#A8A29E" 
-                                       IsPassword="True" 
-                                       FontSize="13" 
-                                       TextColor="#1C1917"
-                                       Focused="OnInputFocused" 
-                                       Unfocused="OnInputUnfocused" />
+                            <Border x:Name="BorderPassword" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="#FAFAF9" Padding="12, 2">
+                                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
+                                    <Entry x:Name="TxtPassword" 
+               Grid.Column="0"
+               Placeholder="Minimum 6 characters" 
+               PlaceholderColor="#A8A29E" 
+               IsPassword="True" 
+               FontSize="13" 
+               TextColor="#1C1917"
+               Focused="OnPasswordFocused" 
+               Unfocused="OnPasswordUnfocused" />
+
+                                    <Label x:Name="LblTogglePassword"
+               Grid.Column="1"
+               Text="👁️"
+               FontSize="16"
+               VerticalOptions="Center"
+               HorizontalOptions="End"
+               Padding="4">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Tapped="OnTogglePasswordTapped" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                </Grid>
                             </Border>
                         </VerticalStackLayout>
 

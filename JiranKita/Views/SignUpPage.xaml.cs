@@ -318,4 +318,21 @@ public partial class SignUpPage : ContentPage
             await DisplayAlert("Firebase Error", $"Failed to register: {error.Message}", "OK");
         }
     }
+    private void OnTogglePasswordTapped(object sender, TappedEventArgs e)
+    {
+        TxtPassword.IsPassword = !TxtPassword.IsPassword;
+        LblTogglePassword.Text = TxtPassword.IsPassword ? "👁️" : "🙈";
+    }
+
+    private void OnPasswordFocused(object sender, FocusEventArgs e)
+    {
+        BorderPassword.Stroke = Color.FromArgb("#047857");
+        BorderPassword.StrokeThickness = 2;
+    }
+
+    private void OnPasswordUnfocused(object sender, FocusEventArgs e)
+    {
+        BorderPassword.Stroke = Color.FromArgb("#D6D3D1");
+        BorderPassword.StrokeThickness = 1;
+    }
 }
