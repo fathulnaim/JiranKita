@@ -1,4 +1,6 @@
-﻿namespace JiranKita.Models;
+﻿using Newtonsoft.Json;
+
+namespace JiranKita.Models;
 
 public class PostModel
 {
@@ -42,4 +44,29 @@ public class PostModel
     // Image Validation (Used by XAML to toggle between actual image vs placeholder)
     public bool HasImage => !string.IsNullOrWhiteSpace(ImageUrl);
     public bool HasNoImage => string.IsNullOrWhiteSpace(ImageUrl);
+
+    // Converts Base64 string from Firebase (or web URL) into a displayable ImageSource
+    [JsonIgnore]
+    [System.Text.Json.Serialization.JsonIgnore]
+    public ImageSource? DisplayImage
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(ImageUrl))
+                return null;
+
+            if (ImageUrl.StartsWith("http", StringComparison.OrdinalIgnoreCase))
+                return ImageSource.FromUri(new Uri(ImageUrl));
+
+            try
+            {
+                byte[] bytes = Convert.FromBase64String(ImageUrl);
+                return ImageSource.FromStream(() => new MemoryStream(bytes));
+            }
+            catch
+            {
+                return null;
+            }
+        }
+    }
 }

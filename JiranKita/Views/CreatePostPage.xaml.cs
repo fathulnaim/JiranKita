@@ -6,23 +6,20 @@ namespace JiranKita.Views;
 public partial class CreatePostPage : ContentPage
 {
     private readonly FirebaseService _firebaseService = new FirebaseService();
-    private string _selectedCategory = "Lost & Found"; // Default active category
-    private string _selectedLocation = string.Empty;   // Stores clean location string without UI emoji
-    private string? _attachedPhotoPath = null;
-    private bool _isPublishing = false;                // Prevents double-tap duplicate submissions
+    private string _selectedCategory = "Lost & Found";
+    private string _selectedLocation = string.Empty;
+    private string? _attachedImageBase64 = null;
+    private bool _isPublishing = false;
 
-    // Constructor: Initializes layout controls
     public CreatePostPage()
     {
         InitializeComponent();
     }
 
-    // Lifecycle hook: Populates dynamic default community location when the page opens
     protected override void OnAppearing()
     {
         base.OnAppearing();
 
-        // Set default location from active AppSession only if not already customized by the user
         if (string.IsNullOrWhiteSpace(_selectedLocation))
         {
             _selectedLocation = !string.IsNullOrWhiteSpace(AppSession.CurrentCommunityName)
@@ -33,34 +30,29 @@ public partial class CreatePostPage : ContentPage
         }
     }
 
-    // Navigation handler: Pops current page back to previous stack view
     private async void OnCancelClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
     }
 
-    // Category selection handler: Sets active category string and updates pill button styling
     private void OnCategoryClicked(object sender, EventArgs e)
     {
         if (sender is Button clickedBtn)
         {
             _selectedCategory = clickedBtn.Text.Replace("&amp;", "&");
 
-            // Reset all category button styles back to default white
             ResetButton(BtnCatLostFound);
             ResetButton(BtnCatRoad);
             ResetButton(BtnCatEvents);
             ResetButton(BtnCatOfficial);
             ResetButton(BtnCatEmergency);
 
-            // Apply selected visual styling (amber orange background, white text)
             clickedBtn.BackgroundColor = Color.FromArgb("#D97706");
             clickedBtn.TextColor = Colors.White;
             clickedBtn.FontAttributes = FontAttributes.Bold;
         }
     }
 
-    // UI helper: Resets a category button back to unselected visual state
     private void ResetButton(Button btn)
     {
         btn.BackgroundColor = Colors.White;
@@ -70,7 +62,6 @@ public partial class CreatePostPage : ContentPage
         btn.FontAttributes = FontAttributes.None;
     }
 
-    // Location selector handler: Lets resident choose a preset community landmark or enter a custom spot
     private async void OnChangeLocationTapped(object sender, TappedEventArgs e)
     {
         string unitLocation = !string.IsNullOrWhiteSpace(AppSession.CurrentUserUnit)
@@ -110,53 +101,55 @@ public partial class CreatePostPage : ContentPage
         }
         else
         {
-            // Strip leading emoji prefix so clean location text is stored in Firebase
             _selectedLocation = action.Substring(action.IndexOf(' ') + 1).Trim();
             LblLocation.Text = $"📍 {_selectedLocation}";
         }
     }
 
-    // Input listener: Dynamically tracks title input character count (Max: 70)
     private void OnTitleTextChanged(object sender, TextChangedEventArgs e)
     {
         int length = e.NewTextValue?.Length ?? 0;
         LblTitleCount.Text = $"{length} / 70 characters";
     }
 
-    // Media picker handler: Launches device camera to capture photo
+    // Launches device camera and converts photo to Base64
     private async void OnCameraClicked(object sender, EventArgs e)
     {
         if (MediaPicker.Default.IsCaptureSupported)
         {
             FileResult? photo = await MediaPicker.Default.CapturePhotoAsync();
-            if (photo != null) SetPhoto(photo.FullPath);
+            if (photo != null) await SetPhotoAsync(photo);
         }
     }
 
-    // Media picker handler: Opens device photo gallery picker
+    // Opens device photo gallery picker and converts photo to Base64
     private async void OnGalleryClicked(object sender, EventArgs e)
     {
         FileResult? photo = await MediaPicker.Default.PickPhotoAsync();
-        if (photo != null) SetPhoto(photo.FullPath);
+        if (photo != null) await SetPhotoAsync(photo);
     }
 
-    // Image state helper: Saves selected photo path and displays image preview card
-    private void SetPhoto(string fullPath)
+    // Reads image stream into Base64 so it persists permanently in Firebase
+    private async Task SetPhotoAsync(FileResult photo)
     {
-        _attachedPhotoPath = fullPath;
-        ImgPreview.Source = ImageSource.FromFile(fullPath);
+        using Stream stream = await photo.OpenReadAsync();
+        using var memoryStream = new MemoryStream();
+        await stream.CopyToAsync(memoryStream);
+
+        byte[] imageBytes = memoryStream.ToArray();
+        _attachedImageBase64 = Convert.ToBase64String(imageBytes);
+
+        ImgPreview.Source = ImageSource.FromStream(() => new MemoryStream(imageBytes));
         AttachedPhotoCard.IsVisible = true;
     }
 
-    // Image state helper: Clears active photo attachment and hides preview card
     private void OnRemovePhotoClicked(object sender, EventArgs e)
     {
-        _attachedPhotoPath = null;
+        _attachedImageBase64 = null;
         ImgPreview.Source = null;
         AttachedPhotoCard.IsVisible = false;
     }
 
-    // Core action handler: Validates post inputs, instantiates PostModel, and publishes to Firebase
     private async void OnPublishClicked(object sender, EventArgs e)
     {
         if (_isPublishing) return;
@@ -164,14 +157,12 @@ public partial class CreatePostPage : ContentPage
         string title = TxtTitle.Text?.Trim() ?? string.Empty;
         string desc = TxtDescription.Text?.Trim() ?? string.Empty;
 
-        // 1. Validate required post inputs
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(desc))
         {
             await DisplayAlert("Incomplete Information", "Please enter both a title and detailed description for your post.", "OK");
             return;
         }
 
-        // 2. Ensure active community session exists before writing to Firebase
         if (string.IsNullOrWhiteSpace(AppSession.CurrentCommunityCode))
         {
             await DisplayAlert("No Active Community", "Please join or select a neighbourhood community before publishing a post.", "OK");
@@ -181,14 +172,12 @@ public partial class CreatePostPage : ContentPage
         _isPublishing = true;
         if (sender is Button publishBtn) publishBtn.IsEnabled = false;
 
-        // Normalize unit display format cleanly (prevents duplicate "Unit Unit ...")
         string formattedUnit = string.IsNullOrWhiteSpace(AppSession.CurrentUserUnit)
             ? "Resident"
             : (AppSession.CurrentUserUnit.StartsWith("Unit ", StringComparison.OrdinalIgnoreCase)
                 ? AppSession.CurrentUserUnit
                 : $"Unit {AppSession.CurrentUserUnit}");
 
-        // 3. Build PostModel dynamically from active AppSession (zero hardcoded data)
         var newPost = new PostModel
         {
             Category = _selectedCategory,
@@ -202,13 +191,12 @@ public partial class CreatePostPage : ContentPage
             IsVerifiedAuthor = AppSession.CurrentUser?.IsVerified ?? false,
             CreatedAt = DateTime.Now,
             CommentsCount = 0,
-            ImageUrl = _attachedPhotoPath ?? string.Empty,
+            ImageUrl = _attachedImageBase64 ?? string.Empty, // Stores actual Base64 image data in Firebase
             AllowDirectContact = ChkAllowContact.IsChecked
         };
 
         try
         {
-            // 4. Publish new post entry directly into current community code scope
             await _firebaseService.CreatePostAsync(AppSession.CurrentCommunityCode, newPost);
             await DisplayAlert("Success!", "Your post has been published to the community feed.", "OK");
             await Shell.Current.GoToAsync("..");

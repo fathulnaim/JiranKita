@@ -29,7 +29,7 @@
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnPostImageTapped" CommandParameter="{Binding Post.ImageUrl}" />
                     </Border.GestureRecognizers>
-                    <Image Source="{Binding Post.ImageUrl}" Aspect="AspectFill" />
+                    <Image Source="{Binding Post.DisplayImage}" Aspect="AspectFill" />
                 </Border>
 
                 <!-- Category & Status Badges -->

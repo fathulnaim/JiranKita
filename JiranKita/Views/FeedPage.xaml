@@ -86,7 +86,7 @@
 
                                 <!-- Post Image (Rendered only if present) -->
                                 <Border StrokeShape="RoundRectangle 12" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" HeightRequest="120" IsVisible="{Binding HasImage}" Padding="0">
-                                    <Image Source="{Binding ImageUrl}" Aspect="AspectFill" />
+                                    <Image Source="{Binding DisplayImage}" Aspect="AspectFill" />
                                 </Border>
 
                                 <Grid ColumnDefinitions="*, Auto" Margin="0, 2">
