@@ -35,15 +35,10 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#512BD4" />
-		<MauiSplashScreen Include="Resources\AppIcon\logo_jirankita.png">
-		  <Color>#FAFAF9</Color>
-		  <BaseSize>128,128</BaseSize>
-		</MauiSplashScreen>
-		<MauiSplashScreen Include="Resources\Images\logo_jirankita.png">
-		  <Color>#FAFAF9</Color>
-		  <BaseSize>128,128</BaseSize>
-		</MauiSplashScreen>
+		<MauiIcon Include="Resources\AppIcon\appicon.svg"
+          ForegroundFile="Resources\AppIcon\logo_jirankita.png"
+          Color="#FFFFFF"
+          ForegroundScale="1" />
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\logo_jirankita.png" Color="#FAFAF9" BaseSize="128,128" />
