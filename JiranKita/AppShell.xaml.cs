@@ -2,11 +2,12 @@
 
 public partial class AppShell : Shell
 {
+    // Constructor: initializes AppShell.xaml and registers all sub-page navigation routes outside the main TabBar
     public AppShell()
     {
         InitializeComponent();
 
-        // Hanya daftar skrin yang berada di luar TabBar:
+        // Register all modal/detail/auth pages outside <TabBar> so Shell.Current.GoToAsync() can navigate to them
         Routing.RegisterRoute("login", typeof(Views.login));
         Routing.RegisterRoute("FindNeighbourhoodPage", typeof(Views.FindNeighbourhoodPage));
         Routing.RegisterRoute("WelcomePage", typeof(Views.WelcomePage));

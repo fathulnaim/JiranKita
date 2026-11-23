@@ -6,15 +6,19 @@ namespace JiranKita.Views;
 
 public partial class AlertsPage : ContentPage
 {
+    // Firebase database service instance used to fetch approved neighborhood alerts
     private readonly FirebaseService fbService = new FirebaseService();
+
+    // Local cache of all approved alerts fetched from Firebase, plus the active filter state
     private List<AlertModel> _allAlerts = new();
     private string _currentFilter = "All";
 
-    // Map center (set per community in SetMapCenterFromCommunity)
+    // Default map center GPS coordinates (updated dynamically in SetMapCenterFromCommunity)
     private double _userLat = 3.0249;
     private double _userLng = 101.7012;
 
-    public string CommunityTitleDisplay => $"GIS Map: {AppSession.CurrentCommunityName}";
+    // Computed property bound to the header label in AlertsPage.xaml
+    public string CommunityTitleDisplay => $"Map: {AppSession.CurrentCommunityName}";
 
     public AlertsPage()
     {
@@ -22,7 +26,7 @@ public partial class AlertsPage : ContentPage
         BindingContext = this;
     }
 
-    // Lifecycle hook: runs every time the page appears; refreshes header and fetches fresh data
+    // Lifecycle method: runs every time the user navigates to this page; updates location & fetches fresh DB alerts
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -31,7 +35,7 @@ public partial class AlertsPage : ContentPage
         await LoadCommunityAlerts();
     }
 
-    // Picks the map center based on the active community (same codes as CreateAlertPage)
+    // Sets the map's center latitude and longitude based on the logged-in user's community code
     private void SetMapCenterFromCommunity()
     {
         string code = AppSession.CurrentCommunityCode?.Trim().ToUpper() ?? string.Empty;
@@ -44,14 +48,14 @@ public partial class AlertsPage : ContentPage
         };
     }
 
-    // Pulls ONLY approved + active alerts from Firebase, then renders list and map
+    // Asynchronously fetches only JMB-approved and active alerts from Firebase, sorts newest-first, and updates UI
     private async Task LoadCommunityAlerts()
     {
         try
         {
             _allAlerts = await fbService.GetApprovedAlertsAsync(AppSession.CurrentCommunityCode);
 
-            // Newest first, and compute a live "time ago" label from CreatedAt
+            // Sort alerts chronologically (newest first) and generate a human-readable relative timestamp
             _allAlerts = _allAlerts.OrderByDescending(a => a.CreatedAt).ToList();
             foreach (var alert in _allAlerts)
             {
@@ -66,6 +70,7 @@ public partial class AlertsPage : ContentPage
         }
     }
 
+    // Helper function: converts a UTC DateTime into a relative "time ago" string (e.g., "5 min ago")
     private static string BuildTimeAgo(DateTime createdAtUtc)
     {
         var diff = DateTime.UtcNow - createdAtUtc.ToUniversalTime();
@@ -76,7 +81,7 @@ public partial class AlertsPage : ContentPage
         return $"{(int)diff.TotalDays} day(s) ago";
     }
 
-    // Filter pill tapped
+    // Event handler: runs when a category filter pill button is tapped; updates filter & swaps button colors
     private void OnFilterAlertClicked(object sender, EventArgs e)
     {
         if (sender is Button btn)
@@ -87,20 +92,23 @@ public partial class AlertsPage : ContentPage
             else if (filterText.Contains("Security")) _currentFilter = "Security";
             else _currentFilter = "All";
 
+            // Step 1: Reset all four filter pills back to their inactive white appearance
             ResetButton(PillAll);
             ResetButton(PillRoad);
             ResetButton(PillHazards);
             ResetButton(PillSecurity);
 
+            // Step 2: Highlight the newly selected pill with Emerald Green background and white bold text
             btn.BackgroundColor = Color.FromArgb("#047857");
             btn.TextColor = Colors.White;
             btn.FontAttributes = FontAttributes.Bold;
 
+            // Step 3: Re-filter the list and redraw map markers
             FilterAlertsAndRenderMap();
         }
     }
 
-    // Resets a filter pill to its unselected styling
+    // Helper function: restores a filter pill button to its unselected white/gray state
     private void ResetButton(Button btn)
     {
         btn.BackgroundColor = Colors.White;
@@ -110,7 +118,7 @@ public partial class AlertsPage : ContentPage
         btn.FontAttributes = FontAttributes.None;
     }
 
-    // Makes any text safe to place inside a single-quoted JavaScript string with HTML content
+    // Security helper: encodes HTML and escapes quotes/newlines so database text cannot break injected JavaScript
     private static string JsSafe(string? text) =>
         System.Net.WebUtility.HtmlEncode(text ?? string.Empty)
             .Replace("\\", "\\\\")
@@ -118,7 +126,7 @@ public partial class AlertsPage : ContentPage
             .Replace("\r", " ")
             .Replace("\n", " ");
 
-    // Filters alerts, updates the list, builds Leaflet markers and renders the map
+    // Core rendering function: filters alerts by category, updates CollectionView, and builds Leaflet OpenStreetMap HTML
     private void FilterAlertsAndRenderMap()
     {
         var filteredList = _allAlerts.AsEnumerable();
@@ -130,14 +138,16 @@ public partial class AlertsPage : ContentPage
         var activeAlerts = filteredList.ToList();
         AlertsCollectionView.ItemsSource = activeAlerts;
 
+        // Use InvariantCulture so decimal coordinates always format with '.' instead of ','
         var inv = CultureInfo.InvariantCulture;
         string markersJs = string.Empty;
 
         foreach (var alert in activeAlerts)
         {
-            // Skip alerts with no coordinates so they don't appear at 0,0 in the ocean
+            // Skip alerts without valid GPS coordinates so they don't appear at (0, 0) in the ocean
             if (alert.Latitude == 0.0 && alert.Longitude == 0.0) continue;
 
+            // Assign marker icon and hex color based on alert category
             bool isRoad = alert.Category.Equals("Road", StringComparison.OrdinalIgnoreCase);
             string markerIcon = isRoad ? "🚧" : "⚠️";
             string colorHex = isRoad ? "#F59E0B" : "#E11D48";
@@ -157,6 +167,7 @@ public partial class AlertsPage : ContentPage
         string centerLat = _userLat.ToString(inv);
         string centerLng = _userLng.ToString(inv);
 
+        // Generate complete HTML document embedding Leaflet.js + OpenStreetMap tiles + user geofence + alert markers
         string mapHtml = $@"
         <!DOCTYPE html>
         <html>
@@ -178,6 +189,7 @@ public partial class AlertsPage : ContentPage
                     maxZoom: 19
                 }}).addTo(map);
 
+                // Blue marker representing the user's current community center
                 L.circleMarker([{centerLat}, {centerLng}], {{
                     radius: 7,
                     fillColor: '#0284c7',
@@ -187,6 +199,7 @@ public partial class AlertsPage : ContentPage
                     fillOpacity: 1
                 }}).addTo(map).bindPopup('<b>📍 You are here</b><br>{JsSafe(AppSession.CurrentUserUnit)}');
 
+                // 500-meter green geofence radius circle around the community
                 L.circle([{centerLat}, {centerLng}], {{
                     color: '#047857',
                     fillColor: '#10b981',
@@ -202,13 +215,13 @@ public partial class AlertsPage : ContentPage
         MapWebView.Source = new HtmlWebViewSource { Html = mapHtml };
     }
 
-    // Recenters the map (re-renders at the community default position)
+    // Event handler: re-centers the map back to the community's default coordinates
     private void OnRecenterMapClicked(object sender, EventArgs e)
     {
         FilterAlertsAndRenderMap();
     }
 
-    // SOS: confirmation dialog, then opens the phone dialer for the guardhouse hotline
+    // Event handler: prompts confirmation and launches the native phone dialer for the guardhouse hotline
     private async void OnSosCallClicked(object sender, EventArgs e)
     {
         bool call = await DisplayAlert(
@@ -240,7 +253,7 @@ public partial class AlertsPage : ContentPage
         }
     }
 
-    // Opens the report form (resident submits -> JMB approves -> shows here)
+    // Event handler: navigates to CreateAlertPage so the resident can submit a new hazard report
     private async void OnReportHazardClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.CreateAlertPage));

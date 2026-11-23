@@ -5,22 +5,25 @@ using JiranKita.Models;
 
 namespace JiranKita.Services;
 
+// Central cloud data-access service wrapping Firebase Realtime Database (Singapore region: asia-southeast1)
 public class FirebaseService
 {
     private readonly string _firebaseUrl = "https://jirankita-c5652-default-rtdb.asia-southeast1.firebasedatabase.app/";
     private readonly FirebaseClient _firebaseClient;
 
+    // Constructor: initializes the FirebaseClient connection using the regional database endpoint
     public FirebaseService()
     {
         _firebaseClient = new FirebaseClient(_firebaseUrl);
     }
 
-    // ==========================================
-    // 1. SEMAK DAN DAFTAR KOMUNITI (BUBBLE)
-    // ==========================================
+    // ==============================================================
+    // 1. COMMUNITY PRECINCT LOOKUP & REGISTRATION ("BUBBLE" ISOLATION)
+    // ==============================================================
+
+    // Looks up a community precinct by its 5-character invite code under Communities/{inviteCode}/Info
     public async Task<CommunityModel?> FindCommunityByInviteCodeAsync(string inviteCode)
     {
-        // Cari terus ke dahan komuniti kod tersebut
         var communityData = await _firebaseClient
             .Child("Communities")
             .Child(inviteCode.ToUpper())
@@ -36,9 +39,9 @@ public class FirebaseService
         return null;
     }
 
+    // Creates a new isolated community branch in Firebase keyed by its uppercase InviteCode
     public async Task RegisterCommunityAsync(CommunityModel community)
     {
-        // Cipta bubble baharu menggunakan InviteCode sebagai nama dahan
         await _firebaseClient
             .Child("Communities")
             .Child(community.InviteCode.ToUpper())
@@ -46,10 +49,11 @@ public class FirebaseService
             .PutAsync(community);
     }
 
-    // ==========================================
-    // 2. CHAT DALAM BUBBLE (IKUT KOMUNITI SAHAJA)
-    // ==========================================
-    // 1. HANTAR MESEJ HANYA KE BUBBLE KOMUNITI SPESIFIK
+    // ==============================================================
+    // 2. COMMUNITY GROUP CHAT (REAL-TIME STREAMING & CRUD)
+    // ==============================================================
+
+    // Pushes a new group chat message into Communities/{communityCode}/Chat
     public async Task SendMessageAsync(string communityCode, ChatMessage message)
     {
         await _firebaseClient
@@ -59,7 +63,7 @@ public class FirebaseService
             .PostAsync(message);
     }
 
-    // 2. PADAM MESEJ DALAM BUBBLE KOMUNITI SPESIFIK
+    // Deletes a specific group chat message by its Firebase push key
     public async Task DeleteMessageAsync(string communityCode, string firebaseKey)
     {
         if (string.IsNullOrEmpty(firebaseKey)) return;
@@ -72,7 +76,7 @@ public class FirebaseService
             .DeleteAsync();
     }
 
-    // 3. DENGAR MESEJ HANYA DARI BUBBLE KOMUNITI SPESIFIK
+    // Opens a live reactive stream (AsObservable) listening for added/removed messages in the community group chat
     public IDisposable SubscribeToMessages(string communityCode, Action<FirebaseEvent<ChatMessage>> onEventReceived)
     {
         return _firebaseClient
@@ -83,9 +87,11 @@ public class FirebaseService
             .Subscribe(onEventReceived);
     }
 
-    // ==========================================
-    // 3. FEED POS DALAM BUBBLE (IKUT KOMUNITI SAHAJA)
-    // ==========================================
+    // ==============================================================
+    // 3. COMMUNITY FEED POSTS (CREATE & FETCH)
+    // ==============================================================
+
+    // Saves a new community feed post under Communities/{communityCode}/Posts
     public async Task CreatePostAsync(string communityCode, PostModel post)
     {
         await _firebaseClient
@@ -95,6 +101,7 @@ public class FirebaseService
             .PostAsync(post);
     }
 
+    // Fetches all posts for a community, attaches each item's FirebaseKey, and sorts newest first
     public async Task<List<PostModel>> GetAllPostsAsync(string communityCode)
     {
         var postList = await _firebaseClient
@@ -114,9 +121,11 @@ public class FirebaseService
         return results.OrderByDescending(p => p.CreatedAt).ToList();
     }
 
-    // ==========================================
-    // 4. KOMEN DALAM BUBBLE
-    // ==========================================
+    // ==============================================================
+    // 4. POST COMMENTS
+    // ==============================================================
+
+    // Appends a new resident comment under Communities/{communityCode}/Posts/{postFirebaseKey}/Comments
     public async Task AddCommentAsync(string communityCode, string postFirebaseKey, CommentModel comment)
     {
         if (string.IsNullOrEmpty(postFirebaseKey)) return;
@@ -130,6 +139,7 @@ public class FirebaseService
             .PostAsync(comment);
     }
 
+    // Retrieves all comments for a specific post sorted chronologically (oldest first)
     public async Task<List<CommentModel>> GetCommentsAsync(string communityCode, string postFirebaseKey)
     {
         if (string.IsNullOrEmpty(postFirebaseKey)) return new List<CommentModel>();
@@ -150,10 +160,11 @@ public class FirebaseService
         return comments.OrderBy(c => c.CreatedAt).ToList();
     }
 
-    // ==========================================
-    // 5. AUTH PENGGUNA
-    // ==========================================
-    // Returns the new Firebase key so the caller can set user.FirebaseKey
+    // ==============================================================
+    // 5. USER REGISTRATION & AUTHENTICATION
+    // ==============================================================
+
+    // Registers a new UserModel under the global 'Users' node and returns its generated Firebase push key
     public async Task<string> RegisterUserAsync(UserModel user)
     {
         var result = await _firebaseClient
@@ -163,6 +174,7 @@ public class FirebaseService
         return result.Key;
     }
 
+    // Authenticates a user by matching email (case-insensitive) and password against records in 'Users'
     public async Task<UserModel?> LoginUserAsync(string email, string password)
     {
         var userList = await _firebaseClient
@@ -182,9 +194,11 @@ public class FirebaseService
         return null;
     }
 
-    // --- TAMBAH 2 FUNGSI INI DALAM KELAS FirebaseService.cs ---
+    // ==============================================================
+    // 6. HOME DASHBOARD DATA (URGENT BANNER & NEIGHBOURHOOD PULSE)
+    // ==============================================================
 
-    // 1. TARIK AMARAN KECEMASAN (URGENT ALERT) IKUT BUBBLE
+    // Fetches the active JMB Urgent Alert banner displayed at the top of HomePage
     public async Task<AlertModel?> GetUrgentAlertAsync(string communityCode)
     {
         try
@@ -201,21 +215,20 @@ public class FirebaseService
         }
     }
 
-    // 2. TARIK 2 POS PALING TERKINI UNTUK 'NEIGHBOURHOOD PULSE'
+    // Fetches the top N most recent community posts (default 2) for HomePage's Neighbourhood Pulse section
     public async Task<List<PostModel>> GetPulsePostsAsync(string communityCode, int limit = 2)
     {
         var posts = await GetAllPostsAsync(communityCode);
         return posts.Take(limit).ToList();
     }
 
-    // ==========================================
-    // FUNGSI 1-ON-1 DIRECT CHAT (WHATSAPP STYLE)
-    // ==========================================
+    // ==============================================================
+    // 7. 1-ON-1 DIRECT MESSAGING (WHATSAPP-STYLE PRIVATE ROOMS)
+    // ==============================================================
 
-    // 1. HANTAR MESEJ 1-ON-1
+    // Sends a private 1-on-1 message into Communities/{communityCode}/DirectChats/{roomId}/Messages
     public async Task SendDirectMessageAsync(string communityCode, string roomId, ChatMessage message)
     {
-        // Simpan mesej ke bilik peribadi di Firebase
         await _firebaseClient
             .Child("Communities")
             .Child(communityCode.ToUpper())
@@ -225,7 +238,7 @@ public class FirebaseService
             .PostAsync(message);
     }
 
-    // 2. DENGAR MESEJ 1-ON-1 SECARA LIVE
+    // Subscribes to live incoming/deleted messages inside a private 1-on-1 chat room
     public IDisposable SubscribeToDirectMessages(string communityCode, string roomId, Action<FirebaseEvent<ChatMessage>> onEventReceived)
     {
         return _firebaseClient
@@ -238,7 +251,7 @@ public class FirebaseService
             .Subscribe(onEventReceived);
     }
 
-    // 3. PADAM MESEJ 1-ON-1
+    // Deletes a specific message from a 1-on-1 direct chat room
     public async Task DeleteDirectMessageAsync(string communityCode, string roomId, string firebaseKey)
     {
         if (string.IsNullOrEmpty(firebaseKey)) return;
@@ -253,9 +266,11 @@ public class FirebaseService
             .DeleteAsync();
     }
 
-    // ==========================================
-    // TARIK AMARAN BENCANA/KESELAMATAN DARI BUBBLE
-    // ==========================================
+    // ==============================================================
+    // 8. JMB MODERATION QUEUE (RESIDENT & HAZARD ALERT APPROVALS)
+    // ==============================================================
+
+    // Retrieves all active hazard/safety alerts for a community (both approved and pending)
     public async Task<List<AlertModel>> GetCommunityAlertsAsync(string communityCode)
     {
         try
@@ -272,7 +287,7 @@ public class FirebaseService
                 var alert = item.Object;
                 alert.FirebaseKey = item.Key;
 
-                // Hanya ambil amaran yang aktif
+                // Include only active alerts
                 if (alert.IsActive)
                 {
                     results.Add(alert);
@@ -286,7 +301,7 @@ public class FirebaseService
         }
     }
 
-    // 1. Tarik senarai penduduk yang belum disahkan (IsVerified == false)
+    // Fetches non-admin resident accounts awaiting JMB verification (IsVerified == false)
     public async Task<List<UserModel>> GetPendingResidentsAsync()
     {
         var users = await _firebaseClient.Child("Users").OnceAsync<UserModel>();
@@ -295,7 +310,6 @@ public class FirebaseService
         foreach (var item in users)
         {
             if (!item.Object.IsVerified && item.Object.Role != "Admin")
-
             {
                 var user = item.Object;
                 user.FirebaseKey = item.Key;
@@ -305,7 +319,7 @@ public class FirebaseService
         return pending;
     }
 
-    // 2. Luluskan Penduduk (Tukar IsVerified -> true)
+    // Approves a pending resident account by setting IsVerified = true in Firebase
     public async Task ApproveResidentAsync(string userFirebaseKey)
     {
         await _firebaseClient
@@ -315,8 +329,7 @@ public class FirebaseService
             .PutAsync(true);
     }
 
-    // 3. Tolak Penduduk
-    // 3. Tolak Penduduk & Padam Semua Pos, Komen, dan Sembang Pengguna
+    // Rejects a resident account and performs a cascading delete of their Posts, Comments, Group Chats, Direct Chats, and User record
     public async Task RejectResidentAsync(string userFirebaseKey, string communityCode = "", string userFullName = "")
     {
         if (string.IsNullOrWhiteSpace(userFirebaseKey)) return;
@@ -326,7 +339,7 @@ public class FirebaseService
 
         if (!string.IsNullOrEmpty(cleanCode) && !string.IsNullOrEmpty(targetName))
         {
-            // 1. Padam semua Posts & Comments milik pengguna
+            // 1. Delete all Posts and Comments authored by the rejected user
             var posts = await _firebaseClient
                 .Child("Communities")
                 .Child(cleanCode)
@@ -368,7 +381,7 @@ public class FirebaseService
                 }
             }
 
-            // 2. Padam semua mesej Group Chat milik pengguna
+            // 2. Delete all Group Chat messages sent by the rejected user
             var chatMessages = await _firebaseClient
                 .Child("Communities")
                 .Child(cleanCode)
@@ -391,7 +404,7 @@ public class FirebaseService
                 }
             }
 
-            // 3. Padam semua bilik Direct Chat (1-on-1) pengguna
+            // 3. Delete all 1-on-1 Direct Chat rooms involving the rejected user
             string cleanUserKey = targetName.Replace(" ", "").ToLower();
             var directRooms = await _firebaseClient
                 .Child("Communities")
@@ -417,14 +430,14 @@ public class FirebaseService
             }
         }
 
-        // 4. Padam akaun pengguna dari Users
+        // 4. Delete the user's primary profile record from 'Users'
         await _firebaseClient
             .Child("Users")
             .Child(userFirebaseKey)
             .DeleteAsync();
     }
 
-    // 4. Tarik senarai amaran bahaya yang menunggu kelulusan JMB (IsApproved == false)
+    // Fetches unapproved active hazard alerts awaiting JMB review (IsApproved == false)
     public async Task<List<AlertModel>> GetPendingAlertsAsync(string communityCode)
     {
         var alerts = await _firebaseClient
@@ -446,7 +459,7 @@ public class FirebaseService
         return pending;
     }
 
-    // 5. Luluskan & Siarkan Amaran ke Peta (Tukar IsApproved -> true)
+    // Approves a pending hazard alert so it becomes visible on the live GIS map (IsApproved -> true)
     public async Task ApproveAlertAsync(string communityCode, string alertFirebaseKey)
     {
         await _firebaseClient
@@ -458,7 +471,7 @@ public class FirebaseService
             .PutAsync(true);
     }
 
-    // 6. Buang Amaran Palsu / Tolak Amaran
+    // Rejects/deletes a false or duplicate hazard alert from Firebase
     public async Task RejectAlertAsync(string communityCode, string alertFirebaseKey)
     {
         await _firebaseClient
@@ -470,18 +483,20 @@ public class FirebaseService
     }
 
     // ==============================================================
-    // FUNGSI SIARKAN NOTIS RASMI JMB KE FIREBASE
+    // 9. OFFICIAL JMB NOTICE BROADCAST
     // ==============================================================
+
+    // Publishes an official JMB notice both to UrgentAlert (HomePage banner) and Alerts (pre-approved map pin)
     public async Task SetCommunityUrgentAlertAsync(string communityCode, AlertModel alert)
     {
-        // 1. Simpan ke dahan UrgentAlert (Untuk Kad Kuning di HomePage)
+        // 1. Save to UrgentAlert node for the HomePage yellow warning card
         await _firebaseClient
             .Child("Communities")
             .Child(communityCode.ToUpper())
             .Child("UrgentAlert")
             .PutAsync(alert);
 
-        // 2. Simpan juga ke senarai Alerts (Untuk Peta GIS di AlertsPage)
+        // 2. Also append as an approved active alert so it plots immediately on AlertsPage's GIS map
         alert.IsApproved = true;
         alert.IsActive = true;
         await _firebaseClient
@@ -492,8 +507,10 @@ public class FirebaseService
     }
 
     // ==============================================================
-    // TARIK SENARAI SEMBANG 1-ON-1 YANG AKTIF DARI DATABASE
+    // 10. DIRECT CHAT INBOX & USER PROFILE UPDATES
     // ==============================================================
+
+    // Scans DirectChats rooms matching currentUserName to populate ChatInboxPage with neighbour names and latest messages
     public async Task<List<DirectConversationModel>> GetDirectChatRoomsAsync(string communityCode, string currentUserName)
     {
         var conversationList = new List<DirectConversationModel>();
@@ -501,7 +518,6 @@ public class FirebaseService
 
         try
         {
-            // Ambil semua bilik DirectChats dalam bubble komuniti
             var chatRooms = await _firebaseClient
                 .Child("Communities")
                 .Child(communityCode.ToUpper())
@@ -510,12 +526,11 @@ public class FirebaseService
 
             foreach (var room in chatRooms)
             {
-                string roomId = room.Key; // cth: "muhammadfathul_puanaisyah"
+                string roomId = room.Key; // e.g., "muhammadfathul_puanaisyah"
 
-                // Hanya ambil bilik jika pengguna terlibat dalam perbualan itu
+                // Include only rooms where the signed-in user is one of the two participants
                 if (roomId.Contains(cleanCurrent))
                 {
-                    // Tarik mesej dalam bilik ini untuk dapatkan mesej terakhir & profil jiran
                     var messages = await _firebaseClient
                         .Child("Communities")
                         .Child(communityCode.ToUpper())
@@ -529,13 +544,13 @@ public class FirebaseService
                         var sortedMessages = messages.OrderBy(m => m.Object.Timestamp).ToList();
                         var lastMsg = sortedMessages.Last().Object;
 
-                        // Cari mesej jiran untuk dapatkan nama & unitnya
+                        // Find any message sent by the neighbour to extract their full display name and unit
                         var neighbourMsg = messages.FirstOrDefault(m => m.Object.SenderName != currentUserName)?.Object;
 
                         string neighbourName = neighbourMsg?.SenderName ?? "Neighbour";
                         string neighbourUnit = neighbourMsg?.SenderUnit ?? "Unit Resident";
 
-                        // Jika kita baru hantar mesej dan jiran belum balas, ekstrak nama dari RoomId
+                        // Fallback: parse neighbour name from the roomId key if they haven't replied yet
                         if (neighbourName == "Neighbour")
                         {
                             string rawName = roomId.Replace(cleanCurrent, "").Replace("_", "");
@@ -558,12 +573,13 @@ public class FirebaseService
         }
         catch
         {
-            // Jika belum ada rekod
+            // Ignore if DirectChats node does not exist yet
         }
 
         return conversationList;
     }
 
+    // Patches a user's linked CommunityCode and CommunityName in Firebase without overwriting other profile fields
     public async Task UpdateUserCommunityAsync(string userFirebaseKey, string communityCode, string communityName)
     {
         if (string.IsNullOrWhiteSpace(userFirebaseKey))
@@ -581,7 +597,7 @@ public class FirebaseService
             .PatchAsync(json);
     }
 
-    // Fetches chat messages for a given community and chat room ID
+    // Fetches historical chat messages for a given community and chat room ID
     public async Task<List<ChatMessage>> GetChatMessagesAsync(string communityCode, string roomId)
     {
         if (string.IsNullOrWhiteSpace(communityCode) || string.IsNullOrWhiteSpace(roomId))
@@ -600,18 +616,18 @@ public class FirebaseService
             .OrderBy(m => m.Timestamp)
             .ToList();
     }
-    // ==========================================
-    // RESIDENT ALERT FLOW: SUBMIT -> JMB APPROVE -> SHOW ON ALERTS MAP
-    // ==========================================
 
-    // Submits a new resident hazard/security alert (pending JMB approval).
-    // NOTE: path MUST be "Communities/{code}/Alerts" (same casing as every read/approve method).
+    // ==============================================================
+    // 11. RESIDENT HAZARD ALERT SUBMISSION & APPROVED MAP QUERY
+    // ==============================================================
+
+    // Submits a new resident hazard alert with IsApproved = false (enters JMB moderation queue first)
     public async Task SubmitResidentAlertAsync(string communityCode, AlertModel alert)
     {
         if (string.IsNullOrWhiteSpace(communityCode))
             throw new ArgumentException("Community code cannot be empty.", nameof(communityCode));
 
-        alert.IsApproved = false; // always pending when submitted by a resident
+        alert.IsApproved = false;
         alert.IsActive = true;
 
         await _firebaseClient
@@ -621,7 +637,7 @@ public class FirebaseService
             .PostAsync(alert);
     }
 
-    // Returns only alerts that are active AND approved by JMB (used by AlertsPage)
+    // Returns only active AND JMB-approved alerts for plotting on AlertsPage's GIS map
     public async Task<List<AlertModel>> GetApprovedAlertsAsync(string communityCode)
     {
         var all = await GetCommunityAlertsAsync(communityCode);

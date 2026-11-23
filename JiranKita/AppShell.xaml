@@ -7,48 +7,50 @@
     xmlns:views="clr-namespace:JiranKita.Views"
     Shell.FlyoutBehavior="Disabled"
     Title="JiranKita"
-    
     Shell.TabBarBackgroundColor="White"
     Shell.TabBarForegroundColor="#047857"
     Shell.TabBarTitleColor="#047857"
     Shell.TabBarUnselectedColor="#78716C">
 
-    <!-- 1. SKRIN PERMULAAN / AUTH (Tab bar disorok di sini) -->
+    <!-- ================= 1. INITIAL ENTRY / AUTHENTICATION SCREEN ================= -->
+    <!-- Placed outside <TabBar> so the bottom navigation bar stays hidden before login -->
     <ShellContent
         Title="Welcome"
         ContentTemplate="{DataTemplate views:WelcomePage}"
         Route="WelcomePage" />
 
-    <!-- 2. SISTEM TAB MENU ASLI -->
+    <!-- ================= 2. MAIN NATIVE BOTTOM TAB BAR NAVIGATION ================= -->
     <TabBar>
 
-        <!-- Tab 1: Home (Wajib ada Icon!) -->
+        <!-- Tab 1: Home Dashboard -->
         <ShellContent
             Title="Home"
             Icon="home.svg"
             Route="HomePage"
             ContentTemplate="{DataTemplate views:HomePage}" />
 
+        <!-- Tab 2: Community Feed -->
         <ShellContent
             Title="Feed"
             Icon="feed.svg"
             Route="FeedPage"
             ContentTemplate="{DataTemplate views:FeedPage}" />
 
-        <!-- Tab 3: Chat & AI (GUNA ChatInboxPage SEBAGAI SENARAI INBOX!) -->
+        <!-- Tab 3: Chat Inbox & JiranBot AI Entry Point -->
         <ShellContent
             Title="Chat &amp; AI"
             Icon="chat.svg"
             Route="ChatInboxPage"
             ContentTemplate="{DataTemplate views:ChatInboxPage}" />
 
+        <!-- Tab 4: GIS Hazard & Safety Alerts -->
         <ShellContent
             Title="Alerts"
             Icon="alert.svg"
             Route="AlertsPage"
             ContentTemplate="{DataTemplate views:AlertsPage}" />
 
-        <!-- Tab 2: Profile (Wajib ada Icon!) -->
+        <!-- Tab 5: Resident / JMB Profile & Approvals -->
         <ShellContent
             Title="Profile"
             Icon="profile.svg"

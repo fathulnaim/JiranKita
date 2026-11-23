@@ -5,31 +5,37 @@ using JiranKita.Services;
 
 namespace JiranKita.Views;
 
+// MAUI Shell QueryProperties: receives RoomId, TargetName, and TargetUnit passed during navigation
 [QueryProperty(nameof(TargetRoomId), "RoomId")]
 [QueryProperty(nameof(TargetUserName), "TargetName")]
 [QueryProperty(nameof(TargetUserUnit), "TargetUnit")]
 public partial class ChatPage : ContentPage
 {
+    // Firebase database service instance used for real-time streaming, sending, and deleting messages
     private readonly FirebaseService _firebaseService = new FirebaseService();
+
+    // Holds the active real-time WebSocket/SSE stream subscription so it can be disposed when leaving the page
     private IDisposable? _liveChatSubscription;
+
+    // Cancellation token used to cancel the 500ms press-and-hold timer if the user lifts their finger early
     private CancellationTokenSource? _longPressTimer;
 
-    // Parameters for 1-on-1 direct chat routing (Defaults to "Group")
+    // Navigation parameters for 1-on-1 direct chat routing (defaults to "Group" for community group chat)
     public string TargetRoomId { get; set; } = "Group";
     public string TargetUserName { get; set; } = string.Empty;
     public string TargetUserUnit { get; set; } = string.Empty;
 
-    // Observable collection bound to MessagesCollectionView for real-time UI updates
+    // ObservableCollection bound to MessagesCollectionView so incoming/deleted messages update the UI automatically
     public ObservableCollection<ChatMessage> MessageList { get; set; } = new ObservableCollection<ChatMessage>();
 
-    // Constructor: Initializes XAML layout and binds collection to list view
+    // Constructor: initializes XAML components and binds MessageList to MessagesCollectionView
     public ChatPage()
     {
         InitializeComponent();
         MessagesCollectionView.ItemsSource = MessageList;
     }
 
-    // Lifecycle hook: Sets up header title and subscribes to real-time Firebase chat streams (Direct vs Group)
+    // Lifecycle hook: configures header labels and opens a live Firebase stream (Direct 1-on-1 vs Community Group)
     protected override void OnAppearing()
     {
         base.OnAppearing();
@@ -44,7 +50,7 @@ public partial class ChatPage : ContentPage
             LblCommunityTitle.Text = TargetUserName;
             LblBubbleCode.Text = $"{TargetUserUnit} · Direct Chat 🔒";
 
-            // Subscribe to private direct message room
+            // Subscribe to the private 1-on-1 direct message stream in Firebase
             _liveChatSubscription = _firebaseService.SubscribeToDirectMessages(communityCode, TargetRoomId, HandleIncomingMessage);
         }
         // Fallback to precinct public community group chat
@@ -53,16 +59,17 @@ public partial class ChatPage : ContentPage
             LblCommunityTitle.Text = AppSession.CurrentCommunityName;
             LblBubbleCode.Text = $"Bubble: {communityCode} · Community Group";
 
-            // Subscribe to public community group chat
+            // Subscribe to the public community group message stream in Firebase
             _liveChatSubscription = _firebaseService.SubscribeToMessages(communityCode, HandleIncomingMessage);
         }
     }
 
-    // Firebase WebSocket streaming callback: Listens for incoming insertions and deletions in real-time
+    // Real-time Firebase streaming callback: processes incoming new messages and remote deletions on the UI thread
     private void HandleIncomingMessage(FirebaseEvent<ChatMessage> firebaseEvent)
     {
         MainThread.BeginInvokeOnMainThread(() =>
         {
+            // Case 1: A message was deleted from Firebase -> remove it from the UI list and recalculate date badges
             if (firebaseEvent.EventType == FirebaseEventType.Delete)
             {
                 var messageToDelete = MessageList.FirstOrDefault(m => m.FirebaseKey == firebaseEvent.Key);
@@ -72,6 +79,7 @@ public partial class ChatPage : ContentPage
                     UpdateDateHeaders();
                 }
             }
+            // Case 2: A new message arrived -> tag ownership (IsSelf), insert chronologically, and auto-scroll down
             else if (firebaseEvent.Object != null)
             {
                 ChatMessage incomingMsg = firebaseEvent.Object;
@@ -87,14 +95,14 @@ public partial class ChatPage : ContentPage
         });
     }
 
-    // Lifecycle hook: Unsubscribes active Firebase listener when navigating away to prevent memory leaks
+    // Lifecycle hook: disposes the active Firebase stream listener when leaving the page to prevent memory leaks
     protected override void OnDisappearing()
     {
         base.OnDisappearing();
         _liveChatSubscription?.Dispose();
     }
 
-    // In-memory insertion sorting: Places incoming message chronologically by timestamp
+    // Chronological insertion sort: inserts each incoming message at the exact index matching its Timestamp
     private void InsertMessageSorted(ChatMessage msg)
     {
         int index = 0;
@@ -106,7 +114,7 @@ public partial class ChatPage : ContentPage
         UpdateDateHeaders();
     }
 
-    // Dynamic date grouping: Evaluates adjacent message dates to toggle WhatsApp-style date headers ("Today", "Yesterday", or formatted date string)
+    // Dynamic date grouping: compares adjacent message dates to toggle WhatsApp-style date badges ("Today", "Yesterday", or full date)
     private void UpdateDateHeaders()
     {
         DateTime? previousDate = null;
@@ -128,12 +136,13 @@ public partial class ChatPage : ContentPage
         }
     }
 
-    // Action handler: Sends text message via Firebase (routes to either Direct or Group chat room)
+    // Event handler: creates a new ChatMessage and sends it to either the Direct or Group Firebase node
     private async void OnSendMessageClicked(object sender, EventArgs e)
     {
         string text = TxtChatMessage.Text?.Trim() ?? "";
         if (string.IsNullOrWhiteSpace(text)) return;
 
+        // Clear the input field immediately for responsive UX
         TxtChatMessage.Text = string.Empty;
 
         var newMsg = new ChatMessage
@@ -164,7 +173,7 @@ public partial class ChatPage : ContentPage
         }
     }
 
-    // Pointer gesture handler: Implements a 500ms long-press action sheet for copying or deleting messages
+    // Pointer gesture handler: starts a 500ms hold timer to show a Copy / Delete for Everyone action sheet
     private async void OnMessagePointerPressed(object sender, PointerEventArgs e)
     {
         _longPressTimer = new CancellationTokenSource();
@@ -189,6 +198,7 @@ public partial class ChatPage : ContentPage
                 }
                 else if (action == "Delete for Everyone 🗑️")
                 {
+                    // Route deletion to either the 1-on-1 room or the community group room in Firebase
                     if (!string.IsNullOrEmpty(TargetUserName) && TargetRoomId != "Group")
                     {
                         await _firebaseService.DeleteDirectMessageAsync(AppSession.CurrentCommunityCode, TargetRoomId, msg.FirebaseKey);
@@ -203,13 +213,13 @@ public partial class ChatPage : ContentPage
         catch (TaskCanceledException) { }
     }
 
-    // Pointer gesture handler: Cancels long-press timer if touch is released early
+    // Pointer gesture handler: cancels the 500ms hold timer if the user releases or slides off before 500ms
     private void OnMessagePointerReleased(object sender, PointerEventArgs e)
     {
         _longPressTimer?.Cancel();
     }
 
-    // Navigation handler: Launches JiranBot AI Assistant page
+    // Navigation handler: opens the JiranBot AI Assistant page
     private async void OnRobotClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync(nameof(Views.JiranBotPage));

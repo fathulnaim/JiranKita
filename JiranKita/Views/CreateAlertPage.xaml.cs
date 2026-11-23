@@ -5,17 +5,22 @@ namespace JiranKita.Views;
 
 public partial class CreateAlertPage : ContentPage
 {
+    // Firebase database service instance used to submit the resident's hazard report
     private readonly FirebaseService fbService = new FirebaseService();
+
+    // Form state fields: tracks selected hazard category and captured GPS coordinates
     private string selectedCategory = "Hazards";
     private double _capturedLat = 0.0;
     private double _capturedLng = 0.0;
     private bool _hasRealGps = false;
 
+    // Constructor: initializes XAML layout controls
     public CreateAlertPage()
     {
         InitializeComponent();
     }
 
+    // Page startup lifecycle hook: sets safe community fallback coordinates first, then requests live device GPS
     protected override async void OnAppearing()
     {
         base.OnAppearing();
@@ -23,7 +28,7 @@ public partial class CreateAlertPage : ContentPage
         await CaptureDeviceGpsAsync();
     }
 
-    // Dynamically sets fallback coordinates based on the active community (no single hardcoded location)
+    // Dynamically sets fallback coordinates based on the active community (avoids a single hardcoded location)
     private void SetCommunityDefaultCoordinates()
     {
         string code = AppSession.CurrentCommunityCode?.Trim().ToUpper() ?? string.Empty;
@@ -36,7 +41,7 @@ public partial class CreateAlertPage : ContentPage
         };
     }
 
-    // Captures the device's real GPS location to place a pin on the map
+    // Requests runtime location permission and captures the device's real GPS coordinates for the GIS map pin
     private async Task CaptureDeviceGpsAsync()
     {
         try
@@ -63,7 +68,7 @@ public partial class CreateAlertPage : ContentPage
         }
         catch
         {
-            // Fallback to active community coordinates set in SetCommunityDefaultCoordinates()
+            // Fallback to active community coordinates already set in SetCommunityDefaultCoordinates()
         }
 
         LblGpsStatus.Text = _capturedLat != 0.0
@@ -71,21 +76,22 @@ public partial class CreateAlertPage : ContentPage
             : "GPS Unavailable: Location will be verified by JMB";
     }
 
+    // Navigation handler: closes the form and returns to the previous page when Cancel is tapped
     private async void OnCancelClicked(object sender, EventArgs e)
     {
         await Shell.Current.GoToAsync("..");
     }
 
-    // Hazard Category Selection
+    // Event handler: extracts clean category text from the tapped pill button and highlights it in Crimson Red
     private void OnCategoryClicked(object sender, EventArgs e)
     {
         if (sender is Button btn)
         {
-            // Ambil kategori bersih
+            // Strip emoji prefixes to store the clean category name (e.g., "Hazards", "Road", "Security")
             string cleanText = btn.Text.Replace("⚠️ ", "").Replace("🚧 ", "").Replace("🚨 ", "").Replace("💧 ", "").Replace("⚡ ", "").Replace("🛗 ", "");
             selectedCategory = cleanText;
 
-            // Reset semua butang
+            // Reset all 6 category buttons back to their unselected white appearance
             ResetButton(BtnCatHazards);
             ResetButton(BtnCatRoad);
             ResetButton(BtnCatSecurity);
@@ -93,13 +99,14 @@ public partial class CreateAlertPage : ContentPage
             ResetButton(BtnCatElectricity);
             ResetButton(BtnCatFacility);
 
-            // Butang aktif bertukar merah
+            // Highlight the newly selected category button in Crimson Red (#BE123C) with bold white text
             btn.BackgroundColor = Color.FromArgb("#BE123C");
             btn.TextColor = Colors.White;
             btn.FontAttributes = FontAttributes.Bold;
         }
     }
 
+    // Helper function: restores a category button to its default unselected white/gray state
     private void ResetButton(Button btn)
     {
         btn.BackgroundColor = Colors.White;
@@ -112,26 +119,31 @@ public partial class CreateAlertPage : ContentPage
     // ==========================================
     // SUBMIT REPORT TO FIREBASE (PENDING JMB)
     // ==========================================
+
+    // Validates user inputs, packages data into AlertModel, and sends it to Firebase for JMB moderation
     private async void OnSubmitAlertClicked(object sender, EventArgs e)
     {
         string title = TxtTitle.Text?.Trim() ?? "";
         string location = TxtLocation.Text?.Trim() ?? "";
         string advisory = TxtAdvisory.Text?.Trim() ?? "";
 
+        // Validate required headline and location fields before building the database object
         if (string.IsNullOrWhiteSpace(title) || string.IsNullOrWhiteSpace(location))
         {
             await DisplayAlert("Information Required", "Please enter the incident title and location.", "OK");
             return;
         }
 
+        // Provide a default safety message if the resident left the optional advisory box empty
         if (string.IsNullOrWhiteSpace(advisory))
         {
             advisory = "Please exercise caution when passing through this area.";
         }
 
-        // Derive severity dynamically from category if no separate severity picker exists in XAML
+        // Derive alert severity dynamically from the chosen category ("Security" -> HIGH, others -> MEDIUM)
         string derivedSeverity = selectedCategory == "Security" ? "HIGH" : "MEDIUM";
 
+        // Package all form inputs, session user details, and GPS coordinates into a new AlertModel
         var newAlert = new AlertModel
         {
             Title = title.ToUpper(),
@@ -142,7 +154,7 @@ public partial class CreateAlertPage : ContentPage
             Distance = _hasRealGps ? "Live GPS Pin" : AppSession.CurrentCommunityName,
             TimeDisplay = "Just now",
             IsActive = true,
-            IsApproved = false, // Awaiting JMB approval in ApprovalsQueuePage
+            IsApproved = false, // Awaiting JMB approval in ApprovalsQueuePage before appearing on AlertsPage
             Severity = derivedSeverity,
             ReportedBy = $"{AppSession.CurrentUserName} ({AppSession.CurrentUserUnit})",
             Latitude = _capturedLat,
@@ -151,6 +163,7 @@ public partial class CreateAlertPage : ContentPage
 
         try
         {
+            // Push the new alert record to Firebase under the resident's community node
             await fbService.SubmitResidentAlertAsync(AppSession.CurrentCommunityCode, newAlert);
 
             await DisplayAlert(
@@ -167,6 +180,7 @@ public partial class CreateAlertPage : ContentPage
         }
     }
 
+    // Focus visual feedback: turns the parent Border emerald green (#047857) when typing into an Entry
     private void OnInputFocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry entry && entry.Parent is Border border)
@@ -176,6 +190,7 @@ public partial class CreateAlertPage : ContentPage
         }
     }
 
+    // Focus visual feedback: restores the parent Border to light gray (#D6D3D1) when leaving an Entry
     private void OnInputUnfocused(object sender, FocusEventArgs e)
     {
         if (sender is Entry entry && entry.Parent is Border border)

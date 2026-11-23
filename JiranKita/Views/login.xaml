@@ -6,15 +6,17 @@
              BackgroundColor="#FAFAF9"
              Shell.NavBarIsVisible="False">
 
+    <!-- Main scrollable container preventing soft keyboard overlap on smaller screens -->
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="16">
 
-            <!-- Top Header Bar with Navigation Back & Language Picker -->
+            <!-- ================= 1. TOP HEADER BAR ================= -->
             <Grid ColumnDefinitions="Auto, *" Margin="0,10,0,5">
 
+                <!-- Reusable back navigation button -->
                 <controls:BackButton Grid.Column="0" />
 
-                <!-- Language Selection Indicator -->
+                <!-- Right-aligned static Language Selection Pill ("EN") -->
                 <HorizontalStackLayout Grid.Column="1" 
                                        HorizontalOptions="End" 
                                        VerticalOptions="Center" 
@@ -35,7 +37,7 @@
                 </HorizontalStackLayout>
             </Grid>
 
-            <!-- Greeting Banner -->
+            <!-- ================= 2. WELCOME GREETING BANNER ================= -->
             <VerticalStackLayout Spacing="4" Margin="0, 5, 0, 5">
                 <Label Text="Welcome Neighbour!" 
                        FontSize="20" 
@@ -46,52 +48,54 @@
                        TextColor="#78716C" />
             </VerticalStackLayout>
 
-            <!-- Authentication Input Fields -->
+            <!-- ================= 3. AUTHENTICATION INPUT FIELDS ================= -->
 
-            <!-- Email Entry -->
+            <!-- Email Entry Field -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Residential / User Email" 
-           FontSize="12" 
-           TextColor="#44403C" 
-           FontAttributes="Bold" />
+                       FontSize="12" 
+                       TextColor="#44403C" 
+                       FontAttributes="Bold" />
                 <Border StrokeShape="RoundRectangle 12" 
-            Stroke="#D6D3D1" 
-            BackgroundColor="White" 
-            Padding="12, 2">
+                        Stroke="#D6D3D1" 
+                        BackgroundColor="White" 
+                        Padding="12, 2">
                     <Entry x:Name="TxtEmail"
-               Placeholder="Enter residential / user email"
-               PlaceholderColor="#A8A29E"
-               Keyboard="Email"
-               FontSize="13"
-               TextColor="#1C1917" />
+                           Placeholder="Enter residential / user email"
+                           PlaceholderColor="#A8A29E"
+                           Keyboard="Email"
+                           FontSize="13"
+                           TextColor="#1C1917" />
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Password Entry -->
+            <!-- Password Entry Field with Show/Hide Eye Toggle -->
             <VerticalStackLayout Spacing="6">
                 <Label Text="Password" 
-           FontSize="12" 
-           TextColor="#44403C" 
-           FontAttributes="Bold" />
+                       FontSize="12" 
+                       TextColor="#44403C" 
+                       FontAttributes="Bold" />
                 <Border StrokeShape="RoundRectangle 12" 
-            Stroke="#D6D3D1" 
-            BackgroundColor="White" 
-            Padding="12, 2">
+                        Stroke="#D6D3D1" 
+                        BackgroundColor="White" 
+                        Padding="12, 2">
                     <Grid ColumnDefinitions="*, Auto">
                         <Entry x:Name="TxtPassword"
-                   Grid.Column="0" 
-                   Placeholder="Enter password"
-                   PlaceholderColor="#A8A29E"
-                   IsPassword="True" 
-                   FontSize="13" 
-                   TextColor="#1C1917" />
+                               Grid.Column="0" 
+                               Placeholder="Enter password"
+                               PlaceholderColor="#A8A29E"
+                               IsPassword="True" 
+                               FontSize="13" 
+                               TextColor="#1C1917" />
+
+                        <!-- Interactive Eye Icon to toggle IsPassword true/false in code-behind -->
                         <Label x:Name="LblTogglePassword"
-                   Grid.Column="1" 
-                   Text="👁" 
-                   FontSize="14" 
-                   VerticalOptions="Center" 
-                   TextColor="#A8A29E" 
-                   Margin="0,0,5,0">
+                               Grid.Column="1" 
+                               Text="👁" 
+                               FontSize="14" 
+                               VerticalOptions="Center" 
+                               TextColor="#A8A29E" 
+                               Margin="0,0,5,0">
                             <Label.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnTogglePasswordTapped" />
                             </Label.GestureRecognizers>
@@ -100,9 +104,9 @@
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Remember Me Checkbox & Forgot Password Link -->
+            <!-- ================= 4. REMEMBER ME & FORGOT PASSWORD ROW ================= -->
             <Grid ColumnDefinitions="*, Auto">
-                <!-- Remember Me Option -->
+                <!-- Remember Me Checkbox + Tappable Label (saves credentials locally via Preferences) -->
                 <HorizontalStackLayout Spacing="6" VerticalOptions="Center" Margin="0, -2, 0, 2">
                     <CheckBox x:Name="ChkRememberMe" IsChecked="False" Color="#047857" VerticalOptions="Center" />
                     <Label Text="Remember my login details" FontSize="12" TextColor="#44403C" VerticalOptions="Center">
@@ -112,6 +116,7 @@
                     </Label>
                 </HorizontalStackLayout>
 
+                <!-- Forgot Password Navigation Link -->
                 <Label Grid.Column="1" 
                        Text="Forgot?" 
                        TextColor="#065F46" 
@@ -124,7 +129,9 @@
                 </Label>
             </Grid>
 
-            <!-- Primary Sign In Action Button -->
+            <!-- ================= 5. SIGN IN BUTTON & FOOTER LINKS ================= -->
+
+            <!-- Primary Sign In Action Button (triggers Firebase user lookup & verification check) -->
             <Button Text="SIGN IN TO JIRANKITA" 
                     BackgroundColor="#047857" 
                     TextColor="White" 
@@ -149,7 +156,7 @@
                 </Label>
             </HorizontalStackLayout>
 
-            <!-- Regulatory Compliance Footer -->
+            <!-- Malaysian PDPA 2010 Data Privacy Notice -->
             <Label Text="Compliant with Malaysian PDPA 2010." 
                    FontSize="10" 
                    TextColor="#78716C" 

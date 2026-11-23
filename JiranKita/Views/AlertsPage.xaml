@@ -9,107 +9,226 @@
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="True">
 
+    <!-- Main 4-row vertical layout: Top Header, Category Filter Bar, Interactive Map, and Scrollable Alert Feed -->
     <Grid RowDefinitions="Auto, Auto, Auto, *">
 
-        <!-- ================= 1. HEADER (ACTIVE LOCATION) ================= -->
-        <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
+        <!-- ================= 1. HEADER (ACTIVE COMMUNITY LOCATION) ================= -->
+        <Border Grid.Row="0"
+                Stroke="#E7E5E4"
+                StrokeThickness="1"
+                BackgroundColor="White"
+                Padding="16, 12">
             <Grid ColumnDefinitions="*, Auto">
-                <HorizontalStackLayout Grid.Column="0" Spacing="8" VerticalOptions="Center">
-                    <Label Text="📍" FontSize="16" TextColor="#047857" VerticalOptions="Center" />
-                    <!-- Dynamic Community Name -->
-                    <Label Text="{Binding CommunityTitleDisplay}" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" VerticalOptions="Center" />
+
+                <!-- Left Side: Location Pin & Dynamic Community Name bound from AlertsPage.xaml.cs -->
+                <HorizontalStackLayout Grid.Column="0"
+                                       Spacing="8"
+                                       VerticalOptions="Center">
+                    <Label Text="📍"
+                           FontSize="16"
+                           TextColor="#047857"
+                           VerticalOptions="Center" />
+                    <Label Text="{Binding CommunityTitleDisplay}"
+                           FontSize="13"
+                           FontAttributes="Bold"
+                           TextColor="#1C1917"
+                           VerticalOptions="Center" />
                 </HorizontalStackLayout>
 
-                <!-- Re-center Map Button -->
-                <Border Grid.Column="1" StrokeShape="RoundRectangle 8" BackgroundColor="#F5F5F4" Stroke="#E7E5E4" HeightRequest="32" WidthRequest="32">
+                <!-- Right Side: Map Re-center Button using a TapGestureRecognizer -->
+                <Border Grid.Column="1"
+                        StrokeShape="RoundRectangle 8"
+                        BackgroundColor="#F5F5F4"
+                        Stroke="#E7E5E4"
+                        HeightRequest="32"
+                        WidthRequest="32">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnRecenterMapClicked" />
                     </Border.GestureRecognizers>
-                    <Label Text="🎯" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" />
+                    <Label Text="🎯"
+                           FontSize="14"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center" />
                 </Border>
             </Grid>
         </Border>
 
-        <!-- ================= 2. CATEGORY FILTERS ================= -->
-        <Border Grid.Row="1" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="#F5F5F4" Padding="12, 8">
-            <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+        <!-- ================= 2. HORIZONTAL CATEGORY FILTER PILLS ================= -->
+        <Border Grid.Row="1"
+                Stroke="#E7E5E4"
+                StrokeThickness="1"
+                BackgroundColor="#F5F5F4"
+                Padding="12, 8">
+            <ScrollView Orientation="Horizontal"
+                        HorizontalScrollBarVisibility="Never">
                 <HorizontalStackLayout Spacing="8">
-                    <Button x:Name="PillAll" Text="All" Clicked="OnFilterAlertClicked" BackgroundColor="#047857" TextColor="White" FontAttributes="Bold" FontSize="10" CornerRadius="8" HeightRequest="30" Padding="12, 0" />
-                    <Button x:Name="PillRoad" Text="🚧 Road" Clicked="OnFilterAlertClicked" BackgroundColor="White" TextColor="#78350F" BorderColor="#D6D3D1" BorderWidth="1" FontSize="10" CornerRadius="8" HeightRequest="30" Padding="10, 0" />
-                    <Button x:Name="PillHazards" Text="⚠️ Hazards" Clicked="OnFilterAlertClicked" BackgroundColor="White" TextColor="#9F1239" BorderColor="#D6D3D1" BorderWidth="1" FontSize="10" CornerRadius="8" HeightRequest="30" Padding="10, 0" />
-                    <Button x:Name="PillSecurity" Text="🚨 Security" Clicked="OnFilterAlertClicked" BackgroundColor="White" TextColor="#0369A1" BorderColor="#D6D3D1" BorderWidth="1" FontSize="10" CornerRadius="8" HeightRequest="30" Padding="10, 0" />
+
+                    <!-- Active Filter State (Default): Emerald Green (#047857) background with White text -->
+                    <Button x:Name="PillAll"
+                            Text="All"
+                            Clicked="OnFilterAlertClicked"
+                            BackgroundColor="#047857"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="10"
+                            CornerRadius="8"
+                            HeightRequest="30"
+                            Padding="12, 0" />
+
+                    <!-- Inactive Filter States: White background with category-specific text colors -->
+                    <Button x:Name="PillRoad"
+                            Text="🚧 Road"
+                            Clicked="OnFilterAlertClicked"
+                            BackgroundColor="White"
+                            TextColor="#78350F"
+                            BorderColor="#D6D3D1"
+                            BorderWidth="1"
+                            FontSize="10"
+                            CornerRadius="8"
+                            HeightRequest="30"
+                            Padding="10, 0" />
+
+                    <Button x:Name="PillHazards"
+                            Text="⚠️ Hazards"
+                            Clicked="OnFilterAlertClicked"
+                            BackgroundColor="White"
+                            TextColor="#9F1239"
+                            BorderColor="#D6D3D1"
+                            BorderWidth="1"
+                            FontSize="10"
+                            CornerRadius="8"
+                            HeightRequest="30"
+                            Padding="10, 0" />
+
+                    <Button x:Name="PillSecurity"
+                            Text="🚨 Security"
+                            Clicked="OnFilterAlertClicked"
+                            BackgroundColor="White"
+                            TextColor="#0369A1"
+                            BorderColor="#D6D3D1"
+                            BorderWidth="1"
+                            FontSize="10"
+                            CornerRadius="8"
+                            HeightRequest="30"
+                            Padding="10, 0" />
                 </HorizontalStackLayout>
             </ScrollView>
         </Border>
 
-        <!-- ================= 3. INTERACTIVE GIS MAP (OPENSTREETMAP) ================= -->
+        <!-- ================= 3. INTERACTIVE GIS MAP (OPENSTREETMAP WEBVIEW) ================= -->
         <Grid Grid.Row="2" HeightRequest="190">
-            <!-- WebView displaying live GPS map -->
+
+            <!-- Embedded browser view rendering Leaflet/OpenStreetMap HTML & GPS pins from code-behind -->
             <WebView x:Name="MapWebView" />
 
-            <!-- Geofence badge at bottom-right of map -->
-            <Border StrokeShape="RoundRectangle 6" 
-                    BackgroundColor="#F2FFFFFF" 
-                    Stroke="#D6D3D1" 
-                    Padding="6, 2" 
-                    HorizontalOptions="End" 
-                    VerticalOptions="End" 
+            <!-- Floating semi-transparent Geofence Radius indicator badge at bottom-right -->
+            <Border StrokeShape="RoundRectangle 6"
+                    BackgroundColor="#F2FFFFFF"
+                    Stroke="#D6D3D1"
+                    Padding="6, 2"
+                    HorizontalOptions="End"
+                    VerticalOptions="End"
                     Margin="8">
-                <Label Text="Radius: 500m active" FontSize="9" FontAttributes="Bold" TextColor="#047857" />
+                <Label Text="Radius: 500m active"
+                       FontSize="9"
+                       FontAttributes="Bold"
+                       TextColor="#047857" />
             </Border>
         </Grid>
 
-        <!-- ================= 4. LIVE ALERTS LIST & SOS BUTTON ================= -->
+        <!-- ================= 4. LIVE ALERTS FEED, SOS BUTTON & FLOATING ACTION BUTTON ================= -->
         <Grid Grid.Row="3">
 
+            <!-- Scrollable container with bottom padding (70) so the floating button doesn't block the SOS button -->
             <ScrollView Padding="16, 14, 16, 70">
                 <VerticalStackLayout Spacing="14">
 
-                    <!-- Dynamic Alerts List -->
-                    <CollectionView x:Name="AlertsCollectionView" SelectionMode="None">
+                    <!-- Dynamic CollectionView populated with AlertModel items from Firebase in AlertsPage.xaml.cs -->
+                    <CollectionView x:Name="AlertsCollectionView"
+                                    SelectionMode="None">
+
+                        <!-- Fallback UI displayed automatically when the alerts list is empty -->
                         <CollectionView.EmptyView>
-                            <Border StrokeShape="RoundRectangle 12" Stroke="#E7E5E4" BackgroundColor="White" Padding="18">
-                                <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
-                                    <Label Text="✅" FontSize="26" HorizontalOptions="Center" />
-                                    <Label Text="No active hazard alerts in your area." FontSize="11" FontAttributes="Bold" TextColor="#047857" HorizontalOptions="Center" />
+                            <Border StrokeShape="RoundRectangle 12"
+                                    Stroke="#E7E5E4"
+                                    BackgroundColor="White"
+                                    Padding="18">
+                                <VerticalStackLayout Spacing="4"
+                                                     HorizontalOptions="Center">
+                                    <Label Text="✅"
+                                           FontSize="26"
+                                           HorizontalOptions="Center" />
+                                    <Label Text="No active hazard alerts in your area."
+                                           FontSize="11"
+                                           FontAttributes="Bold"
+                                           TextColor="#047857"
+                                           HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Border>
                         </CollectionView.EmptyView>
 
+                        <!-- Card template repeated for each AlertModel record retrieved from the database -->
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:AlertModel">
-                                <Border StrokeShape="RoundRectangle 16" Stroke="#FECDD3" BackgroundColor="#FFF1F2" Padding="14" Margin="0, 0, 0, 10">
+                                <Border StrokeShape="RoundRectangle 16"
+                                        Stroke="#FECDD3"
+                                        BackgroundColor="#FFF1F2"
+                                        Padding="14"
+                                        Margin="0, 0, 0, 10">
                                     <VerticalStackLayout Spacing="5">
+
+                                        <!-- Top Row: Red Alert Title Badge & Timestamp -->
                                         <Grid ColumnDefinitions="*, Auto">
-                                            <Border Grid.Column="0" StrokeShape="RoundRectangle 4" BackgroundColor="#E11D48" Stroke="Transparent" Padding="6, 2" HorizontalOptions="Start">
-                                                <Label Text="{Binding Title, StringFormat='HIGH ALERT: {0}'}" FontSize="9" FontAttributes="Bold" TextColor="White" />
+                                            <Border Grid.Column="0"
+                                                    StrokeShape="RoundRectangle 4"
+                                                    BackgroundColor="#E11D48"
+                                                    Stroke="Transparent"
+                                                    Padding="6, 2"
+                                                    HorizontalOptions="Start">
+                                                <Label Text="{Binding Title, StringFormat='HIGH ALERT: {0}'}"
+                                                       FontSize="9"
+                                                       FontAttributes="Bold"
+                                                       TextColor="White" />
                                             </Border>
-                                            <Label Grid.Column="1" Text="{Binding TimeDisplay}" FontSize="10" FontAttributes="Bold" TextColor="#9F1239" VerticalOptions="Center" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding TimeDisplay}"
+                                                   FontSize="10"
+                                                   FontAttributes="Bold"
+                                                   TextColor="#9F1239"
+                                                   VerticalOptions="Center" />
                                         </Grid>
 
-                                        <Label Text="{Binding Location, StringFormat='Location: {0}'}" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" Margin="0, 2, 0, 0" />
-                                        <Label Text="{Binding Advisory}" FontSize="11" TextColor="#57534E" LineHeight="1.2" />
+                                        <!-- Alert Location & Detailed Advisory Description -->
+                                        <Label Text="{Binding Location, StringFormat='Location: {0}'}"
+                                               FontSize="12"
+                                               FontAttributes="Bold"
+                                               TextColor="#1C1917"
+                                               Margin="0, 2, 0, 0" />
+                                        <Label Text="{Binding Advisory}"
+                                               FontSize="11"
+                                               TextColor="#57534E"
+                                               LineHeight="1.2" />
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
 
-                    <!-- Emergency SOS Call Button -->
-                    <Button Text="🚨 SOS EMERGENCY CALL: GUARDHOUSE" 
+                    <!-- Emergency Guardhouse Phone Dialer Button -->
+                    <Button Text="🚨 SOS EMERGENCY CALL: GUARDHOUSE"
                             Clicked="OnSosCallClicked"
-                            BackgroundColor="#BE123C" 
-                            TextColor="White" 
-                            FontAttributes="Bold" 
-                            FontSize="11" 
-                            CornerRadius="12" 
-                            HeightRequest="48" 
+                            BackgroundColor="#BE123C"
+                            TextColor="White"
+                            FontAttributes="Bold"
+                            FontSize="11"
+                            CornerRadius="12"
+                            HeightRequest="48"
                             Margin="0, 4, 0, 10" />
 
                 </VerticalStackLayout>
             </ScrollView>
 
-            <!-- FLOATING REPORT HAZARD BUTTON (OPENS CreateAlertPage) -->
+            <!-- Floating Action Button (FAB) pinned to bottom-right to navigate to CreateAlertPage -->
             <Border StrokeShape="RoundRectangle 24"
                     BackgroundColor="#D97706"
                     Stroke="Transparent"
@@ -121,9 +240,16 @@
                 <Border.GestureRecognizers>
                     <TapGestureRecognizer Tapped="OnReportHazardClicked" />
                 </Border.GestureRecognizers>
-                <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
-                    <Label Text="⚠️" FontSize="14" VerticalOptions="Center" />
-                    <Label Text="Report Hazard" TextColor="White" FontSize="11" FontAttributes="Bold" VerticalOptions="Center" />
+                <HorizontalStackLayout Spacing="6"
+                                       VerticalOptions="Center">
+                    <Label Text="⚠️"
+                           FontSize="14"
+                           VerticalOptions="Center" />
+                    <Label Text="Report Hazard"
+                           TextColor="White"
+                           FontSize="11"
+                           FontAttributes="Bold"
+                           VerticalOptions="Center" />
                 </HorizontalStackLayout>
             </Border>
 

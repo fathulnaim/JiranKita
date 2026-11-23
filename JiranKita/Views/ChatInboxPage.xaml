@@ -7,17 +7,19 @@
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="True">
 
+    <!-- Main 2-row layout: Fixed Top Header Bar and Scrollable Chat Inbox List -->
     <Grid RowDefinitions="Auto, *">
 
         <!-- ================= 1. HEADER BAR ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 12">
             <Grid ColumnDefinitions="*, Auto">
+                <!-- Left Side: Page Title & Active Community Subtitle populated from C# code-behind -->
                 <VerticalStackLayout Grid.Column="0" Spacing="1" VerticalOptions="Center">
                     <Label Text="NEIGHBOURHOOD CHATS" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" />
                     <Label x:Name="LblCommunitySub" Text="Loading..." FontSize="10" TextColor="#78716C" />
                 </VerticalStackLayout>
 
-                <!-- JiranBot AI Assistant Shortcut Button -->
+                <!-- Right Side: JiranBot AI Assistant Shortcut Button (Purple theme accent) -->
                 <Border Grid.Column="1" StrokeShape="RoundRectangle 10" BackgroundColor="#F3E8FF" Stroke="#E9D5FF" HeightRequest="36" WidthRequest="36">
                     <Border.GestureRecognizers>
                         <TapGestureRecognizer Tapped="OnRobotClicked" />
@@ -35,20 +37,24 @@
                 <VerticalStackLayout Spacing="6">
                     <Label Text="COMMUNITY GROUP" FontSize="10" FontAttributes="Bold" TextColor="#78716C" CharacterSpacing="1" />
 
+                    <!-- Tappable Pinned Community Group Card with Mint Green (#ECFDF5) highlight -->
                     <Border StrokeShape="RoundRectangle 16" Stroke="#A7F3D0" BackgroundColor="#ECFDF5" Padding="12">
                         <Border.GestureRecognizers>
                             <TapGestureRecognizer Tapped="OnOpenGroupChatClicked" />
                         </Border.GestureRecognizers>
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                            <!-- Group Icon Badge -->
                             <Border Grid.Column="0" StrokeShape="RoundRectangle 14" BackgroundColor="#047857" HeightRequest="44" WidthRequest="44">
                                 <Label Text="🏢" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
                             </Border>
 
+                            <!-- Group Title (dynamically set via LblGroupName) & Subtitle -->
                             <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                                 <Label x:Name="LblGroupName" Text="Community Group Chat" FontSize="13" FontAttributes="Bold" TextColor="#1C1917" />
                                 <Label Text="Tap to join neighbourhood conversation..." FontSize="11" TextColor="#57534E" LineBreakMode="TailTruncation" />
                             </VerticalStackLayout>
 
+                            <!-- Live Status Pill -->
                             <Border Grid.Column="2" StrokeShape="RoundRectangle 8" BackgroundColor="#047857" Padding="6, 2" VerticalOptions="Center">
                                 <Label Text="LIVE" FontSize="9" FontAttributes="Bold" TextColor="White" />
                             </Border>
@@ -56,13 +62,14 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- B. DYNAMIC DIRECT MESSAGES LIST (FROM DATABASE) -->
+                <!-- B. DYNAMIC DIRECT MESSAGES LIST (POPULATED FROM FIREBASE DATABASE) -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="DIRECT MESSAGES" FontSize="10" FontAttributes="Bold" TextColor="#78716C" CharacterSpacing="1" />
 
+                    <!-- Single-selection list of 1-on-1 neighbor chat threads -->
                     <CollectionView x:Name="CvDirectChats" SelectionMode="Single" SelectionChanged="OnDirectChatSelected">
 
-                        <!-- Empty View State (When no 1-on-1 conversations exist) -->
+                        <!-- Empty View State (Displayed automatically when no 1-on-1 conversations exist) -->
                         <CollectionView.EmptyView>
                             <Border StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="18">
                                 <VerticalStackLayout Spacing="4" HorizontalOptions="Center">
@@ -73,19 +80,23 @@
                             </Border>
                         </CollectionView.EmptyView>
 
+                        <!-- Item Template repeated for each DirectConversationModel returned from Firebase -->
                         <CollectionView.ItemTemplate>
                             <DataTemplate x:DataType="models:DirectConversationModel">
                                 <Border StrokeShape="RoundRectangle 14" Stroke="#E7E5E4" BackgroundColor="White" Padding="12" Margin="0, 0, 0, 8">
                                     <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12">
+                                        <!-- Neighbour Avatar Circle showing 2-letter Initials -->
                                         <Border Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#065F46" HeightRequest="40" WidthRequest="40">
                                             <Label Text="{Binding Initials}" TextColor="White" FontSize="12" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
                                         </Border>
 
+                                        <!-- Neighbour Name/Unit & Preview of Last Sent Message -->
                                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
                                             <Label Text="{Binding DisplayTitle}" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" />
                                             <Label Text="{Binding LastMessage}" FontSize="11" TextColor="#78716C" MaxLines="1" LineBreakMode="TailTruncation" />
                                         </VerticalStackLayout>
 
+                                        <!-- Right Arrow Indicator -->
                                         <Label Grid.Column="2" Text="➔" FontSize="12" TextColor="#A8A29E" VerticalOptions="Center" />
                                     </Grid>
                                 </Border>

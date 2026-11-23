@@ -6,11 +6,13 @@
              Shell.NavBarIsVisible="False"
              Shell.TabBarIsVisible="False">
 
+    <!-- Main 3-row layout: Top Cancel Header, Scrollable Post Creation Form, and Fixed Bottom Publish Button -->
     <Grid RowDefinitions="Auto, *, Auto">
 
         <!-- ================= 1. HEADER SECTION ================= -->
         <Border Grid.Row="0" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="12, 10">
             <Grid ColumnDefinitions="Auto, *, Auto">
+                <!-- Left Side: Cancel button to dismiss the post creation screen without saving -->
                 <Button Grid.Column="0" 
                         Text="Cancel" 
                         Clicked="OnCancelClicked" 
@@ -19,7 +21,11 @@
                         FontAttributes="Bold" 
                         FontSize="12" 
                         HeightRequest="36" />
+
+                <!-- Centered Header Title -->
                 <Label Grid.Column="1" Text="CREATE NEW POST" FontSize="12" FontAttributes="Bold" TextColor="#1C1917" CharacterSpacing="1" HorizontalOptions="Center" VerticalOptions="Center" />
+
+                <!-- Right Side: Empty spacer matching Cancel button width so title stays centered -->
                 <BoxView Grid.Column="2" WidthRequest="48" Color="White" />
             </Grid>
         </Border>
@@ -28,12 +34,15 @@
         <ScrollView Grid.Row="1" Padding="16">
             <VerticalStackLayout Spacing="16">
 
-                <!-- Category Selection Bar -->
+                <!-- Category Selection Bar (Horizontal scrollable interactive category pills) -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Choose Category *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                     <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
                         <HorizontalStackLayout Spacing="8">
+                            <!-- Default Selected Category: Amber (#D97706) background with bold white text -->
                             <Button x:Name="BtnCatLostFound" Text="Lost &amp; Found" Clicked="OnCategoryClicked" BackgroundColor="#D97706" TextColor="White" FontAttributes="Bold" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
+
+                            <!-- Unselected Categories: White background with charcoal text (#44403C) and stone border -->
                             <Button x:Name="BtnCatRoad" Text="Road &amp; Maintenance" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
                             <Button x:Name="BtnCatEvents" Text="Events" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
                             <Button x:Name="BtnCatOfficial" Text="Official" Clicked="OnCategoryClicked" BackgroundColor="White" TextColor="#44403C" BorderColor="#D6D3D1" BorderWidth="1" FontSize="11" CornerRadius="8" HeightRequest="36" Padding="12, 0" />
@@ -42,7 +51,7 @@
                     </ScrollView>
                 </VerticalStackLayout>
 
-                <!-- Post Title Input -->
+                <!-- Post Title Input with live 70-character limit counter -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Post Title *" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                     <Border StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" BackgroundColor="White" Padding="12, 2">
@@ -72,11 +81,11 @@
                     </Border>
                 </VerticalStackLayout>
 
-                <!-- Photo Attachments & Image Preview Card -->
+                <!-- Photo Attachments & Image Preview Card (3-column grid: Camera, Gallery, Selected Image Thumbnail) -->
                 <VerticalStackLayout Spacing="8">
                     <Label Text="Attach Photo" FontSize="12" FontAttributes="Bold" TextColor="#44403C" />
                     <Grid ColumnDefinitions="*, *, *" ColumnSpacing="8">
-                        <!-- Camera Picker -->
+                        <!-- Column 0: Camera Capture Trigger (dashed border card) -->
                         <Border Grid.Column="0" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" StrokeDashArray="4, 2" BackgroundColor="White" HeightRequest="64">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnCameraClicked" />
@@ -87,7 +96,7 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <!-- Gallery Picker -->
+                        <!-- Column 1: Photo Gallery Picker Trigger (dashed border card) -->
                         <Border Grid.Column="1" StrokeShape="RoundRectangle 12" Stroke="#D6D3D1" StrokeDashArray="4, 2" BackgroundColor="White" HeightRequest="64">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer Tapped="OnGalleryClicked" />
@@ -98,12 +107,13 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <!-- Image Preview Box (Displays when photo is selected) -->
+                        <!-- Column 2: Selected Image Preview Card (hidden until a photo is captured/picked) -->
                         <Grid x:Name="AttachedPhotoCard" Grid.Column="2" HeightRequest="64" IsVisible="False">
                             <Border StrokeShape="RoundRectangle 12" Stroke="#047857" StrokeThickness="1.5" BackgroundColor="#F5F5F4" Padding="0">
                                 <Image x:Name="ImgPreview" Aspect="AspectFill" />
                             </Border>
 
+                            <!-- Red circular Remove ('✕') badge floating at top-right corner of the thumbnail -->
                             <Border StrokeShape="RoundRectangle 10" BackgroundColor="#E11D48" HeightRequest="20" WidthRequest="20" HorizontalOptions="End" VerticalOptions="Start" TranslationX="4" TranslationY="-4">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Tapped="OnRemovePhotoClicked" />
@@ -114,12 +124,11 @@
                     </Grid>
                 </VerticalStackLayout>
 
-                <!-- Location Selector Card -->
                 <!-- Interactive Location Selector Card (Replaces hardcoded "Location" label) -->
                 <Border StrokeShape="RoundRectangle 12" 
-        Stroke="#D6D3D1" 
-        BackgroundColor="White" 
-        Padding="12, 10">
+                        Stroke="#D6D3D1" 
+                        BackgroundColor="White" 
+                        Padding="12, 10">
 
                     <!-- Makes the entire card clickable, not just the small "Change" text -->
                     <Border.GestureRecognizers>
@@ -129,25 +138,25 @@
                     <Grid ColumnDefinitions="*, Auto" ColumnSpacing="8">
                         <!-- Displays the dynamically resolved community or custom location -->
                         <Label x:Name="LblLocation" 
-               Grid.Column="0" 
-               Text="📍 Detecting community location..." 
-               FontSize="11" 
-               FontAttributes="Bold" 
-               TextColor="#1C1917" 
-               LineBreakMode="TailTruncation"
-               VerticalOptions="Center" />
+                               Grid.Column="0" 
+                               Text="📍 Detecting community location..." 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               TextColor="#1C1917" 
+                               LineBreakMode="TailTruncation"
+                               VerticalOptions="Center" />
 
                         <!-- Action affordance indicating the location can be edited -->
                         <Label Grid.Column="1" 
-               Text="Change" 
-               FontSize="11" 
-               FontAttributes="Bold" 
-               TextColor="#047857" 
-               VerticalOptions="Center" />
+                               Text="Change" 
+                               FontSize="11" 
+                               FontAttributes="Bold" 
+                               TextColor="#047857" 
+                               VerticalOptions="Center" />
                     </Grid>
                 </Border>
 
-                <!-- Optional Toggles -->
+                <!-- Optional Privacy / Direct Contact Permission Toggle -->
                 <VerticalStackLayout Spacing="8">
                     <HorizontalStackLayout Spacing="8">
                         <CheckBox x:Name="ChkAllowContact" IsChecked="True" Color="#047857" />
@@ -158,7 +167,7 @@
             </VerticalStackLayout>
         </ScrollView>
 
-        <!-- Publish Action Button -->
+        <!-- ================= 3. PUBLISH ACTION BUTTON ================= -->
         <Border Grid.Row="2" Stroke="#E7E5E4" StrokeThickness="1" BackgroundColor="White" Padding="16, 10">
             <Button Text="PUBLISH TO COMMUNITY" Clicked="OnPublishClicked" BackgroundColor="#047857" TextColor="White" FontAttributes="Bold" FontSize="12" CornerRadius="12" HeightRequest="48" />
         </Border>
